@@ -13,7 +13,7 @@ import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.info.Info;
 import io.swagger.v3.oas.models.info.License;
 
-@javax.annotation.Generated(value = "io.swagger.codegen.v3.generators.java.SpringCodegen", date = "2023-05-09T16:01:34.487688617Z[GMT]")
+@javax.annotation.Generated(value = "io.swagger.codegen.v3.generators.java.SpringCodegen", date = "2023-05-16T13:11:00.686570329Z[GMT]")
 @Configuration
 public class SwaggerDocumentationConfig {
 
@@ -32,7 +32,7 @@ public class SwaggerDocumentationConfig {
         return new ApiInfoBuilder()
             .title("CodeGen gr 5")
             .description("Casper is cool")
-            .license("Apache 2.0")
+            .license("Apac he 2.0")
             .licenseUrl("http://www.apache.org/licenses/LICENSE-2.0.html")
             .termsOfServiceUrl("")
             .version("1.0.0")
@@ -49,7 +49,7 @@ public class SwaggerDocumentationConfig {
                 .termsOfService("")
                 .version("1.0.0")
                 .license(new License()
-                    .name("Apache 2.0")
+                    .name("Apac he 2.0")
                     .url("http://www.apache.org/licenses/LICENSE-2.0.html"))
                 .contact(new io.swagger.v3.oas.models.info.Contact()
                     .email("")));
