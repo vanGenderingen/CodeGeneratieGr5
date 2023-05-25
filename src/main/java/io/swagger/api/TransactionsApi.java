@@ -5,7 +5,7 @@
  */
 package io.swagger.api;
 
-import io.swagger.model.CreateTransactionDTO;
+import io.swagger.model.DTO.CreateTransactionDTO;
 import org.threeten.bp.OffsetDateTime;
 import io.swagger.model.Transaction;
 import java.util.UUID;
@@ -14,7 +14,6 @@ import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.enums.ParameterIn;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
-import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
@@ -22,18 +21,12 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RequestPart;
-import org.springframework.web.multipart.MultipartFile;
-import org.springframework.web.bind.annotation.CookieValue;
 
 import javax.validation.Valid;
 import javax.validation.constraints.*;
-import java.util.List;
-import java.util.Map;
 
 @javax.annotation.Generated(value = "io.swagger.codegen.v3.generators.java.SpringCodegen", date = "2023-05-16T13:11:00.686570329Z[GMT]")
 @Validated
@@ -48,9 +41,7 @@ public interface TransactionsApi {
         
         @ApiResponse(responseCode = "401", description = "Unauthorized. No authentication"),
         
-        @ApiResponse(responseCode = "403", description = "Forbidden. The client does not have access"),
-        
-        @ApiResponse(responseCode = "500", description = "Internal server error.") })
+        @ApiResponse(responseCode = "403", description = "Forbidden. The client does not have access")})
     @RequestMapping(value = "/transactions",
         produces = { "application/json" }, 
         method = RequestMethod.GET)
@@ -68,9 +59,7 @@ public interface TransactionsApi {
         
         @ApiResponse(responseCode = "401", description = "Access token is missing or invalid"),
         
-        @ApiResponse(responseCode = "403", description = "Forbidden. The client does not have access"),
-        
-        @ApiResponse(responseCode = "500", description = "Internal server error.") })
+        @ApiResponse(responseCode = "403", description = "Forbidden. The client does not have access") })
     @RequestMapping(value = "/transactions",
         produces = { "application/json" }, 
         consumes = { "application/json" }, 
@@ -87,9 +76,7 @@ public interface TransactionsApi {
         
         @ApiResponse(responseCode = "401", description = "Unauthorized. No authentication"),
         
-        @ApiResponse(responseCode = "403", description = "Forbidden. The client does not have access"),
-        
-        @ApiResponse(responseCode = "500", description = "Internal server error.") })
+        @ApiResponse(responseCode = "403", description = "Forbidden. The client does not have access") })
     @RequestMapping(value = "/transactions/{transactionID}",
         produces = { "application/json" }, 
         method = RequestMethod.GET)
