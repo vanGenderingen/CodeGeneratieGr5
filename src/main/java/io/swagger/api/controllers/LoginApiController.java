@@ -1,5 +1,9 @@
 package io.swagger.api.controllers;
 
+//import com.sun.org.apache.xml.internal.security.algorithms.SignatureAlgorithm;
+import io.jsonwebtoken.SignatureAlgorithm;
+
+import io.jsonwebtoken.Jwts;
 import io.swagger.api.LoginApi;
 import io.swagger.model.DTO.LoginDTO;
 import io.swagger.model.DTO.LoginResponseDTO;
@@ -17,6 +21,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import javax.validation.Valid;
 import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
+import java.util.Date;
+import java.util.UUID;
 
 @javax.annotation.Generated(value = "io.swagger.codegen.v3.generators.java.SpringCodegen", date = "2023-05-16T13:11:00.686570329Z[GMT]")
 @RestController
@@ -47,5 +53,22 @@ public class LoginApiController implements LoginApi {
 
         return new ResponseEntity<LoginResponseDTO>(HttpStatus.NOT_IMPLEMENTED);
     }
+    private static String generateJwtToken(UUID userId, String role) {
+        long currentTimeMillis = System.currentTimeMillis();
+        long expirationTimeMillis = currentTimeMillis + 3600000; // Token expiration time: 1 hour
+        Date expirationDate = new Date(expirationTimeMillis);
+
+        return Jwts.builder()
+
+                .setSubject(userId.toString()) // User ID
+                .claim("role", role) // Custom claim: user role
+
+                .setExpiration(expirationDate) // Expiration time
+                .signWith(SignatureAlgorithm.HS256, "yourSecretKey") // Sign the JWT with the secret key
+                .compact();
+
+    }
+
+
 
 }
