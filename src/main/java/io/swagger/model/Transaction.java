@@ -8,6 +8,11 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import java.util.UUID;
 import org.threeten.bp.OffsetDateTime;
 import org.springframework.validation.annotation.Validated;
+
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.ManyToMany;
+import javax.persistence.ManyToOne;
 import javax.validation.Valid;
 import javax.validation.constraints.*;
 
@@ -19,6 +24,8 @@ import javax.validation.constraints.*;
 
 
 public class Transaction   {
+  @GeneratedValue
+  @Id
   @JsonProperty("transactionID")
   private UUID transactionID = null;
 
@@ -64,6 +71,7 @@ public class Transaction   {
   @JsonProperty("transactionType")
   private TransactionTypeEnum transactionType = null;
 
+  @ManyToOne
   @JsonProperty("userPerforming")
   private UUID userPerforming = null;
 

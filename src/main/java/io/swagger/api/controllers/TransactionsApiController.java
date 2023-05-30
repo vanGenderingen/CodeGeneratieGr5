@@ -1,9 +1,14 @@
 package io.swagger.api.controllers;
 
 import io.swagger.api.TransactionsApi;
+import io.swagger.api.service.TransactionService;
 import io.swagger.model.DTO.CreateTransactionDTO;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.threeten.bp.OffsetDateTime;
 import io.swagger.model.Transaction;
+
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -31,12 +36,26 @@ public class TransactionsApiController implements TransactionsApi {
 
     private final ObjectMapper objectMapper;
 
+    private TransactionService transactionService;
+
     private final HttpServletRequest request;
 
     @org.springframework.beans.factory.annotation.Autowired
     public TransactionsApiController(ObjectMapper objectMapper, HttpServletRequest request) {
         this.objectMapper = objectMapper;
         this.request = request;
+    }
+
+    public ResponseEntity<Transaction> getTransactions(){
+        try {
+            List<Transaction> transactions = new ArrayList<>();
+            transactions = transactionService.getAllTransactions();
+            return new ResponseEntity<Transaction>(HttpStatus.OK);
+
+        } catch (Exception e) {
+            log.error("Couldn't serialize response for content type application/json", e);
+            return new ResponseEntity<Transaction>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
 
     public ResponseEntity<Transaction> transactionsGet(@Parameter(in = ParameterIn.QUERY, description = "ID of the user" ,schema=@Schema()) @Valid @RequestParam(value = "userID", required = false) UUID userID,@Min(0) @Max(100) @Parameter(in = ParameterIn.QUERY, description = "The maximum number of transactions to retrieve." ,schema=@Schema(allowableValues={ "0", "100" }, maximum="100"
