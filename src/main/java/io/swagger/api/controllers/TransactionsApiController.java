@@ -1,32 +1,31 @@
 package io.swagger.api.controllers;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import io.swagger.api.TransactionsApi;
 import io.swagger.api.service.TransactionService;
 import io.swagger.model.DTO.CreateTransactionDTO;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.threeten.bp.OffsetDateTime;
 import io.swagger.model.Transaction;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.UUID;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.enums.ParameterIn;
 import io.swagger.v3.oas.annotations.media.Schema;
+import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
+import org.threeten.bp.OffsetDateTime;
 
-import javax.validation.constraints.*;
-import javax.validation.Valid;
 import javax.servlet.http.HttpServletRequest;
+import javax.validation.Valid;
+import javax.validation.constraints.DecimalMin;
+import javax.validation.constraints.Max;
+import javax.validation.constraints.Min;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.UUID;
 
 @javax.annotation.Generated(value = "io.swagger.codegen.v3.generators.java.SpringCodegen", date = "2023-05-16T13:11:00.686570329Z[GMT]")
 @RestController
@@ -34,11 +33,16 @@ public class TransactionsApiController implements TransactionsApi {
 
     private static final Logger log = LoggerFactory.getLogger(TransactionsApiController.class);
 
+
     private final ObjectMapper objectMapper;
 
+    @Autowired
     private TransactionService transactionService;
 
+    private ModelMapper modelMapper;
+
     private final HttpServletRequest request;
+
 
     @org.springframework.beans.factory.annotation.Autowired
     public TransactionsApiController(ObjectMapper objectMapper, HttpServletRequest request) {
@@ -56,6 +60,15 @@ public class TransactionsApiController implements TransactionsApi {
             log.error("Couldn't serialize response for content type application/json", e);
             return new ResponseEntity<Transaction>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
+    }
+
+    @RequestMapping(value = "/transactions",
+            produces = { "application/json" },
+            consumes = { "application/json" },
+            method = RequestMethod.POST)
+    public ResponseEntity<Transaction> postTransactions(@RequestBody Transaction body) {
+        Transaction result = transactionService.add(body);
+        return new ResponseEntity<Transaction>(result, HttpStatus.OK);
     }
 
     public ResponseEntity<Transaction> transactionsGet(@Parameter(in = ParameterIn.QUERY, description = "ID of the user" ,schema=@Schema()) @Valid @RequestParam(value = "userID", required = false) UUID userID,@Min(0) @Max(100) @Parameter(in = ParameterIn.QUERY, description = "The maximum number of transactions to retrieve." ,schema=@Schema(allowableValues={ "0", "100" }, maximum="100"

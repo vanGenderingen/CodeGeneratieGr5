@@ -1,20 +1,19 @@
 package io.swagger.model;
 
-import java.util.Objects;
-import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonValue;
 import io.swagger.v3.oas.annotations.media.Schema;
-import java.util.UUID;
-import org.threeten.bp.OffsetDateTime;
+import lombok.Data;
 import org.springframework.validation.annotation.Validated;
+import org.threeten.bp.OffsetDateTime;
 
+import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
-import javax.persistence.ManyToMany;
-import javax.persistence.ManyToOne;
 import javax.validation.Valid;
-import javax.validation.constraints.*;
+import java.util.Objects;
+import java.util.UUID;
 
 /**
  * Transaction
@@ -22,10 +21,12 @@ import javax.validation.constraints.*;
 @Validated
 @javax.annotation.Generated(value = "io.swagger.codegen.v3.generators.java.SpringCodegen", date = "2023-05-16T13:11:00.686570329Z[GMT]")
 
-
+@Data
+@Entity
 public class Transaction   {
-  @GeneratedValue
+
   @Id
+  @GeneratedValue
   @JsonProperty("transactionID")
   private UUID transactionID = null;
 
@@ -71,7 +72,6 @@ public class Transaction   {
   @JsonProperty("transactionType")
   private TransactionTypeEnum transactionType = null;
 
-  @ManyToOne
   @JsonProperty("userPerforming")
   private UUID userPerforming = null;
 

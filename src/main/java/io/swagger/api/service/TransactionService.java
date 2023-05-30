@@ -1,25 +1,24 @@
 package io.swagger.api.service;
 
 import io.swagger.api.repository.TransactionRepository;
-import io.swagger.model.Account;
 import io.swagger.model.Transaction;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
 
+@Service
 public class TransactionService {
 
     @Autowired
     private TransactionRepository transactionRepository;
 
-//    public Transaction add(Transaction transaction) {
-////        Account sender = transaction.getSender();
-////        Account receiver = transaction.getReceiver();
-//        transactionRepository.save(transaction);
-//        return transaction;
-//    }
+    public Transaction add(Transaction transaction) {
+        transaction = transactionRepository.save(transaction);
+        return transaction;
+    }
 
     public List<Transaction> getAllTransactions() {
-        return transactionRepository.findAll();
+        return null;
     }
 }
