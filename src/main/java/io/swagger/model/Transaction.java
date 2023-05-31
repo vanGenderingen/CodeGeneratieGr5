@@ -11,6 +11,7 @@ import org.threeten.bp.OffsetDateTime;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.Table;
 import javax.validation.Valid;
 import java.util.Objects;
 import java.util.UUID;
@@ -23,6 +24,7 @@ import java.util.UUID;
 
 @Data
 @Entity
+@Table(name = "TRANSACTION")
 public class Transaction   {
 
   @Id
@@ -30,11 +32,11 @@ public class Transaction   {
   @JsonProperty("transactionID")
   private UUID transactionID = null;
 
-  @JsonProperty("from")
-  private String from = null;
+  @JsonProperty("fromIBAN")
+  private String fromIBAN = null;
 
-  @JsonProperty("to")
-  private String to = null;
+  @JsonProperty("toIBAN")
+  private String toIBAN = null;
 
   @JsonProperty("amount")
   private Double amount = null;
@@ -101,8 +103,8 @@ public class Transaction   {
     this.transactionID = transactionID;
   }
 
-  public Transaction from(String from) {
-    this.from = from;
+  public Transaction fromIBAN(String from) {
+    this.fromIBAN = from;
     return this;
   }
 
@@ -112,16 +114,16 @@ public class Transaction   {
    **/
   @Schema(example = "NL01INHO0000000001", description = "International Bank Account Number (IBAN) associated with the account.")
   
-    public String getFrom() {
-    return from;
+    public String getfromIBAN() {
+    return fromIBAN;
   }
 
-  public void setFrom(String from) {
-    this.from = from;
+  public void setfromIBAN(String from) {
+    this.fromIBAN = from;
   }
 
-  public Transaction to(String to) {
-    this.to = to;
+  public Transaction toIBAN(String to) {
+    this.toIBAN = to;
     return this;
   }
 
@@ -132,11 +134,11 @@ public class Transaction   {
   @Schema(example = "NL01INHO0000000001", description = "International Bank Account Number (IBAN) associated with the account.")
   
     public String getTo() {
-    return to;
+    return toIBAN;
   }
 
   public void setTo(String to) {
-    this.to = to;
+    this.toIBAN = to;
   }
 
   public Transaction amount(Double amount) {
@@ -247,8 +249,8 @@ public class Transaction   {
     }
     Transaction transaction = (Transaction) o;
     return Objects.equals(this.transactionID, transaction.transactionID) &&
-        Objects.equals(this.from, transaction.from) &&
-        Objects.equals(this.to, transaction.to) &&
+        Objects.equals(this.fromIBAN, transaction.fromIBAN) &&
+        Objects.equals(this.toIBAN, transaction.toIBAN) &&
         Objects.equals(this.amount, transaction.amount) &&
         Objects.equals(this.transactionType, transaction.transactionType) &&
         Objects.equals(this.userPerforming, transaction.userPerforming) &&
@@ -258,7 +260,7 @@ public class Transaction   {
 
   @Override
   public int hashCode() {
-    return Objects.hash(transactionID, from, to, amount, transactionType, userPerforming, timeStamp, description);
+    return Objects.hash(transactionID, fromIBAN, toIBAN, amount, transactionType, userPerforming, timeStamp, description);
   }
 
   @Override
@@ -267,8 +269,8 @@ public class Transaction   {
     sb.append("class Transaction {\n");
     
     sb.append("    transactionID: ").append(toIndentedString(transactionID)).append("\n");
-    sb.append("    from: ").append(toIndentedString(from)).append("\n");
-    sb.append("    to: ").append(toIndentedString(to)).append("\n");
+    sb.append("    from: ").append(toIndentedString(fromIBAN)).append("\n");
+    sb.append("    to: ").append(toIndentedString(toIBAN)).append("\n");
     sb.append("    amount: ").append(toIndentedString(amount)).append("\n");
     sb.append("    transactionType: ").append(toIndentedString(transactionType)).append("\n");
     sb.append("    userPerforming: ").append(toIndentedString(userPerforming)).append("\n");
