@@ -5,6 +5,7 @@ import io.swagger.api.repository.UserRepository;
 import io.swagger.model.DTO.UpdateUserDTO;
 import io.swagger.model.User;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -16,9 +17,12 @@ public class UserService {
     @Autowired
     private UserRepository userRepository;
 
+    @Autowired
+    private PasswordEncoder passwordEncoder;
+
     public User add(User user) {
-        user = userRepository.save(user);
-        return user;
+        user.setPassword(passwordEncoder.encode(user.getPassword()));
+        return userRepository.save(user);
     }
 
     public List<User> getAllUsers() {
@@ -36,7 +40,7 @@ public class UserService {
         existingUser.setEmail(updateUserDTO.getEmail());
         existingUser.setPassword(updateUserDTO.getPassword());
         existingUser.setRole(User.RoleEnum.fromValue(updateUserDTO.getRole().toString()));
-        existingUser.setActive(updateUserDTO.isActive());
+        existingUser.setActive(updateUserDTO.getActive());
         // TODO: add account
         existingUser.setTransactionLimit(updateUserDTO.getTransactionLimit().doubleValue());
         existingUser.setDailyLimit(updateUserDTO.getDailyLimit().doubleValue());
