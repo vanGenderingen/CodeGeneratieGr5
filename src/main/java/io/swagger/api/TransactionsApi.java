@@ -5,6 +5,7 @@
  */
 package io.swagger.api;
 
+import io.swagger.model.DTO.CreateTransactionDTO;
 import io.swagger.model.Transaction;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -16,13 +17,11 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
 import javax.validation.Valid;
-import java.util.UUID;
 
 @javax.annotation.Generated(value = "io.swagger.codegen.v3.generators.java.SpringCodegen", date = "2023-05-16T13:11:00.686570329Z[GMT]")
 @Validated
@@ -52,20 +51,7 @@ public interface TransactionsApi {
             produces = {"application/json"},
             consumes = {"application/json"},
             method = RequestMethod.POST)
-    ResponseEntity<Transaction> postTransactions(@Parameter(in = ParameterIn.DEFAULT, description = "", required = true, schema = @Schema()) @Valid @RequestBody Transaction body);
-
-
-    @Operation(summary = "Get a transaction", description = "", security = {
-            @SecurityRequirement(name = "JWTAuth")}, tags = {"Transactions", "Customers", "Employees"})
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "OK", content = @Content(mediaType = "application/json", schema = @Schema(implementation = Transaction.class))),
-            @ApiResponse(responseCode = "400", description = "Bad request"),
-            @ApiResponse(responseCode = "401", description = "Unauthorized. No authentication"),
-            @ApiResponse(responseCode = "403", description = "Forbidden. The client does not have access")})
-    @RequestMapping(value = "/transactions/{transactionID}",
-            produces = {"application/json"},
-            method = RequestMethod.GET)
-    ResponseEntity<Transaction> transactionsTransactionIDGet(@Parameter(in = ParameterIn.PATH, description = "ID of the transaction", required = true, schema = @Schema()) @PathVariable("transactionID") UUID transactionID);
+    ResponseEntity<Transaction> postTransactions(@Parameter(in = ParameterIn.DEFAULT, description = "", required = true, schema = @Schema()) @Valid @RequestBody CreateTransactionDTO body);
 
 }
 
