@@ -34,6 +34,7 @@ public class UserService {
         existingUser.setFirstName(updateUserDTO.getFirstName());
         existingUser.setLastName(updateUserDTO.getLastName());
         existingUser.setEmail(updateUserDTO.getEmail());
+        existingUser.setPassword(updateUserDTO.getPassword());
         existingUser.setRole(User.RoleEnum.fromValue(updateUserDTO.getRole().toString()));
         existingUser.setActive(updateUserDTO.isActive());
         // TODO: add account
