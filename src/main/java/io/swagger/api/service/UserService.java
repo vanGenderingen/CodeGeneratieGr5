@@ -1,6 +1,8 @@
 package io.swagger.api.service;
 
+import io.swagger.api.exceptions.ValidationException;
 import io.swagger.api.repository.UserRepository;
+import io.swagger.model.DTO.UpdateUserDTO;
 import io.swagger.model.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -27,13 +29,21 @@ public class UserService {
         return userRepository.getUserByUserID(userID);
     }
 
-    public User update(User user, UUID userID){
-        User getExistingUser = getUserByUserID(userID);
-        getExistingUser.setFirstName(user.getFirstName());
-        getExistingUser.setLastName(user.getLastName());
-        getExistingUser.setEmail(user.getEmail());
-        getExistingUser.setRole(user.getRole());
-        getExistingUser.setActive(user.getActive());
+    public User update(UpdateUserDTO updateUserDTO, UUID userID) throws ValidationException {
+        User existingUser = getUserByUserID(userID);
+        existingUser.setFirstName(updateUserDTO.getFirstName());
+        existingUser.setLastName(updateUserDTO.getLastName());
+        existingUser.setEmail(updateUserDTO.getEmail());
+        existingUser.setRole(User.RoleEnum.fromValue(updateUserDTO.getRole().toString()));
+        existingUser.setActive(updateUserDTO.isActive());
+        // TODO: add account
+        existingUser.setTransactionLimit(updateUserDTO.getTransactionLimit().doubleValue());
+        existingUser.setDailyLimit(updateUserDTO.getDailyLimit().doubleValue());
 
+        try {
+            return userRepository.save(existingUser);
+        } catch (Exception e) {
+            throw new ValidationException("Error while updating user");
+        }
     }
 }

@@ -11,6 +11,7 @@ import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.enums.ParameterIn;
 import io.swagger.v3.oas.annotations.media.Schema;
 import org.modelmapper.ModelMapper;
+import org.modelmapper.ValidationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,7 +22,6 @@ import org.springframework.web.bind.annotation.*;
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 import javax.validation.constraints.Max;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -88,11 +88,17 @@ public class UsersApiController implements UsersApi {
     }
 
    @RequestMapping(value = "/users/{userID}", produces = {"application/json"}, method = RequestMethod.PUT)
-    public ResponseEntity<GetUserDTO> usersUserIDPut(@PathVariable("userID") UUID userID, @RequestBody UpdateUserDTO updateUserDTO) {
-        User user = objectMapper.convertValue(updateUserDTO, User.class);
-        User result = userService.update(userID, user);
-        GetUserDTO userDTO = objectMapper.convertValue(result, GetUserDTO.class);
-        return new ResponseEntity<GetUserDTO>(userDTO, HttpStatus.OK);
+    public ResponseEntity<GetUserDTO> usersUserIDPut(@PathVariable("userID") UUID userID, @RequestBody UpdateUserDTO updateUserDTO) throws ValidationException {
+        try {
+            User user = objectMapper.convertValue(updateUserDTO, User.class);
+            User result = userService.update(updateUserDTO, userID);
+            GetUserDTO userDTO = objectMapper.convertValue(result, GetUserDTO.class);
+            return new ResponseEntity<>(userDTO, HttpStatus.OK);
+        } catch (Exception e) {
+            log.error("Couldn't serialize response for content type application/json", e);
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+
     }
 
     /*public ResponseEntity<GetUserDTO> usersUserIDPut(@Parameter(in = ParameterIn.PATH, description = "ID of the user to update", required=true, schema=@Schema()) @PathVariable("userID") UUID userID,@Parameter(in = ParameterIn.DEFAULT, description = "New user details to update for the specified user", required=true, schema=@Schema()) @Valid @RequestBody UpdateUserDTO body) {
