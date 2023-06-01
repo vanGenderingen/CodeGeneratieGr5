@@ -2,22 +2,25 @@ package io.swagger.api.controllers;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.swagger.api.AccountsApi;
+import io.swagger.api.service.AccountService;
+import io.swagger.api.service.UserService;
 import io.swagger.model.Account;
 import io.swagger.model.DTO.CreateAccountDTO;
+import io.swagger.model.DTO.CreateUserDTO;
 import io.swagger.model.DTO.GetAccountDTO;
 import io.swagger.model.DTO.UpdateAccountDTO;
 import io.swagger.model.FindByUserName;
+import io.swagger.model.User;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.enums.ParameterIn;
 import io.swagger.v3.oas.annotations.media.Schema;
+import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
@@ -34,6 +37,9 @@ public class AccountsApiController implements AccountsApi {
 
     private final ObjectMapper objectMapper;
 
+    @Autowired
+    private AccountService accountService;
+    private ModelMapper modelMapper;
     private final HttpServletRequest request;
 
     @org.springframework.beans.factory.annotation.Autowired
@@ -113,18 +119,10 @@ public class AccountsApiController implements AccountsApi {
             return new ResponseEntity<List<GetAccountDTO>>(HttpStatus.NOT_IMPLEMENTED);
         }
 
-    public ResponseEntity<Account> accountsPost(@Parameter(in = ParameterIn.DEFAULT, description = "", required=true, schema=@Schema()) @Valid @RequestBody CreateAccountDTO body) {
-        String accept = request.getHeader("Accept");
-        if (accept != null && accept.contains("application/json")) {
-            try {
-                return new ResponseEntity<Account>(objectMapper.readValue("{\n  \"Type\" : \"Current\",\n  \"Active\" : true,\n  \"AccountID\" : \"046b6c7f-0b8a-43b9-b35d-6489e6daee91\",\n  \"IBAN\" : \"IBAN\",\n  \"MinBal\" : 6.027456183070403,\n  \"UserID\" : \"046b6c7f-0b8a-43b9-b35d-6489e6daee91\",\n  \"Balance\" : 0.8008281904610115,\n  \"Name\" : \"Name\"\n}", Account.class), HttpStatus.NOT_IMPLEMENTED);
-            } catch (IOException e) {
-                log.error("Couldn't serialize response for content type application/json", e);
-                return new ResponseEntity<Account>(HttpStatus.INTERNAL_SERVER_ERROR);
-            }
+        @RequestMapping(value = "/accounts", produces = {"application/json"}, method = RequestMethod.POST)
+        public ResponseEntity<Account> accountsPost(@RequestBody CreateAccountDTO createAccountDTO) {
+            Account account = objectMapper.convertValue(createAccountDTO, Account.class);
+            Account result = accountService.add(account);
+            return new ResponseEntity<Account>(result, HttpStatus.OK);
         }
-
-        return new ResponseEntity<Account>(HttpStatus.NOT_IMPLEMENTED);
-    }
-
 }
