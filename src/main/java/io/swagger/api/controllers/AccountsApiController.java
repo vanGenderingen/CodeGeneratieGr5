@@ -2,12 +2,14 @@ package io.swagger.api.controllers;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.swagger.api.AccountsApi;
+import io.swagger.api.repository.UserRepository;
 import io.swagger.api.service.AccountService;
 import io.swagger.api.service.UserService;
 import io.swagger.model.Account;
 import io.swagger.model.DTO.CreateAccountDTO;
 import io.swagger.model.DTO.GetAccountDTO;
 import io.swagger.model.DTO.UpdateAccountDTO;
+import io.swagger.model.User;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.enums.ParameterIn;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -49,9 +51,19 @@ public class AccountsApiController implements AccountsApi {
 
     @RequestMapping(value = "/accounts", produces = {"application/json"}, method = RequestMethod.POST)
     public ResponseEntity<Account> accountsPost(@RequestBody CreateAccountDTO createAccountDTO) {
+        UUID userId = createAccountDTO.getUserId();
+        User user = userService.getUserByUserID(userId);
+
+        if (user == null) {
+            // Handle the case when the user does not exist
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+
         Account account = objectMapper.convertValue(createAccountDTO, Account.class);
+        account.setUser(user);
         Account result = accountService.add(account);
-        return new ResponseEntity<Account>(result, HttpStatus.OK);
+
+        return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
     @RequestMapping(value = "/accounts", produces = {"application/json"}, method = RequestMethod.GET)

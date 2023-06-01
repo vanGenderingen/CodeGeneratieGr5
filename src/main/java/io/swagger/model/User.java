@@ -1,6 +1,7 @@
 package io.swagger.model;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonValue;
 import lombok.Getter;
@@ -78,12 +79,19 @@ public class User   {
   private Boolean active = null;
 
   @OneToMany(mappedBy = "user")
-  @JsonProperty("Accounts")
-  private List<Account> accounts = null;
+  @JsonIgnore
+  private List<Account> accounts;
 
   @JsonProperty("TransactionLimit")
   private Double transactionLimit = null;
 
   @JsonProperty("DailyLimit")
   private Double dailyLimit = null;
+
+  public User() {
+    // Default constructor required by JPA
+  }
+  public User(String userID) {
+    this.userID = UUID.fromString(userID);
+  }
 }

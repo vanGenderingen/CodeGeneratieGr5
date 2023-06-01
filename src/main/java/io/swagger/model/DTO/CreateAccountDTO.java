@@ -9,6 +9,7 @@ import lombok.Setter;
 import org.springframework.validation.annotation.Validated;
 
 import javax.validation.constraints.NotNull;
+import java.util.UUID;
 
 /**
  * CreateAccountDTO
@@ -22,22 +23,28 @@ public class CreateAccountDTO   {
 
   @JsonProperty("UserID")
   @NotNull
-  private User user = null;
+  private UUID userId;
 
   @JsonProperty("Name")
   @NotNull
   private String name = null;
 
   @JsonProperty("Balance")
-  @NotNull
-  private Double balance = null;
+  private Double balance;
+  public void setBalance(Double balance) {
+    if (balance == null) {
+      this.balance = 0.0;
+    } else {
+      this.balance = balance;
+    }
+  }
 
   /**
    * Type of account.
    */
   public enum TypeEnum {
     CURRENT("Current"),
-    
+
     SAVINGS("Savings");
 
     private String value;
