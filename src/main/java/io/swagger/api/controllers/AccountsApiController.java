@@ -103,9 +103,8 @@ public class AccountsApiController implements AccountsApi {
             @Valid @RequestParam(value = "searchstrings", required = false) String searchstrings
     ) {
         try {
-            List<Account> accounts = new ArrayList<>();
+            List<Account> accounts = accountService.getAccountsOfUser(userId, limit, offset, searchstrings).getContent();
             List<GetAccountDTO> accountDTOS = new ArrayList<>();
-            accounts = accountService.getAccountsOfUser(userId, limit, offset, searchstrings);
             for (Account account : accounts) {
                 GetAccountDTO accountDTO = objectMapper.convertValue(account, GetAccountDTO.class);
                 accountDTOS.add(accountDTO);

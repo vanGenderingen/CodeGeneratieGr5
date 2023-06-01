@@ -4,9 +4,10 @@ import io.swagger.api.exceptions.ValidationException;
 import io.swagger.api.repository.AccountRepository;
 import io.swagger.model.Account;
 import io.swagger.model.DTO.UpdateAccountDTO;
-import io.swagger.model.DTO.UpdateUserDTO;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -31,8 +32,9 @@ public class AccountService {
         return accountRepository.getAccountByAccountID(accountID);
     }
 
-    public List<Account> getAccountsOfUser(UUID userId, Integer limit, Integer offset, String searchStrings) {
-        return accountRepository.getAccountsOfUser(userId, limit, offset, searchStrings);
+    public Page<Account> getAccountsOfUser(UUID userId, Integer limit, Integer offset, String searchStrings) {
+        Pageable pageable = PageRequest.of(offset, limit);
+        return accountRepository.getAccountsOfUser(userId, searchStrings, pageable);
     }
 
     public Account update(UpdateAccountDTO updateAccountDTO, UUID accountID) throws ValidationException {
