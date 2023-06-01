@@ -6,10 +6,13 @@ public class IBANService {
     static String LANDCODE = "NL";
     static String BANKCODE = "INHO";
 
+    //generates complete IBAN up to standards
     public static String generateIBAN(){
         String accountNumber = generateAccountNumber();
         return LANDCODE + generateControlNumber(accountNumber) + BANKCODE + accountNumber;
     }
+
+    //generates account number based on current date and time, so it does not generate duplicates
     public static String generateAccountNumber() {
         LocalDateTime now = LocalDateTime.now();
         int year = now.getYear() % 100; // Get the last two digits of the year
@@ -21,6 +24,7 @@ public class IBANService {
         return "000" + year + month + day + seconds + String.format("%02d", milliseconds);
     }
 
+    //generates control number based on the Statics LANDCODE and BANKCODE and the previously generated account number
     public static String generateControlNumber(String accountNumber) {
         String completeNumber = BANKCODE + accountNumber + LANDCODE;
         StringBuilder numericValue = new StringBuilder();

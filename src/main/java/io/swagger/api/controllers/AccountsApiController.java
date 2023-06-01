@@ -21,7 +21,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
-import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -47,20 +47,51 @@ public class AccountsApiController implements AccountsApi {
         this.request = request;
     }
 
-    public ResponseEntity<List<GetAccountDTO>> accountsAccountIDGet(@Parameter(in = ParameterIn.PATH, description = "ID of the account to retrieve", required=true, schema=@Schema()) @PathVariable("accountID") UUID accountID) {
-        String accept = request.getHeader("Accept");
-        if (accept != null && accept.contains("application/json")) {
-            try {
-                return new ResponseEntity<List<GetAccountDTO>>(objectMapper.readValue("[ {\n  \"Type\" : \"Current\",\n  \"Active\" : true,\n  \"AccountID\" : \"046b6c7f-0b8a-43b9-b35d-6489e6daee91\",\n  \"IBAN\" : \"IBAN\",\n  \"MinBal\" : 6.027456183070403,\n  \"UserID\" : \"046b6c7f-0b8a-43b9-b35d-6489e6daee91\",\n  \"Balance\" : 0.8008281904610115,\n  \"Name\" : \"Name\"\n}, {\n  \"Type\" : \"Current\",\n  \"Active\" : true,\n  \"AccountID\" : \"046b6c7f-0b8a-43b9-b35d-6489e6daee91\",\n  \"IBAN\" : \"IBAN\",\n  \"MinBal\" : 6.027456183070403,\n  \"UserID\" : \"046b6c7f-0b8a-43b9-b35d-6489e6daee91\",\n  \"Balance\" : 0.8008281904610115,\n  \"Name\" : \"Name\"\n} ]", List.class), HttpStatus.NOT_IMPLEMENTED);
-            } catch (IOException e) {
-                log.error("Couldn't serialize response for content type application/json", e);
-                return new ResponseEntity<List<GetAccountDTO>>(HttpStatus.INTERNAL_SERVER_ERROR);
-            }
-        }
-
-        return new ResponseEntity<List<GetAccountDTO>>(HttpStatus.NOT_IMPLEMENTED);
+    @RequestMapping(value = "/accounts", produces = {"application/json"}, method = RequestMethod.POST)
+    public ResponseEntity<Account> accountsPost(@RequestBody CreateAccountDTO createAccountDTO) {
+        Account account = objectMapper.convertValue(createAccountDTO, Account.class);
+        Account result = accountService.add(account);
+        return new ResponseEntity<Account>(result, HttpStatus.OK);
     }
 
+    @RequestMapping(value = "/accounts", produces = {"application/json"}, method = RequestMethod.GET)
+    public ResponseEntity<List<GetAccountDTO>> accountsGet(
+            @Parameter(in = ParameterIn.QUERY, description = "The maximum number of accounts to retrieve.", schema = @Schema(type = "integer", defaultValue = "10", maximum = "50"))
+            @Valid @RequestParam(value = "limit", required = false, defaultValue = "10") Integer limit,
+            @Parameter(in = ParameterIn.QUERY, description = "The offset for paginated results.", schema = @Schema(type = "integer", defaultValue = "0", minimum = "0"))
+            @Valid @RequestParam(value = "offset", required = false, defaultValue = "0") Integer offset,
+            @Parameter(in = ParameterIn.QUERY, description = "Comma-separated list of search strings to filter accounts.", schema = @Schema(type = "string"))
+            @Valid @RequestParam(value = "searchstrings", required = false) String searchstrings
+    ) {
+        try {
+            List<Account> accounts = new ArrayList<>();
+            List<GetAccountDTO> accountDTOS = new ArrayList<>();
+            accounts = accountService.getAllAccounts();
+            for (Account account : accounts) {
+                GetAccountDTO accountDTO = objectMapper.convertValue(account, GetAccountDTO.class);
+                accountDTOS.add(accountDTO);
+            }
+            return new ResponseEntity<List<GetAccountDTO>>(accountDTOS, HttpStatus.OK);
+        } catch (Exception e) {
+            log.error("Couldn't serialize response for content type application/json", e);
+            return new ResponseEntity<List<GetAccountDTO>>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    @RequestMapping(value = "/accounts/{accountID}", produces = {"application/json"}, method = RequestMethod.GET)
+    public ResponseEntity<GetAccountDTO> accountsAccountIDGet(@Parameter(in = ParameterIn.PATH, description = "ID of the account to retrieve", required=true, schema=@Schema()) @PathVariable("accountID") UUID accountID) {
+        try {
+            Account account = accountService.getAccountByAccountID(accountID);
+            GetAccountDTO accountDTO = objectMapper.convertValue(account, GetAccountDTO.class);
+            return new ResponseEntity<GetAccountDTO>(accountDTO, HttpStatus.OK);
+
+        } catch (Exception e) {
+            log.error("Couldn't serialize response for content type application/json", e);
+            return new ResponseEntity<GetAccountDTO>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    @RequestMapping(value = "/accounts/user/{userID}/accounts", produces = {"application/json"}, method = RequestMethod.GET)
     public ResponseEntity<List<GetAccountDTO>> accountsUserUserIdAccountsGet(
             @Parameter(in = ParameterIn.PATH, description = "ID of the user whose accounts to retrieve", required = true, schema = @Schema(type = "string", format = "uuid"))
             @PathVariable("userId") UUID userId,
@@ -71,57 +102,31 @@ public class AccountsApiController implements AccountsApi {
             @Parameter(in = ParameterIn.QUERY, description = "Comma-separated list of search strings to filter accounts.", schema = @Schema(type = "string"))
             @Valid @RequestParam(value = "searchstrings", required = false) String searchstrings
     ) {
-        String accept = request.getHeader("Accept");
-        if (accept != null && accept.contains("application/json")) {
-            try {
-                return new ResponseEntity<List<GetAccountDTO>>(objectMapper.readValue("[ {\n  \"Type\" : \"Current\",\n  \"Active\" : true,\n  \"AccountID\" : \"046b6c7f-0b8a-43b9-b35d-6489e6daee91\",\n  \"IBAN\" : \"IBAN\",\n  \"MinBal\" : 6.027456183070403,\n  \"UserID\" : \"046b6c7f-0b8a-43b9-b35d-6489e6daee91\",\n  \"Balance\" : 0.8008281904610115,\n  \"Name\" : \"Name\"\n}, {\n  \"Type\" : \"Current\",\n  \"Active\" : true,\n  \"AccountID\" : \"046b6c7f-0b8a-43b9-b35d-6489e6daee91\",\n  \"IBAN\" : \"IBAN\",\n  \"MinBal\" : 6.027456183070403,\n  \"UserID\" : \"046b6c7f-0b8a-43b9-b35d-6489e6daee91\",\n  \"Balance\" : 0.8008281904610115,\n  \"Name\" : \"Name\"\n} ]", List.class), HttpStatus.NOT_IMPLEMENTED);
-            } catch (IOException e) {
-                log.error("Couldn't serialize response for content type application/json", e);
-                return new ResponseEntity<List<GetAccountDTO>>(HttpStatus.INTERNAL_SERVER_ERROR);
+        try {
+            List<Account> accounts = new ArrayList<>();
+            List<GetAccountDTO> accountDTOS = new ArrayList<>();
+            accounts = accountService.getAccountsOfUser(userId, limit, offset, searchstrings);
+            for (Account account : accounts) {
+                GetAccountDTO accountDTO = objectMapper.convertValue(account, GetAccountDTO.class);
+                accountDTOS.add(accountDTO);
             }
+            return new ResponseEntity<List<GetAccountDTO>>(accountDTOS, HttpStatus.OK);
+        } catch (Exception e) {
+            log.error("Couldn't serialize response for content type application/json", e);
+            return new ResponseEntity<List<GetAccountDTO>>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
-        return new ResponseEntity<List<GetAccountDTO>>(HttpStatus.NOT_IMPLEMENTED);
     }
 
-    public ResponseEntity<List<UpdateAccountDTO>> accountsAccountIDPut(@Parameter(in = ParameterIn.PATH, description = "ID of the account to update", required=true, schema=@Schema()) @PathVariable("accountID") UUID accountID,@Parameter(in = ParameterIn.DEFAULT, description = "New account details to update for the specified account", required=true, schema=@Schema()) @Valid @RequestBody UpdateAccountDTO body) {
-        String accept = request.getHeader("Accept");
-        if (accept != null && accept.contains("application/json")) {
-            try {
-                return new ResponseEntity<List<UpdateAccountDTO>>(objectMapper.readValue("[ {\n  \"Active\" : true,\n  \"MinBal\" : 6.027456183070403,\n  \"Balance\" : 0.8008281904610115,\n  \"Name\" : \"Name\"\n}, {\n  \"Active\" : true,\n  \"MinBal\" : 6.027456183070403,\n  \"Balance\" : 0.8008281904610115,\n  \"Name\" : \"Name\"\n} ]", List.class), HttpStatus.NOT_IMPLEMENTED);
-            } catch (IOException e) {
-                log.error("Couldn't serialize response for content type application/json", e);
-                return new ResponseEntity<List<UpdateAccountDTO>>(HttpStatus.INTERNAL_SERVER_ERROR);
-            }
+    @RequestMapping(value = "/accounts/{accountID}", produces = {"application/json"}, method = RequestMethod.PUT)
+    public ResponseEntity<GetAccountDTO> accountsAccountIDPut(@Parameter(in = ParameterIn.PATH, description = "ID of the account to update", required=true, schema=@Schema()) @PathVariable("accountID") UUID accountID, @Parameter(in = ParameterIn.DEFAULT, description = "New account details to update for the specified account", required=true, schema=@Schema()) @Valid @RequestBody UpdateAccountDTO updateAccountDTO) {
+        try {
+            Account account = objectMapper.convertValue(updateAccountDTO, Account.class);
+            Account result = accountService.update(updateAccountDTO, accountID);
+            GetAccountDTO accountDTO = objectMapper.convertValue(result, GetAccountDTO.class);
+            return new ResponseEntity<>(accountDTO, HttpStatus.OK);
+        } catch (Exception e) {
+            log.error("Couldn't serialize response for content type application/json", e);
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
-
-        return new ResponseEntity<List<UpdateAccountDTO>>(HttpStatus.NOT_IMPLEMENTED);
     }
-
-
-    public ResponseEntity<List<GetAccountDTO>> accountsGet(
-            @Parameter(in = ParameterIn.QUERY, description = "The maximum number of accounts to retrieve.", schema = @Schema(type = "integer", defaultValue = "10", maximum = "50"))
-            @Valid @RequestParam(value = "limit", required = false, defaultValue = "10") Integer limit,
-            @Parameter(in = ParameterIn.QUERY, description = "The offset for paginated results.", schema = @Schema(type = "integer", defaultValue = "0", minimum = "0"))
-            @Valid @RequestParam(value = "offset", required = false, defaultValue = "0") Integer offset,
-            @Parameter(in = ParameterIn.QUERY, description = "Comma-separated list of search strings to filter accounts.", schema = @Schema(type = "string"))
-            @Valid @RequestParam(value = "searchstrings", required = false) String searchstrings
-    ) {
-        String accept = request.getHeader("Accept");
-            if (accept != null && accept.contains("application/json")) {
-                try {
-                    return new ResponseEntity<List<GetAccountDTO>>(objectMapper.readValue("[ {\n  \"Type\" : \"Current\",\n  \"Active\" : true,\n  \"AccountID\" : \"046b6c7f-0b8a-43b9-b35d-6489e6daee91\",\n  \"IBAN\" : \"IBAN\",\n  \"MinBal\" : 6.027456183070403,\n  \"UserID\" : \"046b6c7f-0b8a-43b9-b35d-6489e6daee91\",\n  \"Balance\" : 0.8008281904610115,\n  \"Name\" : \"Name\"\n}, {\n  \"Type\" : \"Current\",\n  \"Active\" : true,\n  \"AccountID\" : \"046b6c7f-0b8a-43b9-b35d-6489e6daee91\",\n  \"IBAN\" : \"IBAN\",\n  \"MinBal\" : 6.027456183070403,\n  \"UserID\" : \"046b6c7f-0b8a-43b9-b35d-6489e6daee91\",\n  \"Balance\" : 0.8008281904610115,\n  \"Name\" : \"Name\"\n} ]", List.class), HttpStatus.NOT_IMPLEMENTED);
-                } catch (IOException e) {
-                    log.error("Couldn't serialize response for content type application/json", e);
-                    return new ResponseEntity<List<GetAccountDTO>>(HttpStatus.INTERNAL_SERVER_ERROR);
-                }
-            }
-            return new ResponseEntity<List<GetAccountDTO>>(HttpStatus.NOT_IMPLEMENTED);
-        }
-
-        @RequestMapping(value = "/accounts", produces = {"application/json"}, method = RequestMethod.POST)
-        public ResponseEntity<Account> accountsPost(@RequestBody CreateAccountDTO createAccountDTO) {
-            Account account = objectMapper.convertValue(createAccountDTO, Account.class);
-            Account result = accountService.add(account);
-            return new ResponseEntity<Account>(result, HttpStatus.OK);
-        }
 }

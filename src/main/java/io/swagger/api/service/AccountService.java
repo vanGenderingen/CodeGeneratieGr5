@@ -31,6 +31,10 @@ public class AccountService {
         return accountRepository.getAccountByAccountID(accountID);
     }
 
+    public List<Account> getAccountsOfUser(UUID userId, Integer limit, Integer offset, String searchStrings) {
+        return accountRepository.getAccountsOfUser(userId, limit, offset, searchStrings);
+    }
+
     public Account update(UpdateAccountDTO updateAccountDTO, UUID accountID) throws ValidationException {
         Account existingAccount = getAccountByAccountID(accountID);
         existingAccount.setName(updateAccountDTO.getName());
