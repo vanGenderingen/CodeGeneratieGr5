@@ -26,8 +26,11 @@ public class Account   {
   private UUID accountID = null;
 
   @ManyToOne
-  @JsonProperty("UserID")
+  @JsonProperty("User")
   private User user = null;
+
+  @JsonProperty("UserID")
+  private UUID userID;
 
   @JsonProperty("Name")
   private String name = null;
@@ -76,4 +79,11 @@ public class Account   {
 
   @JsonProperty("Active")
   private Boolean active = null;
+
+  public Account() {
+    // Initialize userID if user is not null
+    if (user != null) {
+      this.userID = user.getUserID();
+    }
+  }
 }

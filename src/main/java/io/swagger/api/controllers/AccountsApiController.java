@@ -68,12 +68,9 @@ public class AccountsApiController implements AccountsApi {
 
     @RequestMapping(value = "/accounts", produces = {"application/json"}, method = RequestMethod.GET)
     public ResponseEntity<List<GetAccountDTO>> accountsGet(
-            @Parameter(in = ParameterIn.QUERY, description = "The maximum number of accounts to retrieve.", schema = @Schema(type = "integer", defaultValue = "10", maximum = "50"))
-            @Valid @RequestParam(value = "limit", required = false, defaultValue = "10") Integer limit,
-            @Parameter(in = ParameterIn.QUERY, description = "The offset for paginated results.", schema = @Schema(type = "integer", defaultValue = "0", minimum = "0"))
-            @Valid @RequestParam(value = "offset", required = false, defaultValue = "0") Integer offset,
-            @Parameter(in = ParameterIn.QUERY, description = "Comma-separated list of search strings to filter accounts.", schema = @Schema(type = "string"))
-            @Valid @RequestParam(value = "searchstrings", required = false) String searchstrings
+            @Parameter(in = ParameterIn.QUERY, description = "The maximum number of accounts to retrieve.", schema = @Schema(allowableValues = {"0", "50"}, type = "integer", defaultValue = "20", maximum = "50")) @Valid @RequestParam(value = "limit", required = false, defaultValue = "10") Integer limit,
+            @Parameter(in = ParameterIn.QUERY, description = "The offset for paginated results.", schema = @Schema(type = "integer", defaultValue = "0", minimum = "0")) @Valid @RequestParam(value = "offset", required = false, defaultValue = "0") Integer offset,
+            @Parameter(in = ParameterIn.QUERY, description = "Comma-separated list of search strings to filter accounts.", schema = @Schema(type = "string")) @Valid @RequestParam(value = "searchstrings", required = false) String searchstrings
     ) {
         try {
             List<Account> accounts = new ArrayList<>();
@@ -103,7 +100,7 @@ public class AccountsApiController implements AccountsApi {
         }
     }
 
-    @RequestMapping(value = "/accounts/user/{userID}/accounts", produces = {"application/json"}, method = RequestMethod.GET)
+    @RequestMapping(value = "/accounts/user/{userId}/accounts", produces = {"application/json"}, method = RequestMethod.GET)
     public ResponseEntity<List<GetAccountDTO>> accountsUserUserIdAccountsGet(
             @Parameter(in = ParameterIn.PATH, description = "ID of the user whose accounts to retrieve", required = true, schema = @Schema(type = "string", format = "uuid"))
             @PathVariable("userId") UUID userId,
@@ -121,10 +118,10 @@ public class AccountsApiController implements AccountsApi {
                 GetAccountDTO accountDTO = objectMapper.convertValue(account, GetAccountDTO.class);
                 accountDTOS.add(accountDTO);
             }
-            return new ResponseEntity<List<GetAccountDTO>>(accountDTOS, HttpStatus.OK);
+            return new ResponseEntity<>(accountDTOS, HttpStatus.OK);
         } catch (Exception e) {
             log.error("Couldn't serialize response for content type application/json", e);
-            return new ResponseEntity<List<GetAccountDTO>>(HttpStatus.INTERNAL_SERVER_ERROR);
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
