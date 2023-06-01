@@ -6,11 +6,8 @@ import io.swagger.api.service.AccountService;
 import io.swagger.api.service.UserService;
 import io.swagger.model.Account;
 import io.swagger.model.DTO.CreateAccountDTO;
-import io.swagger.model.DTO.CreateUserDTO;
 import io.swagger.model.DTO.GetAccountDTO;
 import io.swagger.model.DTO.UpdateAccountDTO;
-import io.swagger.model.FindByUserName;
-import io.swagger.model.User;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.enums.ParameterIn;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -24,7 +21,6 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
-import javax.validation.constraints.Max;
 import java.io.IOException;
 import java.util.List;
 import java.util.UUID;
@@ -39,6 +35,9 @@ public class AccountsApiController implements AccountsApi {
 
     @Autowired
     private AccountService accountService;
+
+    @Autowired
+    private UserService userService;
     private ModelMapper modelMapper;
     private final HttpServletRequest request;
 

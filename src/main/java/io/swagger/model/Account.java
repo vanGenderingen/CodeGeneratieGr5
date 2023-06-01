@@ -7,10 +7,7 @@ import lombok.Getter;
 import lombok.Setter;
 import org.springframework.validation.annotation.Validated;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.ManyToOne;
+import javax.persistence.*;
 import java.util.UUID;
 
 /**
@@ -28,9 +25,9 @@ public class Account   {
   @JsonProperty("AccountID")
   private UUID accountID = null;
 
-  @ManyToOne(targetEntity = User.class)
+  @ManyToOne
   @JsonProperty("UserID")
-  private UUID userID = null;
+  private User user = null;
 
   @JsonProperty("Name")
   private String name = null;
