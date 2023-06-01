@@ -7,9 +7,11 @@ import lombok.Getter;
 import lombok.Setter;
 import org.springframework.validation.annotation.Validated;
 
-import javax.persistence.*;
-import javax.validation.Valid;
-import java.util.Set;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.OneToMany;
+import java.util.List;
 import java.util.UUID;
 
 /**
@@ -75,10 +77,9 @@ public class User   {
   @JsonProperty("Active")
   private Boolean active = null;
 
-  @OneToMany(mappedBy = "userID", cascade = CascadeType.ALL, orphanRemoval = true)
+  @OneToMany(mappedBy = "user")
   @JsonProperty("Accounts")
-  @Valid
-  private Set<Account> accounts = null;
+  private List<Account> accounts = null;
 
   @JsonProperty("TransactionLimit")
   private Double transactionLimit = null;
