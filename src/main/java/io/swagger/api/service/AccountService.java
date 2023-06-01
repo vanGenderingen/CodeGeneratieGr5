@@ -39,10 +39,18 @@ public class AccountService {
 
     public Account update(UpdateAccountDTO updateAccountDTO, UUID accountID) throws ValidationException {
         Account existingAccount = getAccountByAccountID(accountID);
-        existingAccount.setName(updateAccountDTO.getName());
-        existingAccount.setBalance(updateAccountDTO.getBalance());
-        existingAccount.setMinBal(updateAccountDTO.getMinBal());
-        existingAccount.setActive(updateAccountDTO.isActive());
+        if (updateAccountDTO.getName() != null) {
+            existingAccount.setName(updateAccountDTO.getName());
+        }
+        if (updateAccountDTO.getBalance() != null) {
+            existingAccount.setBalance(updateAccountDTO.getBalance());
+        }
+        if (updateAccountDTO.getMinBal() != null) {
+            existingAccount.setMinBal(updateAccountDTO.getMinBal());
+        }
+        if (updateAccountDTO.isActive() != null) {
+            existingAccount.setActive(updateAccountDTO.isActive());
+        }
         try {
             return accountRepository.save(existingAccount);
         } catch (Exception e) {

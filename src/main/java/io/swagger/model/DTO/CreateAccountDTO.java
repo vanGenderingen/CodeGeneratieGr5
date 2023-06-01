@@ -30,14 +30,8 @@ public class CreateAccountDTO   {
   private String name = null;
 
   @JsonProperty("Balance")
-  private Double balance;
-  public void setBalance(Double balance) {
-    if (balance == null) {
-      this.balance = 0.0;
-    } else {
-      this.balance = balance;
-    }
-  }
+  @NotNull
+  private Double balance = 0.0;
 
   /**
    * Type of account.
@@ -75,5 +69,5 @@ public class CreateAccountDTO   {
 
   @JsonProperty("MinBal")
   @NotNull
-  private Double minBal = null;
+  private Double minBal = 0.0;
 }

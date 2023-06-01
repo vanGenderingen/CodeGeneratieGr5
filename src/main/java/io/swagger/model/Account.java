@@ -81,6 +81,7 @@ public class Account   {
   private Boolean active = null;
 
   public Account() {
+    this.active = true;
     // Initialize userID if user is not null
     if (user != null) {
       this.userID = user.getUserID();
