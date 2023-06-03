@@ -16,7 +16,7 @@ import javax.validation.constraints.*;
 
 public class LoginDTO   {
   @JsonProperty("email")
-  private String email = null;
+  private static String email = null;
 
   @JsonProperty("password")
   private String password = null;
@@ -33,7 +33,7 @@ public class LoginDTO   {
   @Schema(required = true, description = "")
       @NotNull
 
-    public String getEmail() {
+    public static String getEmail() {
     return email;
   }
 
