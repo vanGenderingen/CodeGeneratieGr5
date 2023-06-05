@@ -1,15 +1,18 @@
 package io.swagger.model;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonValue;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.validation.annotation.Validated;
 
-import javax.persistence.*;
-import javax.validation.Valid;
-import java.util.Set;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.OneToMany;
+import java.util.List;
 import java.util.UUID;
 
 /**
@@ -75,14 +78,20 @@ public class User   {
   @JsonProperty("Active")
   private Boolean active = null;
 
-  @OneToMany(mappedBy = "userID", cascade = CascadeType.ALL, orphanRemoval = true)
-  @JsonProperty("Accounts")
-  @Valid
-  private Set<Account> accounts = null;
+  @OneToMany(mappedBy = "user")
+  @JsonIgnore
+  private List<Account> accounts;
 
   @JsonProperty("TransactionLimit")
   private Double transactionLimit = null;
 
   @JsonProperty("DailyLimit")
   private Double dailyLimit = null;
+
+  public User() {
+    // Default constructor required by JPA
+  }
+  public User(String userID) {
+    this.userID = UUID.fromString(userID);
+  }
 }

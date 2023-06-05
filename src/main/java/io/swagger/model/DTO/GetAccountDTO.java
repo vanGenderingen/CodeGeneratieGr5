@@ -26,9 +26,6 @@ public class GetAccountDTO   {
   @JsonProperty("Name")
   private String name = null;
 
-  @JsonProperty("IBAN")
-  private String IBAN = null;
-
   @JsonProperty("Balance")
   private Double balance = null;
 
@@ -37,7 +34,7 @@ public class GetAccountDTO   {
    */
   public enum TypeEnum {
     CURRENT("Current"),
-    
+
     SAVINGS("Savings");
 
     private String value;
@@ -71,6 +68,9 @@ public class GetAccountDTO   {
   @JsonProperty("Active")
   private Boolean active = null;
 
+  @JsonProperty("IBAN")
+  private String iban = null;
+
   public GetAccountDTO accountID(UUID accountID) {
     this.accountID = accountID;
     return this;
@@ -81,9 +81,9 @@ public class GetAccountDTO   {
    * @return accountID
    **/
   @Schema(description = "Unique identifier for the account (primary key).")
-  
-    @Valid
-    public UUID getAccountID() {
+
+  @Valid
+  public UUID getAccountID() {
     return accountID;
   }
 
@@ -101,9 +101,9 @@ public class GetAccountDTO   {
    * @return userID
    **/
   @Schema(description = "Identifier of the user who owns the account (foreign key).")
-  
-    @Valid
-    public UUID getUserID() {
+
+  @Valid
+  public UUID getUserID() {
     return userID;
   }
 
@@ -121,32 +121,13 @@ public class GetAccountDTO   {
    * @return name
    **/
   @Schema(description = "Name of the account.")
-  
-    public String getName() {
+
+  public String getName() {
     return name;
   }
 
   public void setName(String name) {
     this.name = name;
-  }
-
-  public GetAccountDTO IBAN(String IBAN) {
-    this.IBAN = IBAN;
-    return this;
-  }
-
-  /**
-   * International Bank Account Number (IBAN) associated with the account.
-   * @return IBAN
-   **/
-  @Schema(description = "International Bank Account Number (IBAN) associated with the account.")
-  
-    public String getIBAN() {
-    return IBAN;
-  }
-
-  public void setIBAN(String IBAN) {
-    this.IBAN = IBAN;
   }
 
   public GetAccountDTO balance(Double balance) {
@@ -159,8 +140,8 @@ public class GetAccountDTO   {
    * @return balance
    **/
   @Schema(description = "Current balance in the account.")
-  
-    public Double getBalance() {
+
+  public Double getBalance() {
     return balance;
   }
 
@@ -168,18 +149,13 @@ public class GetAccountDTO   {
     this.balance = balance;
   }
 
-  public GetAccountDTO type(TypeEnum type) {
-    this.type = type;
-    return this;
-  }
-
   /**
    * Type of account.
    * @return type
    **/
   @Schema(description = "Type of account.")
-  
-    public TypeEnum getType() {
+
+  public TypeEnum getType() {
     return type;
   }
 
@@ -193,12 +169,12 @@ public class GetAccountDTO   {
   }
 
   /**
-   * Minimum balance required for the account.
+   * Minimum required balance for the account.
    * @return minBal
    **/
-  @Schema(description = "Minimum balance required for the account.")
-  
-    public Double getMinBal() {
+  @Schema(description = "Minimum required balance for the account.")
+
+  public Double getMinBal() {
     return minBal;
   }
 
@@ -212,12 +188,12 @@ public class GetAccountDTO   {
   }
 
   /**
-   * Indicates whether the account is active or not.
+   * Specifies if the account is active or not.
    * @return active
    **/
-  @Schema(description = "Indicates whether the account is active or not.")
-  
-    public Boolean isActive() {
+  @Schema(description = "Specifies if the account is active or not.")
+
+  public Boolean isActive() {
     return active;
   }
 
@@ -225,56 +201,17 @@ public class GetAccountDTO   {
     this.active = active;
   }
 
-
-  @Override
-  public boolean equals(java.lang.Object o) {
-    if (this == o) {
-      return true;
-    }
-    if (o == null || getClass() != o.getClass()) {
-      return false;
-    }
-    GetAccountDTO getAccountDTO = (GetAccountDTO) o;
-    return Objects.equals(this.accountID, getAccountDTO.accountID) &&
-        Objects.equals(this.userID, getAccountDTO.userID) &&
-        Objects.equals(this.name, getAccountDTO.name) &&
-        Objects.equals(this.IBAN, getAccountDTO.IBAN) &&
-        Objects.equals(this.balance, getAccountDTO.balance) &&
-        Objects.equals(this.type, getAccountDTO.type) &&
-        Objects.equals(this.minBal, getAccountDTO.minBal) &&
-        Objects.equals(this.active, getAccountDTO.active);
-  }
-
-  @Override
-  public int hashCode() {
-    return Objects.hash(accountID, userID, name, IBAN, balance, type, minBal, active);
-  }
-
-  @Override
-  public String toString() {
-    StringBuilder sb = new StringBuilder();
-    sb.append("class GetAccountDTO {\n");
-    
-    sb.append("    accountID: ").append(toIndentedString(accountID)).append("\n");
-    sb.append("    userID: ").append(toIndentedString(userID)).append("\n");
-    sb.append("    name: ").append(toIndentedString(name)).append("\n");
-    sb.append("    IBAN: ").append(toIndentedString(IBAN)).append("\n");
-    sb.append("    balance: ").append(toIndentedString(balance)).append("\n");
-    sb.append("    type: ").append(toIndentedString(type)).append("\n");
-    sb.append("    minBal: ").append(toIndentedString(minBal)).append("\n");
-    sb.append("    active: ").append(toIndentedString(active)).append("\n");
-    sb.append("}");
-    return sb.toString();
-  }
-
   /**
-   * Convert the given object to string with each line indented by 4 spaces
-   * (except the first line).
-   */
-  private String toIndentedString(java.lang.Object o) {
-    if (o == null) {
-      return "null";
-    }
-    return o.toString().replace("\n", "\n    ");
+   * IBAN (International Bank Account Number) of the account.
+   * @return iban
+   **/
+  @Schema(description = "IBAN (International Bank Account Number) of the account.")
+
+  public String getIBAN() {
+    return iban;
+  }
+
+  public void setIBAN(String iban) {
+    this.iban = iban;
   }
 }

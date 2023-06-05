@@ -29,7 +29,6 @@ public class TransactionsApiController implements TransactionsApi {
 
     private static final Logger log = LoggerFactory.getLogger(TransactionsApiController.class);
 
-
     private final ObjectMapper objectMapper;
 
     @Autowired
@@ -48,8 +47,18 @@ public class TransactionsApiController implements TransactionsApi {
             produces = {"application/json"},
             method = RequestMethod.GET)
     public ResponseEntity<List<Transaction>> getTransactions(
+<<<<<<< Updated upstream
             @Parameter(in = ParameterIn.QUERY, description = "The maximum number of transactions to retrieve.", schema = @Schema(allowableValues = {"0", "100"}, maximum = "100")) @Valid @RequestParam(value = "count", required = false, defaultValue = "20") Integer offset,
             @Parameter(in = ParameterIn.QUERY, description = "The maximum number of transactions to retrieve.", schema = @Schema(allowableValues = {"0", "100"}, maximum = "100", defaultValue = "20")) @Valid @RequestParam(value = "count", required = false, defaultValue = "20") Integer limit,
+=======
+<<<<<<< Updated upstream
+            @Parameter(in = ParameterIn.QUERY, description = "ID of the user", schema = @Schema()) @Valid @RequestParam(value = "userID", required = false) UUID userID, @Min(0) @Max(100)
+            @Parameter(in = ParameterIn.QUERY, description = "The maximum number of transactions to retrieve.", schema = @Schema(allowableValues = {"0", "100"}, maximum = "100", defaultValue = "20")) @Valid @RequestParam(value = "count", required = false, defaultValue = "20") Integer count,
+=======
+            @Parameter(in = ParameterIn.QUERY, description = "The maximum number of transactions to retrieve.", schema = @Schema(allowableValues = {"0", "100"}, maximum = "100", defaultValue = "20")) @Valid @RequestParam(value = "count", required = false, defaultValue = "20") Integer offset,
+            @Parameter(in = ParameterIn.QUERY, description = "The maximum number of transactions to retrieve.", schema = @Schema(allowableValues = {"0", "100"}, maximum = "100", defaultValue = "20")) @Valid @RequestParam(value = "count", required = false, defaultValue = "20") Integer limit,
+>>>>>>> Stashed changes
+>>>>>>> Stashed changes
             @Parameter(in = ParameterIn.QUERY, description = "The date range of the transactions to retrieve.", schema = @Schema()) @Valid @RequestParam(value = "dateRange", required = false) OffsetDateTime dateRange,
             @Parameter(in = ParameterIn.QUERY, description = "The the IBAN from who the transaction is done.", schema = @Schema()) @Valid @RequestParam(value = "from", required = false) String from,
             @Parameter(in = ParameterIn.QUERY, description = "The the IBAN to who the transaction is done.", schema = @Schema()) @Valid @RequestParam(value = "to", required = false) String to, @DecimalMin("0")
