@@ -1,4 +1,4 @@
-package groep5.api.model;
+package tests.api.model;
 
 import io.swagger.model.Transaction;
 import org.junit.Before;
