@@ -5,8 +5,9 @@ import io.swagger.model.Transaction;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
+import java.time.OffsetDateTime;
 import java.util.List;
+import java.util.UUID;
 
 @Service
 public class TransactionService {
@@ -15,18 +16,11 @@ public class TransactionService {
     private TransactionRepository transactionRepository;
 
     public Transaction add(Transaction transaction) {
-        transaction = transactionRepository.save(transaction);
-        return transaction;
+        return transaction = transactionRepository.save(transaction);
     }
 
-    public List<Transaction> getAllTransactions() {
+    public List<Transaction> getTransactions(Integer offset, Integer limit, OffsetDateTime dateRange, String toIBAN, String fromIBAN, Double lower, Double higher, Double equal, UUID account, String type) {
         return transactionRepository.findAll();
-    }
 
-    public List<Transaction> getTransactionsByIBAN(String iban) {
-        List<Transaction> transactions = new ArrayList<>();
-        transactions.addAll(transactionRepository.getTransactionsByToIBAN(iban));
-        transactions.addAll(transactionRepository.getTransactionsByFromIBAN(iban));
-        return transactions;
     }
 }

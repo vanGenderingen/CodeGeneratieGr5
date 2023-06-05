@@ -24,8 +24,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import javax.validation.Valid;
 import javax.validation.constraints.DecimalMin;
-import javax.validation.constraints.Max;
-import javax.validation.constraints.Min;
 import java.time.OffsetDateTime;
 import java.util.List;
 import java.util.UUID;
@@ -45,8 +43,8 @@ public interface TransactionsApi {
             produces = {"application/json"},
             method = RequestMethod.GET)
     ResponseEntity<List<Transaction>> getTransactions(
-            @Parameter(in = ParameterIn.QUERY, description = "ID of t  he user", schema = @Schema()) @Valid @RequestParam(value = "userID", required = false) UUID userID, @Min(0) @Max(100)
-            @Parameter(in = ParameterIn.QUERY, description = "The maximum number of transactions to retrieve.", schema = @Schema(allowableValues = {"0", "100"}, maximum = "100", defaultValue = "20")) @Valid @RequestParam(value = "count", required = false, defaultValue = "20") Integer count,
+            @Parameter(in = ParameterIn.QUERY, description = "The maximum number of transactions to retrieve.", schema = @Schema(allowableValues = {"0", "100"}, maximum = "100")) @Valid @RequestParam(value = "count", required = false, defaultValue = "20") Integer offset,
+            @Parameter(in = ParameterIn.QUERY, description = "The maximum number of transactions to retrieve.", schema = @Schema(allowableValues = {"0", "100"}, maximum = "100", defaultValue = "20")) @Valid @RequestParam(value = "count", required = false, defaultValue = "20") Integer limit,
             @Parameter(in = ParameterIn.QUERY, description = "The date range of the transactions to retrieve.", schema = @Schema()) @Valid @RequestParam(value = "dateRange", required = false) OffsetDateTime dateRange,
             @Parameter(in = ParameterIn.QUERY, description = "The the IBAN from who the transaction is done.", schema = @Schema()) @Valid @RequestParam(value = "from", required = false) String from,
             @Parameter(in = ParameterIn.QUERY, description = "The the IBAN to who the transaction is done.", schema = @Schema()) @Valid @RequestParam(value = "to", required = false) String to, @DecimalMin("0")
