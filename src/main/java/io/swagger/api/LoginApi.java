@@ -28,7 +28,9 @@ public interface LoginApi {
 
     @Operation(summary = "Authenticate user credentials and generate a JWT token", description = "Authenticates a user's credentials and returns a JSON Web Token (JWT) token", tags={ "Login" })
     @ApiResponses(value = { 
-        @ApiResponse(responseCode = "200", description = "Successful response", content = @Content(mediaType = "application/json", schema = @Schema(implementation = LoginResponseDTO.class))) })
+        @ApiResponse(responseCode = "200", description = "Successful response", content = @Content(mediaType = "application/json", schema = @Schema(implementation = LoginResponseDTO.class))),
+            @ApiResponse(responseCode = "400", description = "Bad input parameter(s)"),
+            @ApiResponse(responseCode = "403", description = "You are not allowed to access this resource")})
     @RequestMapping(value = "/login",
         produces = { "application/json" }, 
         consumes = { "application/json" }, 

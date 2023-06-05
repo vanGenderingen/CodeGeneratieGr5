@@ -11,6 +11,7 @@ import io.swagger.model.DTO.GetUserDTO;
 import io.swagger.model.DTO.LoginDTO;
 import io.swagger.model.DTO.LoginResponseDTO;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import io.swagger.model.User;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.enums.ParameterIn;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -89,14 +90,14 @@ public class LoginApiController implements LoginApi {
     protected void init() {
         secretKey = Base64.getEncoder().encodeToString(secretKey.getBytes());
     }
-    private static String generateJwtToken(String userId, GetUserDTO.RoleEnum role) {
+    public static String generateJwtToken(User user) {
         long currentTimeMillis = System.currentTimeMillis();
         long expirationTimeMillis = currentTimeMillis + 3600000; // Token expiration time: 1 hour
         Date expirationDate = new Date(expirationTimeMillis);
 
         return Jwts.builder()
-                .setSubject(userId.toString()) // User ID
-                .claim("role", role) // Custom claim: user role
+                .setSubject(user.getUserID().toString()) // User ID
+                .claim("role", user.getRole()) // Custom claim: user role
                 .setExpiration(expirationDate) // Expiration time
                 .signWith(SignatureAlgorithm.HS256, secretKey) // Sign the JWT with the secret key
                 .compact();
