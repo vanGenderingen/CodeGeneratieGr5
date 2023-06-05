@@ -1,4 +1,4 @@
-package io.swagger.repositories;
+package io.swagger.api.repository;
 
 import io.swagger.model.Account;
 import org.springframework.stereotype.Repository;
