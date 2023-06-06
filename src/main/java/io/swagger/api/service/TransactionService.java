@@ -32,32 +32,32 @@ public class TransactionService {
 //        }
 
         if (toIBAN != null) {
-            return transactionRepository.getTransactionsByToIBAN(toIBAN);
+            return transactionRepository.getTransactionsByToIBAN(toIBAN, pageRequest);
         }
 
         if (fromIBAN != null) {
-            return transactionRepository.getTransactionsByFromIBAN(fromIBAN);
+            return transactionRepository.getTransactionsByFromIBAN(fromIBAN, pageRequest);
         }
 
         if (lower != null) {
-            return transactionRepository.getTransactionsByAmountLessThan(lower);
+            return transactionRepository.getTransactionsByAmountLessThan(lower, pageRequest);
         }
 
         if (higher != null) {
-            return transactionRepository.getTransactionsByAmountGreaterThan(higher);
+            return transactionRepository.getTransactionsByAmountGreaterThan(higher, pageRequest);
         }
 
         if (equal != null) {
-            return transactionRepository.getTransactionsByAmountEquals(equal);
+            return transactionRepository.getTransactionsByAmountEquals(equal, pageRequest);
         }
 
         if (accountID != null) {
             Account account = accountsRepository.getAccountByAccountID(accountID);
-            return transactionRepository.getTransactionsByToIBANAndFromIBAN(account.getIBAN(), account.getIBAN());
+            return transactionRepository.getTransactionsByToIBANAndFromIBAN(account.getIBAN(), account.getIBAN(), pageRequest);
         }
 
         if (type != null) {
-            return transactionRepository.getTransactionsByTransactionType(Transaction.TransactionTypeEnum.valueOf(type));
+            return transactionRepository.getTransactionsByTransactionType(Transaction.TransactionTypeEnum.valueOf(type), pageRequest);
         }
 
         return transactionRepository.findAll(pageRequest).getContent();
