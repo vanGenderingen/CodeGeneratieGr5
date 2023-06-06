@@ -1,4 +1,4 @@
-package io.swagger.api.security;
+package io.swagger.configuration.security;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

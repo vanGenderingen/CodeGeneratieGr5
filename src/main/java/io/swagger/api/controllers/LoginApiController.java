@@ -1,39 +1,31 @@
 package io.swagger.api.controllers;
 
 //import com.sun.org.apache.xml.internal.security.algorithms.SignatureAlgorithm;
-import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.JwtException;
-import io.jsonwebtoken.SignatureAlgorithm;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.SignatureAlgorithm;
 import io.swagger.api.LoginApi;
-import io.swagger.model.DTO.GetUserDTO;
 import io.swagger.model.DTO.LoginDTO;
 import io.swagger.model.DTO.LoginResponseDTO;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import io.swagger.model.User;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.enums.ParameterIn;
 import io.swagger.v3.oas.annotations.media.Schema;
-import lombok.Value;
-import lombok.var;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
 
-import javax.validation.Valid;
 import javax.servlet.http.HttpServletRequest;
-import java.io.IOException;
+import javax.validation.Valid;
 import java.util.Base64;
 import java.util.Date;
-import java.util.UUID;
-
-import static javax.crypto.Cipher.SECRET_KEY;
 
 @javax.annotation.Generated(value = "io.swagger.codegen.v3.generators.java.SpringCodegen", date = "2023-05-16T13:11:00.686570329Z[GMT]")
 @RestController
@@ -73,11 +65,12 @@ public class LoginApiController implements LoginApi {
         if (accept != null && accept.contains("application/json")) {
             try {
                 // Build JWT token
-                String token = generateJwtToken(LoginDTO.getEmail(), GetUserDTO.RoleEnum.USER);
-                LoginResponseDTO responseDTO = new LoginResponseDTO();
-                responseDTO.setToken(token);
+//                String token = generateJwtToken(LoginDTO.getEmail(), GetUserDTO.RoleEnum.USER);
+//                LoginResponseDTO responseDTO = new LoginResponseDTO();
+//                responseDTO.setToken(token);
+                return new ResponseEntity<>(HttpStatus.NOT_IMPLEMENTED);
 
-                return new ResponseEntity<>(responseDTO, HttpStatus.OK);
+//                return new ResponseEntity<>(responseDTO, HttpStatus.OK);
             } catch (Exception e) {
                 log.error("Failed to generate JWT token", e);
                 return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
