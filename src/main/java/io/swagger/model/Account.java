@@ -3,6 +3,7 @@ package io.swagger.model;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonValue;
+import jakarta.persistence.GeneratedValue;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.validation.annotation.Validated;
@@ -80,7 +81,8 @@ public class Account   {
   @JsonProperty("Active")
   private Boolean active = null;
 
-  public Account() {
+  @PrePersist
+  public void onCreate() {
     this.active = true;
     // Initialize userID if user is not null
     if (user != null) {
