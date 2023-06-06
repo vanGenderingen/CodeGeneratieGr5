@@ -81,7 +81,8 @@ public class Account   {
   @JsonProperty("Active")
   private Boolean active = null;
 
-  public Account() {
+  @PrePersist
+  public void onCreate() {
     this.active = true;
     // Initialize userID if user is not null
     if (user != null) {

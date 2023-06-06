@@ -8,10 +8,7 @@ import lombok.Getter;
 import lombok.Setter;
 import org.springframework.validation.annotation.Validated;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.OneToMany;
+import javax.persistence.*;
 import java.util.List;
 import java.util.UUID;
 
@@ -24,7 +21,8 @@ import java.util.UUID;
 @Getter
 @Setter
 @Entity
-public class User   {
+@Table(name="users")
+public class User{
   @Id
   @GeneratedValue
   @JsonProperty("UserID")
