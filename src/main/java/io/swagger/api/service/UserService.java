@@ -51,4 +51,8 @@ public class UserService {
             throw new ValidationException("Error while updating user");
         }
     }
+
+    public User getUserByEmail(String email) {
+        return userRepository.getUserByEmail(email);
+    }
 }
