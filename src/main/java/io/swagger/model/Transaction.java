@@ -30,7 +30,7 @@ public class Transaction   {
   @Id
   @GeneratedValue
   @JsonProperty("transactionID")
-  private UUID transactionID = null;
+  private UUID transactionID = UUID.randomUUID();
 
   @JsonProperty("fromIBAN")
   private String fromIBAN = null;
