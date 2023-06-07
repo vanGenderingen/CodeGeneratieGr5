@@ -7,6 +7,7 @@ import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.swagger.api.LoginApi;
+import io.swagger.api.service.UserService;
 import io.swagger.model.DTO.LoginDTO;
 import io.swagger.model.DTO.LoginResponseDTO;
 import io.swagger.model.User;
@@ -15,6 +16,7 @@ import io.swagger.v3.oas.annotations.enums.ParameterIn;
 import io.swagger.v3.oas.annotations.media.Schema;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -38,6 +40,9 @@ public class LoginApiController implements LoginApi {
     private final HttpServletRequest request;
 
     private static String secretKey = "yoursecretkey";
+
+    @Autowired
+    private UserService userService;
 
     @org.springframework.beans.factory.annotation.Autowired
     public LoginApiController(ObjectMapper objectMapper, HttpServletRequest request) {
@@ -64,13 +69,13 @@ public class LoginApiController implements LoginApi {
         String accept = request.getHeader("Accept");
         if (accept != null && accept.contains("application/json")) {
             try {
-                // Build JWT token
-//                String token = generateJwtToken(LoginDTO.getEmail(), GetUserDTO.RoleEnum.USER);
-//                LoginResponseDTO responseDTO = new LoginResponseDTO();
-//                responseDTO.setToken(token);
-                return new ResponseEntity<>(HttpStatus.NOT_IMPLEMENTED);
 
-//                return new ResponseEntity<>(responseDTO, HttpStatus.OK);
+                // login
+                 String token = userService.login(body.getEmail(), body.getPassword());
+                 LoginResponseDTO loginResponse = new LoginResponseDTO();
+                 loginResponse.setToken(token);
+                return new ResponseEntity<>(HttpStatus.OK);
+
             } catch (Exception e) {
                 log.error("Failed to generate JWT token", e);
                 return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
