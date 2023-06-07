@@ -10,8 +10,6 @@ import io.swagger.model.User;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.enums.ParameterIn;
 import io.swagger.v3.oas.annotations.media.Schema;
-import org.modelmapper.ModelMapper;
-import org.modelmapper.ValidationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,6 +19,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
+import javax.validation.ValidationException;
 import javax.validation.constraints.Max;
 import java.util.ArrayList;
 import java.util.List;
@@ -36,7 +35,6 @@ public class UsersApiController implements UsersApi {
 
     @Autowired
     private UserService userService;
-    private ModelMapper modelMapper;
     private final HttpServletRequest request;
 
     @org.springframework.beans.factory.annotation.Autowired
