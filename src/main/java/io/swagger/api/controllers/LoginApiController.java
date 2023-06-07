@@ -19,9 +19,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
 import javax.servlet.http.HttpServletRequest;
@@ -39,7 +37,7 @@ public class LoginApiController implements LoginApi {
 
     private final HttpServletRequest request;
 
-    private static String secretKey = "yoursecretkey";
+    private static String secretKey = "ditihsdiuhiashiudphusaihudhaspdihasudhipuahdhasudisadahspiu";
 
     @Autowired
     private UserService userService;
@@ -64,15 +62,27 @@ public class LoginApiController implements LoginApi {
 //        return new ResponseEntity<LoginResponseDTO>(HttpStatus.NOT_IMPLEMENTED);
 //    }
 
-    @PostMapping("/login")
+    @RequestMapping(value = "/login", produces = {"application/json"}, method = RequestMethod.POST)
     public ResponseEntity<LoginResponseDTO> loginPost(@Parameter(in = ParameterIn.DEFAULT, description = "", required=true, schema=@Schema()) @Valid @RequestBody LoginDTO body) {
             try {
 
                 // login
-                 String token = userService.login(body.getEmail(), body.getPassword());
-                 LoginResponseDTO loginResponse = new LoginResponseDTO();
-                 loginResponse.setToken(token);
-                return new ResponseEntity<>(HttpStatus.OK);
+                String email = body.getEmail();
+                String password = body.getPassword();
+
+                User user = userService.login(email, password);
+                if (user != null) {
+                    String token = generateJwtToken(user);
+                    LoginResponseDTO responseDTO = new LoginResponseDTO(token);
+                    return ResponseEntity.ok(responseDTO);
+                }
+                else{
+                    return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+                }
+//                 String token = userService.login(body.getEmail(), body.getPassword());
+//                 LoginResponseDTO loginResponse = new LoginResponseDTO();
+//                 loginResponse.setToken(token);
+//                return new ResponseEntity<>(HttpStatus.OK);
 
             } catch (Exception e) {
                 log.error("Failed to generate JWT token", e);
