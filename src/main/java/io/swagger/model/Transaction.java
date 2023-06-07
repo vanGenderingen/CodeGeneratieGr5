@@ -3,9 +3,7 @@ package io.swagger.model;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonValue;
-import lombok.Data;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 import org.springframework.validation.annotation.Validated;
 import org.threeten.bp.OffsetDateTime;
 
@@ -25,6 +23,8 @@ import java.util.UUID;
 @Setter
 @Data
 @Entity
+@NoArgsConstructor
+@AllArgsConstructor
 public class Transaction   {
 
   @Id
