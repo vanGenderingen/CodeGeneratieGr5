@@ -66,8 +66,6 @@ public class LoginApiController implements LoginApi {
 
     @PostMapping("/login")
     public ResponseEntity<LoginResponseDTO> loginPost(@Parameter(in = ParameterIn.DEFAULT, description = "", required=true, schema=@Schema()) @Valid @RequestBody LoginDTO body) {
-        String accept = request.getHeader("Accept");
-        if (accept != null && accept.contains("application/json")) {
             try {
 
                 // login
@@ -80,10 +78,6 @@ public class LoginApiController implements LoginApi {
                 log.error("Failed to generate JWT token", e);
                 return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
             }
-        }
-
-        return new ResponseEntity<>(HttpStatus.NOT_IMPLEMENTED);
-
     }
     protected void init() {
         secretKey = Base64.getEncoder().encodeToString(secretKey.getBytes());
