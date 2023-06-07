@@ -2,7 +2,6 @@ package io.swagger.api.controllers;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.swagger.api.AccountsApi;
-import io.swagger.api.repository.UserRepository;
 import io.swagger.api.service.AccountService;
 import io.swagger.api.service.UserService;
 import io.swagger.model.Account;
@@ -13,7 +12,6 @@ import io.swagger.model.User;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.enums.ParameterIn;
 import io.swagger.v3.oas.annotations.media.Schema;
-import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -40,7 +38,6 @@ public class AccountsApiController implements AccountsApi {
 
     @Autowired
     private UserService userService;
-    private ModelMapper modelMapper;
     private final HttpServletRequest request;
 
     @org.springframework.beans.factory.annotation.Autowired
