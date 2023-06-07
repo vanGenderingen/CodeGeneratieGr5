@@ -5,6 +5,9 @@ import io.swagger.api.repository.UserRepository;
 import io.swagger.model.DTO.UpdateUserDTO;
 import io.swagger.model.User;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -50,5 +53,21 @@ public class UserService {
         } catch (Exception e) {
             throw new ValidationException("Error while updating user");
         }
+    }
+    public String login(String userEmail, String password) {
+        try {
+
+            authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(userEmail, password));
+
+            User user = userRepository.getUserByEmail(userEmail);
+            return LoginApiController.generateJwtToken(user);
+
+        } catch (Exception e) {
+            throw new ResponseStatusException(HttpStatus.UNPROCESSABLE_ENTITY, "Username/password invalid");
+        }
+    }
+
+    public User getUserByEmail(String email) {
+        return userRepository.getUserByEmail(email);
     }
 }

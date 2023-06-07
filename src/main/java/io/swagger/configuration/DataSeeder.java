@@ -44,7 +44,7 @@ public class DataSeeder implements ApplicationRunner {
         accountService.add(bankAccount);
 
         User johnDoeUser = new User(UUID.randomUUID(), "john", "doe", "john.doe@mail.nl", "password", User.RoleEnum.USER, true, new ArrayList<>(), 1000.00, 10000.00);
-        userService.add(bank);
+        userService.add(johnDoeUser);
 
         CreateAccountDTO createAccountJohnDoe = new CreateAccountDTO(johnDoeUser.getUserID(), "saving account John Doe", 100.00, CreateAccountDTO.TypeEnum.SAVINGS, 0.00);
         Account accountJohnDoe = objectMapper.convertValue(createAccountJohnDoe, Account.class);

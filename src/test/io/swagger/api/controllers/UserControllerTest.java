@@ -2,7 +2,6 @@ package io.swagger.api.controllers;
 
 import io.swagger.api.service.UserService;
 import io.swagger.model.User;
-import org.junit.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
