@@ -64,7 +64,7 @@ public class CreateUserDTO   {
   private RoleEnum role = null;
 
   @JsonProperty("TransactionLimit")
-  private BigDecimal transactionLimit = null;
+  private Double transactionLimit = null;
 
   @JsonProperty("DailyLimit")
   private Double dailyLimit = null;
