@@ -36,7 +36,7 @@ public class TransactionService {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "The IBAN is not valid");
         }
 
-        
+        User test = fromAccount.getUser();
 
         User fromUser = userRepository.getUserByUserID(fromAccount.getUserID());
         User toUser = userRepository.getUserByUserID(toAccount.getUserID());

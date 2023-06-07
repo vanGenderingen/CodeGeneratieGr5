@@ -6,6 +6,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonValue;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.springframework.validation.annotation.Validated;
 
@@ -23,7 +24,7 @@ import java.util.UUID;
 @Setter
 @Entity
 @AllArgsConstructor
-//@NoArgsConstructor
+@NoArgsConstructor
 @Table(name="users")
 public class User{
   @Id
@@ -88,11 +89,4 @@ public class User{
 
   @JsonProperty("DailyLimit")
   private Double dailyLimit = null;
-
-  public User() {
-    // Default constructor required by JPA
-  }
-  public User(String userID) {
-    this.userID = UUID.fromString(userID);
-  }
 }
