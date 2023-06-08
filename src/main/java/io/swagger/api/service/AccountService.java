@@ -24,8 +24,9 @@ public class AccountService {
         return accountRepository.save(account);
     }
 
-    public List<Account> getAllAccounts() {
-        return accountRepository.findAll();
+    public List<Account> getAllAccounts(Integer limit, Integer offset, String searchStrings, String IBAN) {
+        Pageable pageable = PageRequest.of(offset, limit);
+        return accountRepository.getAll(IBAN, searchStrings, pageable);
     }
 
     public Account getAccountByAccountID(UUID accountID) {
@@ -35,6 +36,10 @@ public class AccountService {
     public Page<Account> getAccountsOfUser(UUID userId, Integer limit, Integer offset, String searchStrings) {
         Pageable pageable = PageRequest.of(offset, limit);
         return accountRepository.getAccountsOfUser(userId, searchStrings, pageable);
+    }
+
+    public int getTotalPages(UUID userId, String searchStrings) {
+        return accountRepository.countAccountsOfUser(userId, searchStrings);
     }
 
     public Account update(UpdateAccountDTO updateAccountDTO, UUID accountID) throws ValidationException {

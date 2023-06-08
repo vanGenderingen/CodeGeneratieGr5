@@ -13,6 +13,10 @@ import java.util.UUID;
 
 @Repository
 public interface AccountRepository extends JpaRepository<Account, Long> {
+    @Query("SELECT a FROM Account a WHERE (:IBAN IS NULL OR LOWER(a.IBAN) LIKE CONCAT('%', LOWER(:IBAN), '%')) AND (:searchStrings IS NULL OR LOWER(a.name) LIKE CONCAT('%', LOWER(:searchStrings), '%'))")
+    List<Account> getAll(String IBAN, String searchStrings, Pageable pageable);
+
+    @Query("SELECT a FROM Account a WHERE a.accountID = :accountID")
     Account getAccountByAccountID(UUID accountID);
     @Query("SELECT a FROM Account a WHERE a.user.userID = :userId AND (:searchStrings IS NULL OR LOWER(a.name) LIKE CONCAT('%', LOWER(:searchStrings), '%'))")
     Page<Account> getAccountsOfUser(
@@ -20,4 +24,6 @@ public interface AccountRepository extends JpaRepository<Account, Long> {
             @Param("searchStrings") String searchStrings,
             Pageable pageable
     );
+    @Query("SELECT COUNT(a) FROM Account a WHERE a.userID = :userId AND (:searchStrings IS NULL OR a.name LIKE %:searchStrings%)")
+    int countAccountsOfUser(@Param("userId") UUID userId, @Param("searchStrings") String searchStrings);
 }

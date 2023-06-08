@@ -27,10 +27,8 @@ import java.util.UUID;
 
 @CrossOrigin(origins = "*")
 @javax.annotation.Generated(value = "io.swagger.codegen.v3.generators.java.SpringCodegen", date = "2023-05-16T13:11:00.686570329Z[GMT]")
-@CrossOrigin(origins = "*")
 @RestController
 public class AccountsApiController implements AccountsApi {
-
     private static final Logger log = LoggerFactory.getLogger(AccountsApiController.class);
 
     private final ObjectMapper objectMapper;
@@ -69,12 +67,13 @@ public class AccountsApiController implements AccountsApi {
     public ResponseEntity<List<GetAccountDTO>> accountsGet(
             @Parameter(in = ParameterIn.QUERY, description = "The maximum number of accounts to retrieve.", schema = @Schema(allowableValues = {"0", "50"}, type = "integer", defaultValue = "20", maximum = "50")) @Valid @RequestParam(value = "limit", required = false, defaultValue = "10") Integer limit,
             @Parameter(in = ParameterIn.QUERY, description = "The offset for paginated results.", schema = @Schema(type = "integer", defaultValue = "0", minimum = "0")) @Valid @RequestParam(value = "offset", required = false, defaultValue = "0") Integer offset,
-            @Parameter(in = ParameterIn.QUERY, description = "Comma-separated list of search strings to filter accounts.", schema = @Schema(type = "string")) @Valid @RequestParam(value = "searchstrings", required = false) String searchstrings
-    ) {
+            @Parameter(in = ParameterIn.QUERY, description = "Comma-separated list of search strings to filter accounts.", schema = @Schema(type = "string")) @Valid @RequestParam(value = "searchstrings", required = false) String searchstrings,
+            @Parameter(in = ParameterIn.QUERY, description = "IBAN to filter accounts.", schema = @Schema(type = "string")) @Valid @RequestParam(value = "IBAN", required = false) String IBAN)
+    {
         try {
             List<Account> accounts = new ArrayList<>();
             List<GetAccountDTO> accountDTOS = new ArrayList<>();
-            accounts = accountService.getAllAccounts();
+            accounts = accountService.getAllAccounts(limit, offset, searchstrings, IBAN);
             for (Account account : accounts) {
                 GetAccountDTO accountDTO = objectMapper.convertValue(account, GetAccountDTO.class);
                 accountDTOS.add(accountDTO);
@@ -117,7 +116,10 @@ public class AccountsApiController implements AccountsApi {
                 GetAccountDTO accountDTO = objectMapper.convertValue(account, GetAccountDTO.class);
                 accountDTOS.add(accountDTO);
             }
-            return new ResponseEntity<>(accountDTOS, HttpStatus.OK);
+            int totalAccounts = accountService.getTotalPages(userId, searchstrings);
+            return ResponseEntity.ok()
+                    .header("X-Total-Accounts", String.valueOf(totalAccounts))
+                    .body(accountDTOS);
         } catch (Exception e) {
             log.error("Couldn't serialize response for content type application/json", e);
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
