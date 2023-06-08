@@ -27,6 +27,7 @@ import java.util.UUID;
 
 @CrossOrigin(origins = "*")
 @javax.annotation.Generated(value = "io.swagger.codegen.v3.generators.java.SpringCodegen", date = "2023-05-16T13:11:00.686570329Z[GMT]")
+@CrossOrigin(origins = "*")
 @RestController
 public class AccountsApiController implements AccountsApi {
 
