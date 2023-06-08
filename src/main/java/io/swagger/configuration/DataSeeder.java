@@ -5,7 +5,6 @@ import io.swagger.api.service.AccountService;
 import io.swagger.api.service.TransactionService;
 import io.swagger.api.service.UserService;
 import io.swagger.model.Account;
-import io.swagger.model.DTO.CreateAccountDTO;
 import io.swagger.model.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.ApplicationArguments;
@@ -43,13 +42,19 @@ public class DataSeeder implements ApplicationRunner {
         userService.add(johnDoeUser);
         User johnDoeUser2 = userService.getUserByEmail("john.doe@mail.nl");
 
-        CreateAccountDTO createAccountJohnDoe = new CreateAccountDTO(johnDoeUser2.getUserID(), "Current account John Doe", 100.00, CreateAccountDTO.TypeEnum.CURRENT, 0.00);
-        Account accountJohnDoe = objectMapper.convertValue(createAccountJohnDoe, Account.class);
-        accountService.add(accountJohnDoe);
+        Account currentAccountJohnDoe = new Account(UUID.randomUUID(), johnDoeUser2, johnDoeUser2.getUserID(), "Current account John Doe", "NL01INHO0000000002" ,100.00, Account.TypeEnum.CURRENT, -100.00, true);
+        accountService.add(currentAccountJohnDoe);
 
-        CreateAccountDTO createSavingAccountJohnDoe = new CreateAccountDTO(johnDoeUser2.getUserID(), "Saving account John Doe", 100.00, CreateAccountDTO.TypeEnum.SAVINGS, 0.00);
-        Account savingAccountJohnDoe = objectMapper.convertValue(createSavingAccountJohnDoe, Account.class);
-        accountService.add(savingAccountJohnDoe);
+        Account savingsAccountJohnDoe = new Account(UUID.randomUUID(), johnDoeUser2, johnDoeUser2.getUserID(), "Savings account John Doe", "NL01INHO0000000003" ,100.00, Account.TypeEnum.SAVINGS, -100.00, true);
+        accountService.add(savingsAccountJohnDoe);
+
+//        CreateAccountDTO createAccountJohnDoe = new CreateAccountDTO(johnDoeUser2.getUserID(), "Current account John Doe", 100.00, CreateAccountDTO.TypeEnum.CURRENT, 0.00);
+//        Account accountJohnDoe = objectMapper.convertValue(createAccountJohnDoe, Account.class);
+//        accountService.add(accountJohnDoe);
+
+//        CreateAccountDTO createSavingAccountJohnDoe = new CreateAccountDTO(johnDoeUser2.getUserID(), "Saving account John Doe", 100.00, CreateAccountDTO.TypeEnum.SAVINGS, 0.00);
+//        Account savingAccountJohnDoe = objectMapper.convertValue(createSavingAccountJohnDoe, Account.class);
+//        accountService.add(savingAccountJohnDoe);
 
 //        CreateTransactionDTO createTransactionDTO = new CreateTransactionDTO(bankAccount.getIBAN(),accountJohnDoe.getIBAN(), 100.00, CreateTransactionDTO.TransactionTypeEnum.DEPOSIT, "from bank to john doe");
 //        Transaction transaction = objectMapper.convertValue(createTransactionDTO, Transaction.class);

@@ -36,8 +36,6 @@ public class TransactionService {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "The IBAN is not valid");
         }
 
-        User test = fromAccount.getUser();
-
         User fromUser = userRepository.getUserByUserID(fromAccount.getUserID());
         User toUser = userRepository.getUserByUserID(toAccount.getUserID());
 
@@ -53,6 +51,11 @@ public class TransactionService {
         if (fromAccount.getType() == Account.TypeEnum.SAVINGS && fromUser.getUserID() != toUser.getUserID()) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "You can't transfer money from a savings account that isn't yours");
         }
+
+        fromAccount.setBalance(fromAccount.getBalance() - transaction.getAmount());
+        toAccount.setBalance(toAccount.getBalance() + transaction.getAmount());
+        accountsRepository.save(fromAccount);
+        accountsRepository.save(toAccount);
 
         return transactionRepository.save(transaction);
     }

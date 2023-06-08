@@ -20,7 +20,9 @@ public class AccountService {
     private AccountRepository accountRepository;
 
     public Account add(Account account) {
-        account.setIBAN(IBANService.generateIBAN());
+        if (account.getIBAN() == null) {
+            account.setIBAN(IBANService.generateIBAN());
+        }
         return accountRepository.save(account);
     }
 
