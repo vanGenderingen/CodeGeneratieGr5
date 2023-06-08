@@ -38,7 +38,7 @@ public class DataSeeder implements ApplicationRunner {
         User bank = new User(UUID.randomUUID(), "bank", "bank", "debank@mail.nl", "password", User.RoleEnum.EMPLOYEE, true, new ArrayList<>(), 99999999999.00, 999999999999.00);
         userService.add(bank);
 
-        CreateAccountDTO createAccountDTO1 = new CreateAccountDTO(bank.getUserID(), "Bank", 9999999999999999.00, CreateAccountDTO.TypeEnum.CURRENT, -9999999999999999.00);
+        CreateAccountDTO createAccountDTO1 = new CreateAccountDTO("Bank", 9999999999999999.00, CreateAccountDTO.TypeEnum.CURRENT, -9999999999999999.00, bank.getUserID());
         Account bankAccount = objectMapper.convertValue(createAccountDTO1, Account.class);
         bankAccount.setIBAN("NL01INHO0000000001");
         accountService.add(bankAccount);
@@ -46,7 +46,7 @@ public class DataSeeder implements ApplicationRunner {
         User johnDoeUser = new User(UUID.randomUUID(), "john", "doe", "john.doe@mail.nl", "password", User.RoleEnum.USER, true, new ArrayList<>(), 1000.00, 10000.00);
         userService.add(johnDoeUser);
 
-        CreateAccountDTO createAccountJohnDoe = new CreateAccountDTO(johnDoeUser.getUserID(), "saving account John Doe", 100.00, CreateAccountDTO.TypeEnum.SAVINGS, 0.00);
+        CreateAccountDTO createAccountJohnDoe = new CreateAccountDTO("saving account John Doe", 100.00, CreateAccountDTO.TypeEnum.SAVINGS, 0.00, johnDoeUser.getUserID());
         Account accountJohnDoe = objectMapper.convertValue(createAccountJohnDoe, Account.class);
         accountService.add(accountJohnDoe);
 
