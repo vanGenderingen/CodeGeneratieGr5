@@ -100,12 +100,6 @@ public class UsersApiController implements UsersApi {
             User result = userService.update(updateUserDTO, userID);
             GetUserDTO userDTO = objectMapper.convertValue(result, GetUserDTO.class);
 
-            String email = result.getEmail();
-
-            // Check if user with the given email already exists
-            if (userService.existsByEmail(email)) {
-                return new ResponseEntity<>(HttpStatus.BAD_REQUEST.valueOf("User with email " + email + " already exists"));
-            }
             return new ResponseEntity<>(userDTO, HttpStatus.OK);
         } catch (Exception e) {
             log.error("Couldn't serialize response for content type application/json", e);
