@@ -51,4 +51,14 @@ public class UserService {
             throw new ValidationException("Error while updating user");
         }
     }
+
+    public boolean existsByEmail(String email) {
+        // Implement your logic to check if a user with the given email exists
+        // This can be done using your UserRepository or any other data access mechanism
+
+        // Assuming you have a UserRepository with a method findByEmail
+        User existingUser = userRepository.findByEmail(email);
+        return existingUser != null;
+    }
+
 }
