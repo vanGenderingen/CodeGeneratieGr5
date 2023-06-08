@@ -70,7 +70,7 @@ public class UsersApiController implements UsersApi {
 
         // Check if user with the given email already exists
         if (userService.existsByEmail(email)) {
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST.valueOf("User with email " + email + " already exists"));
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST.valueOf(" User with email " + email + " already exists"));
         }
 
         User user = objectMapper.convertValue(createUserDTO, User.class);
