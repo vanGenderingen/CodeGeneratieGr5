@@ -74,7 +74,7 @@ public class TransactionsApiController implements TransactionsApi {
         }
     }
 
-//    @PreAuthorize("hasAnyRole('USER')")
+    @PreAuthorize("hasRole('ROLE_EMPLOYEE')")
     @RequestMapping(value = "/transactions",
             produces = {"application/json"},
             consumes = {"application/json"},
