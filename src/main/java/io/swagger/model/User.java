@@ -1,11 +1,10 @@
 package io.swagger.model;
 
-import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonValue;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.springframework.validation.annotation.Validated;
 
@@ -23,7 +22,7 @@ import java.util.UUID;
 @Setter
 @Entity
 @AllArgsConstructor
-//@NoArgsConstructor
+@NoArgsConstructor
 @Table(name="users")
 public class User{
   @Id
@@ -46,35 +45,38 @@ public class User{
   /**
    * Role of the user.
    */
-  public enum RoleEnum {
-    USER("User"),
-    
-    EMPLOYEE("Employee");
+//  public enum RoleEnum {
+//    USER("User"),
+//
+//    EMPLOYEE("Employee");
+//
+//    private String value;
+//
+//    RoleEnum(String value) {
+//      this.value = value;
+//    }
+//
+//    @Override
+//    @JsonValue
+//    public String toString() {
+//      return String.valueOf(value);
+//    }
+//
+//    @JsonCreator
+//    public static RoleEnum fromValue(String text) {
+//      for (RoleEnum b : RoleEnum.values()) {
+//        if (String.valueOf(b.value).equals(text)) {
+//          return b;
+//        }
+//      }
+//      return null;
+//    }
+//  }
+//  @JsonProperty("Role")
+//  private RoleEnum role = null;
 
-    private String value;
-
-    RoleEnum(String value) {
-      this.value = value;
-    }
-
-    @Override
-    @JsonValue
-    public String toString() {
-      return String.valueOf(value);
-    }
-
-    @JsonCreator
-    public static RoleEnum fromValue(String text) {
-      for (RoleEnum b : RoleEnum.values()) {
-        if (String.valueOf(b.value).equals(text)) {
-          return b;
-        }
-      }
-      return null;
-    }
-  }
-  @JsonProperty("Role")
-  private RoleEnum role = null;
+  @ElementCollection(fetch = FetchType.EAGER)
+  private List<Role> roles = null;
 
   @JsonProperty("Active")
   private Boolean active = null;
@@ -88,11 +90,4 @@ public class User{
 
   @JsonProperty("DailyLimit")
   private Double dailyLimit = null;
-
-  public User() {
-    // Default constructor required by JPA
-  }
-  public User(String userID) {
-    this.userID = UUID.fromString(userID);
-  }
 }

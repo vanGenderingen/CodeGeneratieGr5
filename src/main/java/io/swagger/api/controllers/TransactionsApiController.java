@@ -13,6 +13,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
@@ -20,6 +21,7 @@ import javax.validation.Valid;
 import javax.validation.constraints.DecimalMin;
 import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
+import java.security.Principal;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -43,8 +45,10 @@ public class TransactionsApiController implements TransactionsApi {
     public TransactionsApiController(ObjectMapper objectMapper, HttpServletRequest request) {
         this.objectMapper = objectMapper;
         this.request = request;
+
     }
 
+    @PreAuthorize("hasRole('USER')")
     @RequestMapping(value = "/transactions",
             produces = {"application/json"},
             method = RequestMethod.GET)
@@ -71,11 +75,14 @@ public class TransactionsApiController implements TransactionsApi {
         }
     }
 
+    @PreAuthorize("hasRole('ROLE_USER')")
     @RequestMapping(value = "/transactions",
             produces = {"application/json"},
             consumes = {"application/json"},
             method = RequestMethod.POST)
     public ResponseEntity<Transaction> postTransactions(@RequestBody CreateTransactionDTO body) {
+        Principal principal = request.getUserPrincipal();
+        principal.getName();
         Transaction transaction = objectMapper.convertValue(body, Transaction.class);
         Transaction result = transactionService.add(transaction);
         return new ResponseEntity<Transaction>(result, HttpStatus.OK);
