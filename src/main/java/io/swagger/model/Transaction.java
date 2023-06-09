@@ -47,7 +47,7 @@ public class Transaction   {
   public enum TransactionTypeEnum {
     DEPOSIT("Deposit"),
     
-    WITHDRAW("Withdraw");
+    WITHDRAWAL("Withdrawal");
 
     private String value;
 

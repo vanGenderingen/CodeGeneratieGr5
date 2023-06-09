@@ -8,7 +8,6 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
-import java.util.List;
 import java.util.UUID;
 
 @Repository
@@ -20,4 +19,6 @@ public interface AccountRepository extends JpaRepository<Account, Long> {
             @Param("searchStrings") String searchStrings,
             Pageable pageable
     );
+
+    Account getAccountByIBAN(String IBAN);
 }

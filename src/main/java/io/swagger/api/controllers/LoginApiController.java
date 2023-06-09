@@ -99,7 +99,7 @@ public class LoginApiController implements LoginApi {
 
         return Jwts.builder()
                 .setSubject(user.getUserID().toString()) // User ID
-                .claim("role", user.getRole()) // Custom claim: user role
+                .claim("auth", user.getRole()) // Custom claim: user role
                 .setExpiration(expirationDate) // Expiration time
                 .signWith(SignatureAlgorithm.HS256, secretKey) // Sign the JWT with the secret key
                 .compact();
