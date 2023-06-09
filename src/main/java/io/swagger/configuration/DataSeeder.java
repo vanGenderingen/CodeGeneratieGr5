@@ -49,11 +49,13 @@ public class DataSeeder implements ApplicationRunner {
         CreateAccountDTO createAccountDTO1 = new CreateAccountDTO("Bank", 9999999999999999.00, CreateAccountDTO.TypeEnum.CURRENT, -9999999999999999.00, bank.getUserID());
         Account bankAccount = objectMapper.convertValue(createAccountDTO1, Account.class);
         bankAccount.setIBAN("NL01INHO0000000001");
+        bankAccount.setUser(bank);
         accountService.add(bankAccount);
 
         CreateAccountDTO createAccountJohnDoe = new CreateAccountDTO("saving account John Doe", 100.00, CreateAccountDTO.TypeEnum.SAVINGS, 0.00, johnDoeUser.getUserID());
         Account accountJohnDoe = objectMapper.convertValue(createAccountJohnDoe, Account.class);
         accountJohnDoe.setIBAN("NL01INHO0000000002");
+        accountJohnDoe.setUser(johnDoeUser);
         accountService.add(accountJohnDoe);
 
         //Account bankAccount = new Account(UUID.randomUUID(), bank2, bank2.getUserID(), "Bank account", "NL01INHO0000000001" ,9999999999999999.00, Account.TypeEnum.CURRENT, -9999999999999999.00, true);
