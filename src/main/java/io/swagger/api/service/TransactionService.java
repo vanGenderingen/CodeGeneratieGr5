@@ -45,12 +45,12 @@ public class TransactionService {
         if (transaction.getTransactionType() == Transaction.TransactionTypeEnum.WITHDRAWAL && fromUser.getTransactionLimit() < transaction.getAmount()) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "You can't withdraw more than your transaction limit");
         }
-        if (toAccount.getType() == Account.TypeEnum.SAVINGS && fromUser.getUserID() != toUser.getUserID()){
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "You can't transfer money to a savings account that isn't yours");
-        }
-        if (fromAccount.getType() == Account.TypeEnum.SAVINGS && fromUser.getUserID() != toUser.getUserID()) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "You can't transfer money from a savings account that isn't yours");
-        }
+//        if (toAccount.getType() == Account.TypeEnum.SAVINGS && fromUser.getUserID() != toUser.getUserID()){
+//            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "You can't transfer money to a savings account that isn't yours");
+//        }
+//        if (fromAccount.getType() == Account.TypeEnum.SAVINGS && fromUser.getUserID() != toUser.getUserID()) {
+//            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "You can't transfer money from a savings account that isn't yours");
+//        }
 
         fromAccount.setBalance(fromAccount.getBalance() - transaction.getAmount());
         toAccount.setBalance(toAccount.getBalance() + transaction.getAmount());
