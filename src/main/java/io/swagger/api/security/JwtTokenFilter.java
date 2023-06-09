@@ -1,4 +1,4 @@
-package io.swagger.configuration.security;
+package io.swagger.api.security;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;

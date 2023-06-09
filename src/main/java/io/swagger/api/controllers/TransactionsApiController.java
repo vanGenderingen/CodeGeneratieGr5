@@ -74,13 +74,14 @@ public class TransactionsApiController implements TransactionsApi {
         }
     }
 
-    @PreAuthorize("hasRole('ROLE_EMPLOYEE')")
+    @PreAuthorize("hasRole('ROLE_USER')")
     @RequestMapping(value = "/transactions",
             produces = {"application/json"},
             consumes = {"application/json"},
             method = RequestMethod.POST)
     public ResponseEntity<Transaction> postTransactions(@RequestBody CreateTransactionDTO body) {
         Principal principal = request.getUserPrincipal();
+        principal.getName();
         Transaction transaction = objectMapper.convertValue(body, Transaction.class);
         Transaction result = transactionService.add(transaction);
         return new ResponseEntity<Transaction>(result, HttpStatus.OK);

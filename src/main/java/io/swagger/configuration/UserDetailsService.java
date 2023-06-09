@@ -1,4 +1,4 @@
-package io.swagger.configuration.security;
+package io.swagger.configuration;
 
 import io.swagger.api.repository.UserRepository;
 import io.swagger.model.User;

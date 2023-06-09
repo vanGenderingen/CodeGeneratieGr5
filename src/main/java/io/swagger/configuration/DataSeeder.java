@@ -50,18 +50,5 @@ public class DataSeeder implements ApplicationRunner {
         Account savingsAccountJohnDoe = new Account(UUID.randomUUID(), johnDoeUser2, johnDoeUser2.getUserID(), "Savings account John Doe", "NL01INHO0000000003" ,100.00, Account.TypeEnum.SAVINGS, -100.00, true);
         accountService.add(savingsAccountJohnDoe);
 
-//        CreateAccountDTO createAccountJohnDoe = new CreateAccountDTO(johnDoeUser2.getUserID(), "Current account John Doe", 100.00, CreateAccountDTO.TypeEnum.CURRENT, 0.00);
-//        Account accountJohnDoe = objectMapper.convertValue(createAccountJohnDoe, Account.class);
-//        accountService.add(accountJohnDoe);
-
-//        CreateAccountDTO createSavingAccountJohnDoe = new CreateAccountDTO(johnDoeUser2.getUserID(), "Saving account John Doe", 100.00, CreateAccountDTO.TypeEnum.SAVINGS, 0.00);
-//        Account savingAccountJohnDoe = objectMapper.convertValue(createSavingAccountJohnDoe, Account.class);
-//        accountService.add(savingAccountJohnDoe);
-
-//        CreateTransactionDTO createTransactionDTO = new CreateTransactionDTO(bankAccount.getIBAN(),accountJohnDoe.getIBAN(), 100.00, CreateTransactionDTO.TransactionTypeEnum.DEPOSIT, "from bank to john doe");
-//        Transaction transaction = objectMapper.convertValue(createTransactionDTO, Transaction.class);
-//        transaction.setUserPerforming(bankAccount.getUserID());
-//        transactionService.add(transaction);
-
     }
 }

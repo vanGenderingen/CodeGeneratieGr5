@@ -2,7 +2,7 @@ package io.swagger.api.service;
 
 import io.swagger.api.exceptions.ValidationException;
 import io.swagger.api.repository.UserRepository;
-import io.swagger.configuration.security.JwtTokenProvider;
+import io.swagger.api.security.JwtTokenProvider;
 import io.swagger.model.DTO.UpdateUserDTO;
 import io.swagger.model.Role;
 import io.swagger.model.User;
@@ -39,7 +39,9 @@ public class UserService {
 
     public User add(User user) {
         user.setPassword(passwordEncoder.encode(user.getPassword()));
-        user.setRoles(Arrays.asList(Role.ROLE_USER));
+        if (user.getRoles() == null){
+            user.setRoles(Arrays.asList(Role.ROLE_USER));
+        }
         return userRepository.save(user);
     }
 
@@ -74,7 +76,7 @@ public class UserService {
             User user = userRepository.getUserByEmail(userEmail);
 
             if (bCryptPasswordEncoder.matches(password, user.getPassword())) {
-                return jwtTokenProvider.createToken(userEmail, user.getRoles());
+                return jwtTokenProvider.createToken(user.getUserID(), user.getRoles());
 
             } else {
                 throw new AuthenticationException("Invalid username/password");
