@@ -65,7 +65,7 @@ public class AccountsApiController implements AccountsApi {
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
-    //@PreAuthorize("hasRole('ROLE_EMPLOYEE')")
+    @PreAuthorize("hasRole('ROLE_EMPLOYEE')")
     @RequestMapping(value = "/accounts", produces = {"application/json"}, method = RequestMethod.GET)
     public ResponseEntity<List<GetAccountDTO>> accountsGet(
             @Parameter(in = ParameterIn.QUERY, description = "The maximum number of accounts to retrieve.", schema = @Schema(allowableValues = {"0", "50"}, type = "integer", defaultValue = "20", maximum = "50")) @Valid @RequestParam(value = "limit", required = false, defaultValue = "10") Integer limit,

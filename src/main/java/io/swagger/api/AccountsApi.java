@@ -33,6 +33,9 @@ import java.util.List;
 @Validated
 public interface AccountsApi {
 
+    // security = {
+    //    @SecurityRequirement(name = "JWTAuth")},
+
     @Operation(summary = "Create Account", description = "Endpoint for creating a new account.",tags = { "Accounts", "Employees" })
     @ApiResponses(value = {
             @ApiResponse(responseCode = "201", description = "Account created successfully.", content = @Content(mediaType = "application/json", schema = @Schema(implementation = Account.class))),
@@ -46,7 +49,8 @@ public interface AccountsApi {
     ResponseEntity<Account> accountsPost(@Parameter(in = ParameterIn.DEFAULT, description = "", required=true, schema=@Schema()) @Valid @RequestBody CreateAccountDTO body);
 
 
-    @Operation(summary = "Get accounts", description = "Retrieves a list of accounts.", tags = { "Accounts", "Employees", "Customers" })
+    @Operation(summary = "Get accounts", description = "Retrieves a list of accounts.", security = {
+            @SecurityRequirement(name = "JWTAuth")}, tags = { "Accounts", "Employees", "Customers" })
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Successful operation", content = @Content(mediaType = "application/json", schema = @Schema(implementation = GetAccountDTO.class))),
             @ApiResponse(responseCode = "400", description = "Invalid request body."),
