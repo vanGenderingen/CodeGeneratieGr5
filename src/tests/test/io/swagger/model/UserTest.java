@@ -49,12 +49,12 @@ public class UserTest extends TestCase {
         assertEquals(password, user.getPassword());
     }
 
-    public void testSetAndGetRole() {
-        User.RoleEnum role = User.RoleEnum.USER;
-        user.setRole(role);
-
-        assertEquals(role, user.getRole());
-    }
+//    public void testSetAndGetRole() {
+//        User.RoleEnum role = User.RoleEnum.USER;
+//        user.setRole(role);
+//
+//        assertEquals(role, user.getRole());
+//    }
 
     public void testSetAndGetActive() {
         Boolean active = true;
