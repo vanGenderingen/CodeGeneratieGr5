@@ -3,11 +3,11 @@ package io.swagger.model.DTO;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonValue;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.springframework.validation.annotation.Validated;
-
-import java.math.BigDecimal;
 
 /**
  * CreateUserDTO
@@ -17,6 +17,8 @@ import java.math.BigDecimal;
 
 @Getter
 @Setter
+@NoArgsConstructor
+@AllArgsConstructor
 public class CreateUserDTO   {
   @JsonProperty("FirstName")
   private String firstName = null;
@@ -64,7 +66,7 @@ public class CreateUserDTO   {
   private RoleEnum role = null;
 
   @JsonProperty("TransactionLimit")
-  private BigDecimal transactionLimit = null;
+  private Double transactionLimit = null;
 
   @JsonProperty("DailyLimit")
   private Double dailyLimit = null;

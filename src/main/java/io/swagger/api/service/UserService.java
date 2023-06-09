@@ -1,16 +1,23 @@
 package io.swagger.api.service;
 
+import ch.qos.logback.classic.Logger;
+import io.swagger.api.controllers.LoginApiController;
 import io.swagger.api.exceptions.ValidationException;
 import io.swagger.api.repository.UserRepository;
 import io.swagger.model.DTO.UpdateUserDTO;
 import io.swagger.model.User;
+import org.slf4j.event.LoggingEvent;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Bean;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 
+
+import javax.naming.AuthenticationException;
 import java.util.List;
 import java.util.UUID;
 
@@ -22,6 +29,9 @@ public class UserService {
 
     @Autowired
     private PasswordEncoder passwordEncoder;
+
+    @Autowired
+    private AuthenticationManager authenticationManager;
 
     public User add(User user) {
         user.setPassword(passwordEncoder.encode(user.getPassword()));
@@ -54,17 +64,21 @@ public class UserService {
             throw new ValidationException("Error while updating user");
         }
     }
-    public String login(String userEmail, String password) {
-        try {
-
-            authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(userEmail, password));
+    public User login(String userEmail, String password) {
+//        try {
 
             User user = userRepository.getUserByEmail(userEmail);
-            return LoginApiController.generateJwtToken(user);
+            if (user != null && passwordEncoder.matches(password, user.getPassword())) {
+                return user;
+            }
+            return null;
 
-        } catch (Exception e) {
-            throw new ResponseStatusException(HttpStatus.UNPROCESSABLE_ENTITY, "Username/password invalid");
-        }
+            //User user = userRepository.getUserByEmail(userEmail);
+            //return LoginApiController.generateJwtToken(user);
+
+//        } catch (Exception e) {
+//            throw new ResponseStatusException(HttpStatus.UNPROCESSABLE_ENTITY, "Username/password invalid");
+//        }
     }
 
     public User getUserByEmail(String email) {
