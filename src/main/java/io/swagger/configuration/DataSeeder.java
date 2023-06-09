@@ -37,7 +37,7 @@ public class DataSeeder implements ApplicationRunner {
 
         Account bankAccount = new Account(UUID.randomUUID(), bank2, bank2.getUserID(), "Bank account", "NL01INHO0000000001" ,9999999999999999.00, Account.TypeEnum.CURRENT, -9999999999999999.00, true);
         accountService.add(bankAccount);
-
+      
         User johnDoeUser = new User(UUID.fromString("bb0cc36d-69a7-471e-a665-3609bc14c27a"), "john", "doe", "john.doe@mail.nl", "password", User.RoleEnum.USER, true, new ArrayList<>(), 1000.00, 10000.00);
         userService.add(johnDoeUser);
         User johnDoeUser2 = userService.getUserByEmail("john.doe@mail.nl");
