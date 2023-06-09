@@ -91,4 +91,8 @@ public class UserService {
     public User getUserByEmail(String email) {
         return userRepository.getUserByEmail(email);
     }
+
+    public Boolean existsByEmail(String email){
+        return userRepository.getUserByEmail(email) != null;
+    }
 }
