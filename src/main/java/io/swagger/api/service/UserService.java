@@ -12,6 +12,7 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 
 import javax.naming.AuthenticationException;
 import java.util.Arrays;
@@ -58,8 +59,6 @@ public class UserService {
         existingUser.setFirstName(updateUserDTO.getFirstName());
         existingUser.setLastName(updateUserDTO.getLastName());
         existingUser.setEmail(updateUserDTO.getEmail());
-        existingUser.setPassword(updateUserDTO.getPassword());
-//        existingUser.setRole(User.RoleEnum.fromValue(updateUserDTO.getRole().toString()));
         existingUser.setActive(updateUserDTO.getActive());
         existingUser.setTransactionLimit(updateUserDTO.getTransactionLimit().doubleValue());
         existingUser.setDailyLimit(updateUserDTO.getDailyLimit().doubleValue());

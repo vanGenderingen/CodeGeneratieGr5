@@ -15,6 +15,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
@@ -43,7 +44,7 @@ public class UsersApiController implements UsersApi {
         this.objectMapper = objectMapper;
         this.request = request;
     }
-
+    @PreAuthorize("hasRole('ROLE_EMPLOYEE')")
     @RequestMapping(value = "/users", produces = {"application/json"}, method = RequestMethod.GET)
     public ResponseEntity<List<GetUserDTO>> usersGet(@Max(50) @Parameter(in = ParameterIn.QUERY, description = "The maximum number of accounts to retrieve." ,schema=@Schema(allowableValues={ "50" }, maximum="50"
             , defaultValue="10")) @Valid @RequestParam(value = "count", required = false, defaultValue="10") Integer count) {
@@ -64,7 +65,7 @@ public class UsersApiController implements UsersApi {
         }
 
     }
-
+    @PreAuthorize("hasRole('ROLE_EMPLOYEE')")
     @RequestMapping(value = "/users", produces = "application/json", method = RequestMethod.POST)
     public ResponseEntity<User> usersPost(@RequestBody CreateUserDTO createUserDTO) {
         String email = createUserDTO.getEmail();
@@ -80,7 +81,7 @@ public class UsersApiController implements UsersApi {
     }
 
 
-
+    @PreAuthorize("hasRole('ROLE_EMPLOYEE')")
     @RequestMapping(value = "/users/{userID}", produces = {"application/json"}, method = RequestMethod.GET)
     public ResponseEntity<GetUserDTO> usersUserIDGet(@PathVariable("userID") UUID userID) {
         try{
@@ -93,7 +94,7 @@ public class UsersApiController implements UsersApi {
             return new ResponseEntity<GetUserDTO>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
-
+    @PreAuthorize("hasRole('ROLE_EMPLOYEE')")
    @RequestMapping(value = "/users/{userID}", produces = {"application/json"}, method = RequestMethod.PUT)
     public ResponseEntity<GetUserDTO> usersUserIDPut(@PathVariable("userID") UUID userID, @RequestBody UpdateUserDTO updateUserDTO) throws ValidationException {
         try {
