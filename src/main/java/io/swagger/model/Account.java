@@ -82,7 +82,7 @@ public class Account   {
   private Double minBal = null;
 
   @JsonProperty("Active")
-  private Boolean active = null;
+  private Boolean active = true;
 
   @PrePersist
   public void onCreate() {
