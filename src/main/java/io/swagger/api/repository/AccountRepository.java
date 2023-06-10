@@ -26,4 +26,6 @@ public interface AccountRepository extends JpaRepository<Account, Long> {
     );
     @Query("SELECT COUNT(a) FROM Account a WHERE a.userID = :userId AND (:searchStrings IS NULL OR a.name LIKE %:searchStrings%)")
     int countAccountsOfUser(@Param("userId") UUID userId, @Param("searchStrings") String searchStrings);
+
+    Account getAccountByIBAN(String IBAN);
 }

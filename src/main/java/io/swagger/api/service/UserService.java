@@ -2,12 +2,19 @@ package io.swagger.api.service;
 
 import io.swagger.api.exceptions.ValidationException;
 import io.swagger.api.repository.UserRepository;
+import io.swagger.api.security.JwtTokenProvider;
 import io.swagger.model.DTO.UpdateUserDTO;
+import io.swagger.model.Role;
 import io.swagger.model.User;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+
+import javax.naming.AuthenticationException;
+import java.util.Arrays;
 
 import java.util.List;
 import java.util.UUID;
@@ -24,8 +31,17 @@ public class UserService {
     @Autowired
     private AuthenticationManager authenticationManager;
 
+    @Autowired
+    private JwtTokenProvider jwtTokenProvider;
+
+    @Autowired
+    private BCryptPasswordEncoder bCryptPasswordEncoder;
+
     public User add(User user) {
         user.setPassword(passwordEncoder.encode(user.getPassword()));
+        if (user.getRoles() == null){
+            user.setRoles(Arrays.asList(Role.ROLE_USER));
+        }
         return userRepository.save(user);
     }
 
@@ -43,7 +59,7 @@ public class UserService {
         existingUser.setLastName(updateUserDTO.getLastName());
         existingUser.setEmail(updateUserDTO.getEmail());
         existingUser.setPassword(updateUserDTO.getPassword());
-        existingUser.setRole(User.RoleEnum.fromValue(updateUserDTO.getRole().toString()));
+//        existingUser.setRole(User.RoleEnum.fromValue(updateUserDTO.getRole().toString()));
         existingUser.setActive(updateUserDTO.getActive());
         existingUser.setTransactionLimit(updateUserDTO.getTransactionLimit().doubleValue());
         existingUser.setDailyLimit(updateUserDTO.getDailyLimit().doubleValue());
@@ -54,33 +70,28 @@ public class UserService {
             throw new ValidationException("Error while updating user");
         }
     }
+    public String login(String userEmail, String password) {
+        try {
+            User user = userRepository.getUserByEmail(userEmail);
+
+            if (bCryptPasswordEncoder.matches(password, user.getPassword())) {
+                return jwtTokenProvider.createToken(user.getUserID(), user.getRoles());
+
+            } else {
+                throw new AuthenticationException("Invalid username/password");
+            }
+
+
+        } catch (Exception e) {
+            throw new ResponseStatusException(HttpStatus.UNPROCESSABLE_ENTITY, "Username/password invalid");
+        }
+    }
 
     public User getUserByEmail(String email) {
         return userRepository.getUserByEmail(email);
     }
 
-    public boolean existsByEmail(String email) {
-        User existingUser = userRepository.getUserByEmail(email);
-        return existingUser != null;
+    public Boolean existsByEmail(String email){
+        return userRepository.getUserByEmail(email) != null;
     }
-
-
-    public User login(String userEmail, String password) {
-//        try {
-
-            User user = userRepository.getUserByEmail(userEmail);
-            if (user != null && passwordEncoder.matches(password, user.getPassword())) {
-                return user;
-            }
-            return null;
-
-            //User user = userRepository.getUserByEmail(userEmail);
-            //return LoginApiController.generateJwtToken(user);
-
-//        } catch (Exception e) {
-//            throw new ResponseStatusException(HttpStatus.UNPROCESSABLE_ENTITY, "Username/password invalid");
-//        }
-    }
-
-
 }
