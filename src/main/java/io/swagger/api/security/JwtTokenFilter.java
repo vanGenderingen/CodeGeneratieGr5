@@ -14,7 +14,9 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.nio.file.AccessDeniedException;
+import java.util.Arrays;
 import java.util.Collection;
+import java.util.List;
 
 @Component
 public class JwtTokenFilter extends OncePerRequestFilter {
@@ -24,6 +26,13 @@ public class JwtTokenFilter extends OncePerRequestFilter {
 
     @Override
     protected void doFilterInternal(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse, FilterChain filterChain) throws ServletException, IOException {
+        String path = httpServletRequest.getRequestURI();
+
+        // Skip filtering for the /login endpoint
+        if (path.equals("/login")) {
+            filterChain.doFilter(httpServletRequest, httpServletResponse);
+            return;
+        }
 
         String token = jwtTokenProvider.resolveToken(httpServletRequest);
 
@@ -43,14 +52,12 @@ public class JwtTokenFilter extends OncePerRequestFilter {
     }
 
     private void filterRoles(Collection<? extends GrantedAuthority> authorities) throws AccessDeniedException {
-        // Check if the authenticated user has the required roles
-        boolean hasEmployeeRole = authorities.stream()
-                .anyMatch(authority -> authority.getAuthority().equals("ROLE_EMPLOYEE"));
+        // Check if the authenticated user has any of the required roles
+        List<String> requiredRoles = Arrays.asList("ROLE_EMPLOYEE", "ROLE_USER");
+        boolean hasRequiredRole = authorities.stream()
+                .anyMatch(authority -> requiredRoles.contains(authority.getAuthority()));
 
-        boolean hasUserRole = authorities.stream()
-                .anyMatch(authority -> authority.getAuthority().equals("ROLE_USER"));
-
-        if (!hasEmployeeRole || !hasUserRole) {
+        if (!hasRequiredRole) {
             throw new AccessDeniedException("Access is denied. User does not have the required roles.");
         }
     }

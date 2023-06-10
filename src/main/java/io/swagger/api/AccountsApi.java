@@ -36,7 +36,8 @@ public interface AccountsApi {
     // security = {
     //    @SecurityRequirement(name = "JWTAuth")},
 
-    @Operation(summary = "Create Account", description = "Endpoint for creating a new account.",tags = { "Accounts", "Employees" })
+    @Operation(summary = "Create Account", description = "Endpoint for creating a new account.", security = {
+            @SecurityRequirement(name = "JWTAuth")}, tags = { "Accounts", "Employees" })
     @ApiResponses(value = {
             @ApiResponse(responseCode = "201", description = "Account created successfully.", content = @Content(mediaType = "application/json", schema = @Schema(implementation = Account.class))),
             @ApiResponse(responseCode = "400", description = "Invalid request body."),
@@ -62,7 +63,8 @@ public interface AccountsApi {
             method = RequestMethod.GET)
     ResponseEntity<List<GetAccountDTO>> accountsGet(@Parameter(in = ParameterIn.QUERY, description = "The maximum number of accounts to retrieve.", schema=@Schema(type = "integer", defaultValue = "10", maximum = "50")) @Valid @RequestParam(value = "limit", required = false, defaultValue = "10") Integer limit, @Parameter(in = ParameterIn.QUERY, description = "The offset for paginated results.", schema=@Schema(type = "integer", defaultValue = "0", minimum = "0")) @Valid @RequestParam(value = "offset", required = false, defaultValue = "0") Integer offset, @Parameter(in = ParameterIn.QUERY, description = "Comma-separated list of search strings to filter accounts.", schema=@Schema(type = "string")) @Valid @RequestParam(value = "searchstrings", required = false) String searchstrings, @Parameter(in = ParameterIn.QUERY, description = "IBAN to filter accounts.", schema=@Schema(type = "string")) @Valid @RequestParam(value = "IBAN", required = false) String IBAN);
 
-    @Operation(summary = "Get a single account by ID", description = "Retrieve information for a single account based on its unique identifier", tags = { "Accounts", "Employees", "Customers" })
+    @Operation(summary = "Get a single account by ID", description = "Retrieve information for a single account based on its unique identifier", security = {
+            @SecurityRequirement(name = "JWTAuth")}, tags = { "Accounts", "Employees", "Customers" })
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "OK", content = @Content(mediaType = "application/json", schema = @Schema(implementation = GetAccountDTO.class))),
             @ApiResponse(responseCode = "400", description = "Invalid request body."),
@@ -74,7 +76,8 @@ public interface AccountsApi {
             method = RequestMethod.GET)
     ResponseEntity<GetAccountDTO> accountsAccountIDGet(@Parameter(in = ParameterIn.PATH, description = "ID of the account to retrieve", required = true, schema=@Schema(type = "string", format = "uuid")) @PathVariable("accountID") UUID accountID);
 
-    @Operation(summary = "Get accounts for a specific user", description = "", tags = { "Accounts", "Employees", "Customers" })
+    @Operation(summary = "Get accounts for a specific user", description = "", security = {
+            @SecurityRequirement(name = "JWTAuth")}, tags = { "Accounts", "Employees", "Customers" })
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "OK", content = @Content(mediaType = "application/json", schema = @Schema(implementation = GetAccountDTO.class))),
             @ApiResponse(responseCode = "400", description = "Invalid request body."),
@@ -86,7 +89,8 @@ public interface AccountsApi {
             method = RequestMethod.GET)
     ResponseEntity<List<GetAccountDTO>> accountsUserUserIdAccountsGet(@Parameter(in = ParameterIn.PATH, description = "ID of the user whose accounts to retrieve", required = true, schema=@Schema(type = "string", format = "uuid")) @PathVariable("userId") UUID userId, @Parameter(in = ParameterIn.QUERY, description = "The maximum number of accounts to retrieve.", schema=@Schema(type = "integer", defaultValue = "10", maximum = "50")) @Valid @RequestParam(value = "limit", required = false, defaultValue = "10") Integer limit, @Parameter(in = ParameterIn.QUERY, description = "The offset for paginated results.", schema=@Schema(type = "integer", defaultValue = "0", minimum = "0")) @Valid @RequestParam(value = "offset", required = false, defaultValue = "0") Integer offset, @Parameter(in = ParameterIn.QUERY, description = "Comma-separated list of search strings to filter accounts.", schema=@Schema(type = "string")) @Valid @RequestParam(value = "searchstrings", required = false) String searchstrings);
 
-    @Operation(summary = "Update account details", description = "Update account details for a specific account based on its unique identifier", tags = { "Accounts", "Employees", "Customers" })
+    @Operation(summary = "Update account details", description = "Update account details for a specific account based on its unique identifier", security = {
+            @SecurityRequirement(name = "JWTAuth")}, tags = { "Accounts", "Employees", "Customers" })
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "OK", content = @Content(mediaType = "application/json", schema = @Schema(implementation = UpdateAccountDTO.class))),
             @ApiResponse(responseCode = "400", description = "Invalid request body."),
