@@ -17,6 +17,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
@@ -25,10 +26,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
+@CrossOrigin(origins = "*")
 @javax.annotation.Generated(value = "io.swagger.codegen.v3.generators.java.SpringCodegen", date = "2023-05-16T13:11:00.686570329Z[GMT]")
 @RestController
 public class AccountsApiController implements AccountsApi {
-
     private static final Logger log = LoggerFactory.getLogger(AccountsApiController.class);
 
     private final ObjectMapper objectMapper;
@@ -46,6 +47,7 @@ public class AccountsApiController implements AccountsApi {
         this.request = request;
     }
 
+    @PreAuthorize("hasRole('ROLE_EMPLOYEE')")
     @RequestMapping(value = "/accounts", produces = {"application/json"}, method = RequestMethod.POST)
     public ResponseEntity<Account> accountsPost(@RequestBody CreateAccountDTO createAccountDTO) {
         UUID userId = createAccountDTO.getUserId();
@@ -63,16 +65,18 @@ public class AccountsApiController implements AccountsApi {
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
+    @PreAuthorize("hasRole('ROLE_EMPLOYEE')")
     @RequestMapping(value = "/accounts", produces = {"application/json"}, method = RequestMethod.GET)
     public ResponseEntity<List<GetAccountDTO>> accountsGet(
             @Parameter(in = ParameterIn.QUERY, description = "The maximum number of accounts to retrieve.", schema = @Schema(allowableValues = {"0", "50"}, type = "integer", defaultValue = "20", maximum = "50")) @Valid @RequestParam(value = "limit", required = false, defaultValue = "10") Integer limit,
             @Parameter(in = ParameterIn.QUERY, description = "The offset for paginated results.", schema = @Schema(type = "integer", defaultValue = "0", minimum = "0")) @Valid @RequestParam(value = "offset", required = false, defaultValue = "0") Integer offset,
-            @Parameter(in = ParameterIn.QUERY, description = "Comma-separated list of search strings to filter accounts.", schema = @Schema(type = "string")) @Valid @RequestParam(value = "searchstrings", required = false) String searchstrings
-    ) {
+            @Parameter(in = ParameterIn.QUERY, description = "Comma-separated list of search strings to filter accounts.", schema = @Schema(type = "string")) @Valid @RequestParam(value = "searchstrings", required = false) String searchstrings,
+            @Parameter(in = ParameterIn.QUERY, description = "IBAN to filter accounts.", schema = @Schema(type = "string")) @Valid @RequestParam(value = "IBAN", required = false) String IBAN)
+    {
         try {
             List<Account> accounts = new ArrayList<>();
             List<GetAccountDTO> accountDTOS = new ArrayList<>();
-            accounts = accountService.getAllAccounts();
+            accounts = accountService.getAllAccounts(limit, offset, searchstrings, IBAN);
             for (Account account : accounts) {
                 GetAccountDTO accountDTO = objectMapper.convertValue(account, GetAccountDTO.class);
                 accountDTOS.add(accountDTO);
@@ -84,6 +88,7 @@ public class AccountsApiController implements AccountsApi {
         }
     }
 
+    @PreAuthorize("hasAnyRole('ROLE_USER', 'ROLE_EMPLOYEE')")
     @RequestMapping(value = "/accounts/{accountID}", produces = {"application/json"}, method = RequestMethod.GET)
     public ResponseEntity<GetAccountDTO> accountsAccountIDGet(@Parameter(in = ParameterIn.PATH, description = "ID of the account to retrieve", required=true, schema=@Schema()) @PathVariable("accountID") UUID accountID) {
         try {
@@ -97,6 +102,7 @@ public class AccountsApiController implements AccountsApi {
         }
     }
 
+    @PreAuthorize("hasRole('ROLE_USER')")
     @RequestMapping(value = "/accounts/user/{userId}/accounts", produces = {"application/json"}, method = RequestMethod.GET)
     public ResponseEntity<List<GetAccountDTO>> accountsUserUserIdAccountsGet(
             @Parameter(in = ParameterIn.PATH, description = "ID of the user whose accounts to retrieve", required = true, schema = @Schema(type = "string", format = "uuid"))
@@ -115,13 +121,17 @@ public class AccountsApiController implements AccountsApi {
                 GetAccountDTO accountDTO = objectMapper.convertValue(account, GetAccountDTO.class);
                 accountDTOS.add(accountDTO);
             }
-            return new ResponseEntity<>(accountDTOS, HttpStatus.OK);
+            int totalAccounts = accountService.getTotalPages(userId, searchstrings);
+            return ResponseEntity.ok()
+                    .header("X-Total-Accounts", String.valueOf(totalAccounts))
+                    .body(accountDTOS);
         } catch (Exception e) {
             log.error("Couldn't serialize response for content type application/json", e);
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
+    @PreAuthorize("hasRole('ROLE_USER')")
     @RequestMapping(value = "/accounts/{accountID}", produces = {"application/json"}, method = RequestMethod.PUT)
     public ResponseEntity<GetAccountDTO> accountsAccountIDPut(@Parameter(in = ParameterIn.PATH, description = "ID of the account to update", required=true, schema=@Schema()) @PathVariable("accountID") UUID accountID, @Parameter(in = ParameterIn.DEFAULT, description = "New account details to update for the specified account", required=true, schema=@Schema()) @Valid @RequestBody UpdateAccountDTO updateAccountDTO) {
         try {

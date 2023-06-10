@@ -1,3 +1,4 @@
+/*
 package io.swagger.configuration;
 
 import org.springframework.context.annotation.Bean;
@@ -12,8 +13,10 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 @EnableWebSecurity
 @EnableGlobalMethodSecurity(prePostEnabled = true)
 public class WebSecurityConfig {
-    @Bean
-    public PasswordEncoder passwordEncoder() {
-        return new BCryptPasswordEncoder(12);
-    }
+@Bean
+public PasswordEncoder passwordEncoder() {
+    return new BCryptPasswordEncoder(12);
 }
+}
+
+ */

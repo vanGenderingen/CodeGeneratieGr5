@@ -5,7 +5,9 @@ import io.swagger.api.service.AccountService;
 import io.swagger.api.service.TransactionService;
 import io.swagger.api.service.UserService;
 import io.swagger.model.Account;
+import io.swagger.model.DTO.CreateTransactionDTO;
 import io.swagger.model.Role;
+import io.swagger.model.Transaction;
 import io.swagger.model.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.ApplicationArguments;
@@ -49,6 +51,10 @@ public class DataSeeder implements ApplicationRunner {
 
         Account savingsAccountJohnDoe = new Account(UUID.randomUUID(), johnDoeUser2, johnDoeUser2.getUserID(), "Savings account John Doe", "NL01INHO0000000003" ,100.00, Account.TypeEnum.SAVINGS, -100.00, true);
         accountService.add(savingsAccountJohnDoe);
+
+        CreateTransactionDTO createTransactionDTO = new CreateTransactionDTO("NL01INHO0000000002", "NL01INHO0000000003", 50.00, CreateTransactionDTO.TransactionTypeEnum.DEPOSIT, "Test transaction");
+        Transaction transaction = objectMapper.convertValue(createTransactionDTO, Transaction.class);
+        transactionService.add(transaction);
 
     }
 }

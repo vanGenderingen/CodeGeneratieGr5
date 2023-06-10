@@ -26,6 +26,7 @@ import java.util.List;
 import java.util.UUID;
 
 @javax.annotation.Generated(value = "io.swagger.codegen.v3.generators.java.SpringCodegen", date = "2023-05-16T13:11:00.686570329Z[GMT]")
+@CrossOrigin(origins = "*")
 @RestController
 public class UsersApiController implements UsersApi {
 
@@ -64,12 +65,20 @@ public class UsersApiController implements UsersApi {
 
     }
 
-    @RequestMapping(value = "/users", produces = {"application/json"}, method = RequestMethod.POST)
+    @RequestMapping(value = "/users", produces = "application/json", method = RequestMethod.POST)
     public ResponseEntity<User> usersPost(@RequestBody CreateUserDTO createUserDTO) {
+        String email = createUserDTO.getEmail();
+
+        // Check if user with the given email already exists
+        if (userService.existsByEmail(email)) {
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST.valueOf(" User with email " + email + " already exists"));
+        }
+
         User user = objectMapper.convertValue(createUserDTO, User.class);
         User result = userService.add(user);
-        return new ResponseEntity<User>(result, HttpStatus.OK);
+        return new ResponseEntity<>(result, HttpStatus.OK);
     }
+
 
 
     @RequestMapping(value = "/users/{userID}", produces = {"application/json"}, method = RequestMethod.GET)
@@ -91,6 +100,7 @@ public class UsersApiController implements UsersApi {
             User user = objectMapper.convertValue(updateUserDTO, User.class);
             User result = userService.update(updateUserDTO, userID);
             GetUserDTO userDTO = objectMapper.convertValue(result, GetUserDTO.class);
+
             return new ResponseEntity<>(userDTO, HttpStatus.OK);
         } catch (Exception e) {
             log.error("Couldn't serialize response for content type application/json", e);

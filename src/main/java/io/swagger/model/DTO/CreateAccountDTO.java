@@ -23,11 +23,6 @@ import java.util.UUID;
 @AllArgsConstructor
 @NoArgsConstructor
 public class CreateAccountDTO   {
-
-  @JsonProperty("UserID")
-  @NotNull
-  private UUID userId;
-
   @JsonProperty("Name")
   @NotNull
   private String name = null;
@@ -73,4 +68,8 @@ public class CreateAccountDTO   {
   @JsonProperty("MinBal")
   @NotNull
   private Double minBal = 0.0;
+
+  @JsonProperty("UserID")
+  @NotNull
+  private UUID userId;
 }
