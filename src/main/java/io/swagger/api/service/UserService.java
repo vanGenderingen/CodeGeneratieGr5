@@ -90,7 +90,7 @@ public class UserService {
         }
     }
 
-    public ResponseEntity<GetUserDTO> update(UUID userID, UpdateUserDTO updateUserDTO) {
+    public ResponseEntity<GetUserDTO> updateUser(UUID userID, UpdateUserDTO updateUserDTO) {
         try {
             User existingUser = userRepository.getUserByUserID(userID);
             if (updateUserDTO.getFirstName() != null) {
