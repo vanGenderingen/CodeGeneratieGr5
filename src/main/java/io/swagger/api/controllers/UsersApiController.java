@@ -74,7 +74,7 @@ public class UsersApiController implements UsersApi {
     @PreAuthorize("hasRole('ROLE_EMPLOYEE')")
    @RequestMapping(value = "/users/{userID}", produces = {"application/json"}, method = RequestMethod.PUT)
     public ResponseEntity<GetUserDTO> usersUserIDPut(@PathVariable("userID") UUID userID, @RequestBody UpdateUserDTO updateUserDTO) throws ValidationException {
-        return userService.update(userID, updateUserDTO);
+        return userService.updateUser(userID, updateUserDTO);
     }
 
 }

@@ -56,7 +56,7 @@ public class UsersApiControllerTest {
         verify(userService).add(any(CreateUserDTO.class));
     }
     @Test
-    public void testUsersGet() {
+    void testUsersGet() {
         int limit = 10;
         int offset = 0;
         String searchstrings = null;
@@ -82,7 +82,7 @@ public class UsersApiControllerTest {
     }
 
     @Test
-    public void testUsersUserIdGet() {
+    void testUsersUserIdGet() {
         UUID userID = UUID.randomUUID();
         GetUserDTO userDTO = new GetUserDTO();
         userDTO.setUserID(userID);
@@ -98,7 +98,7 @@ public class UsersApiControllerTest {
     }
 
     @Test
-    public void testUsersUserIdPut() {
+    void testUsersUserIdPut() {
         UUID userID = UUID.randomUUID();
         UpdateUserDTO userDTO = new UpdateUserDTO();
         userDTO.setFirstName("test");
@@ -106,13 +106,13 @@ public class UsersApiControllerTest {
         GetUserDTO getUserDTO = new GetUserDTO();
         getUserDTO.setUserID(userID);
 
-        when(userService.update(userID, userDTO)).thenReturn(new ResponseEntity<GetUserDTO>(getUserDTO, HttpStatus.OK));
+        when(userService.updateUser(userID, userDTO)).thenReturn(new ResponseEntity<GetUserDTO>(getUserDTO, HttpStatus.OK));
 
         ResponseEntity<GetUserDTO> responseEntity = usersApiController.usersUserIDPut(userID, userDTO);
 
         assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.OK);
         assertThat(responseEntity.getBody()).isInstanceOf(GetUserDTO.class);
 
-        verify(userService, times(1)).update(userID, userDTO);
+        verify(userService, times(1)).updateUser(userID, userDTO);
     }
 }
