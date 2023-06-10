@@ -32,6 +32,7 @@ import java.util.UUID;
 public class AccountsApiController implements AccountsApi {
     private static final Logger log = LoggerFactory.getLogger(AccountsApiController.class);
 
+    @Autowired
     private final ObjectMapper objectMapper;
 
     @Autowired
@@ -43,6 +44,14 @@ public class AccountsApiController implements AccountsApi {
 
     @org.springframework.beans.factory.annotation.Autowired
     public AccountsApiController(ObjectMapper objectMapper, HttpServletRequest request) {
+        this.objectMapper = objectMapper;
+        this.request = request;
+    }
+
+    @Autowired
+    public AccountsApiController(UserService userService, AccountService accountService, ObjectMapper objectMapper, HttpServletRequest request) {
+        this.userService = userService;
+        this.accountService = accountService;
         this.objectMapper = objectMapper;
         this.request = request;
     }
