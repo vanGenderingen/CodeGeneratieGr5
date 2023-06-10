@@ -1,20 +1,12 @@
 package io.swagger.api.controllers;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.mockito.ArgumentMatchers.*;
-import static org.mockito.Mockito.*;
-
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.UUID;
-
-import com.fasterxml.jackson.databind.ObjectMapper;
-import io.swagger.api.controllers.AccountsApiController;
-import io.swagger.api.exceptions.ValidationException;
-import io.swagger.model.DTO.CreateUserDTO;
+import io.swagger.api.service.AccountService;
+import io.swagger.model.Account;
+import io.swagger.model.DTO.CreateAccountDTO;
+import io.swagger.model.DTO.GetAccountDTO;
+import io.swagger.model.DTO.UpdateAccountDTO;
 import io.swagger.model.Role;
+import io.swagger.model.User;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -22,21 +14,17 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
-import io.swagger.api.service.AccountService;
-import io.swagger.api.service.UserService;
-import io.swagger.model.Account;
-import io.swagger.model.DTO.CreateAccountDTO;
-import io.swagger.model.DTO.GetAccountDTO;
-import io.swagger.model.DTO.UpdateAccountDTO;
-import io.swagger.model.User;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.UUID;
 
-import javax.servlet.http.HttpServletRequest;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 public class AccountsApiControllerTest {
@@ -68,7 +56,7 @@ public class AccountsApiControllerTest {
     }
 
     @Test
-    public void testAccountsGet() {
+    void testAccountsGet() {
         int limit = 10;
         int offset = 0;
         String searchstrings = null;
@@ -94,7 +82,7 @@ public class AccountsApiControllerTest {
     }
 
     @Test
-    public void testAccountsAccountIDGet() {
+    void testAccountsAccountIDGet() {
         UUID accountId = UUID.randomUUID();
         GetAccountDTO account = new GetAccountDTO();
         account.setAccountID(accountId);
@@ -110,7 +98,7 @@ public class AccountsApiControllerTest {
     }
 
     @Test
-    public void testAccountsUserUserIdAccountsGet() {
+    void testAccountsUserUserIdAccountsGet() {
         int limit = 10;
         int offset = 0;
         String searchstrings = null;
@@ -134,7 +122,7 @@ public class AccountsApiControllerTest {
     }
 
     @Test
-    public void testAccountsAccountIDPut() {
+    void testAccountsAccountIDPut() {
         UUID accountId = UUID.randomUUID();
         UpdateAccountDTO updateAccountDTO = new UpdateAccountDTO();
         updateAccountDTO.setName("test");

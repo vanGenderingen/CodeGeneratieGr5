@@ -1,17 +1,8 @@
 package io.swagger.api.service;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.ArgumentMatchers.*;
-import static org.mockito.Mockito.*;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.UUID;
-
 import com.fasterxml.jackson.databind.ObjectMapper;
-import io.swagger.api.controllers.AccountsApiController;
-import io.swagger.api.exceptions.ValidationException;
 import io.swagger.api.repository.AccountRepository;
+import io.swagger.api.repository.UserRepository;
 import io.swagger.model.Account;
 import io.swagger.model.DTO.CreateAccountDTO;
 import io.swagger.model.DTO.GetAccountDTO;
@@ -28,11 +19,21 @@ import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.UUID;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.Mockito.*;
+
 @ExtendWith(MockitoExtension.class)
 public class AccountServiceTest {
 
     @Mock
     private AccountRepository accountRepository;
+    @Mock
+    private UserRepository userRepository;
 
     @Mock
     private ObjectMapper objectMapper;
@@ -55,7 +56,7 @@ public class AccountServiceTest {
         Account bankAccount = new Account(UUID.randomUUID(), user, user.getUserID(), "test account", "NL01INHO0000000001", 9999999999999999.00, Account.TypeEnum.CURRENT, -9999999999999999.00, true);
         CreateAccountDTO createAccountDTO = new CreateAccountDTO("test account2", 100.00, CreateAccountDTO.TypeEnum.CURRENT, 1000.00, userId);
 
-        when(userService.getUserByUserID(any(UUID.class))).thenReturn(user);
+        when(userRepository.getUserByUserID(any(UUID.class))).thenReturn(user);
         when(objectMapper.convertValue(any(CreateAccountDTO.class), eq(Account.class))).thenReturn(bankAccount);
         when(accountRepository.save(any(Account.class))).thenReturn(bankAccount);
 

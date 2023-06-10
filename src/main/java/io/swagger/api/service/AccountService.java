@@ -2,8 +2,8 @@ package io.swagger.api.service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.swagger.api.controllers.AccountsApiController;
-import io.swagger.api.exceptions.ValidationException;
 import io.swagger.api.repository.AccountRepository;
+import io.swagger.api.repository.UserRepository;
 import io.swagger.model.Account;
 import io.swagger.model.DTO.CreateAccountDTO;
 import io.swagger.model.DTO.GetAccountDTO;
@@ -30,13 +30,15 @@ public class AccountService {
     @Autowired
     private AccountRepository accountRepository;
     @Autowired
+    private UserRepository userRepository;
+    @Autowired
     private ObjectMapper objectMapper;
     @Autowired
     private UserService userService;
 
     public ResponseEntity<Account> add(CreateAccountDTO createAccountDTO) {
         UUID userId = createAccountDTO.getUserId();
-        User user = userService.getUserByUserID(userId);
+        User user = userRepository.getUserByUserID(userId);
 
         if (user == null) {
             // Handle the case when the user does not exist

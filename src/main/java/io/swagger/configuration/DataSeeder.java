@@ -2,6 +2,7 @@ package io.swagger.configuration;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.swagger.api.repository.AccountRepository;
+import io.swagger.api.repository.UserRepository;
 import io.swagger.api.service.AccountService;
 import io.swagger.api.service.TransactionService;
 import io.swagger.api.service.UserService;
@@ -24,6 +25,8 @@ public class DataSeeder implements ApplicationRunner {
 
     @Autowired
     UserService userService;
+    @Autowired
+    UserRepository userRepository;
 
     @Autowired
     AccountService accountService;
@@ -40,36 +43,36 @@ public class DataSeeder implements ApplicationRunner {
         //create users
         //create employee users
         User bank = new User(UUID.fromString("03259d6f-4c93-40f0-b18d-be04f42537fc"), "bank", "bank", "debank@mail.nl", "password", Arrays.asList(Role.ROLE_USER, Role.ROLE_EMPLOYEE), true, new ArrayList<>(), 99999999999.00, 999999999999.00);
-        userService.add(bank);
+        userRepository.save(bank);
         User bank2 = userService.getUserByEmail("debank@mail.nl");
-
+        userRepository.save(bank2);
         User bank3 = new User(UUID.fromString("34d6a6e4-b52b-474e-8807-8d0479f099a4"), "Harry", "Potter", "harrypotter@mail.nl", "password", Arrays.asList(Role.ROLE_USER, Role.ROLE_EMPLOYEE), true, new ArrayList<>(), 1000.00, 10000.00);
-        userService.add(bank3);
+        userRepository.save(bank3);
         User bank4 = userService.getUserByEmail("harrypotter@mail.nl");
-
+        userRepository.save(bank4);
         User bank5 = new User(UUID.fromString("347b0281-2d8e-4a29-bfc9-033b993bdcc8"), "Ronald", "Weasley", "ronaldweasley@mail.nl", "password", Arrays.asList(Role.ROLE_USER, Role.ROLE_EMPLOYEE), true, new ArrayList<>(), 1000.00, 10000.00);
-        userService.add(bank5);
+        userRepository.save(bank5);
         User bank6 = userService.getUserByEmail("ronaldweasley@mail.nl");
-
+        userRepository.save(bank6);
         User bank7 = new User(UUID.fromString("407d4df7-73b1-44b7-b193-73a35a1403c8"), "Hermione", "Granger", "hermionegranger@mail.nl", "password", Arrays.asList(Role.ROLE_USER, Role.ROLE_EMPLOYEE), true, new ArrayList<>(), 1000.00, 10000.00);
-        userService.add(bank7);
+        userRepository.save(bank7);
         User bank8 = userService.getUserByEmail("hermionegranger@mail.nl");
 
 //create user users
         User user = new User(UUID.fromString("bb0cc36d-69a7-471e-a665-3609bc14c27a"), "John", "Doe", "john.doe@mail.nl", "password", Arrays.asList(Role.ROLE_USER), true, new ArrayList<>(), 1000.00, 10000.00);
-        userService.add(user);
+        userRepository.save(user);
         User user2 = userService.getUserByEmail("john.doe@mail.nl");
 
         User user3 = new User(UUID.fromString("bb0cc36d-69a7-471e-a665-3609bc14c27b"), "Severus", "Snape", "severus.snape@mail.nl", "password", Arrays.asList(Role.ROLE_USER), true, new ArrayList<>(), 1000.00, 10000.00);
-        userService.add(user3);
+        userRepository.save(user3);
         User user4 = userService.getUserByEmail("severus.snape@mail.nl");
 
         User user5 = new User(UUID.fromString("bb0cc36d-69a7-471e-a665-3609bc14c27c"), "Albus", "Dumbledore", "albus.dumbledore@mail.nl", "password", Arrays.asList(Role.ROLE_USER), true, new ArrayList<>(), 1000.00, 10000.00);
-        userService.add(user5);
+        userRepository.save(user5);
         User user6 = userService.getUserByEmail("albus.dumbledore@mail.nl");
 
         User user7 = new User(UUID.fromString("bb0cc36d-69a7-471e-a665-3609bc14c27d"), "Sir", "Lancelot", "sir.lancelot@mail.nl", "password", Arrays.asList(Role.ROLE_USER), true, new ArrayList<>(), 1000.00, 10000.00);
-        userService.add(user7);
+        userRepository.save(user7);
         User user8 = userService.getUserByEmail("sir.lancelot@mail.nl");
 
 
