@@ -82,8 +82,9 @@ public class TransactionsApiController implements TransactionsApi {
             method = RequestMethod.POST)
     public ResponseEntity<Transaction> postTransactions(@RequestBody CreateTransactionDTO body) {
         Principal principal = request.getUserPrincipal();
-        principal.getName();
         Transaction transaction = objectMapper.convertValue(body, Transaction.class);
+        transaction.setUserPerforming(UUID.fromString(principal.getName()));
+
         Transaction result = transactionService.add(transaction);
         return new ResponseEntity<Transaction>(result, HttpStatus.OK);
     }

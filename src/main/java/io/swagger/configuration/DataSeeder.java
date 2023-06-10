@@ -52,8 +52,19 @@ public class DataSeeder implements ApplicationRunner {
         Account savingsAccountJohnDoe = new Account(UUID.randomUUID(), johnDoeUser2, johnDoeUser2.getUserID(), "Savings account John Doe", "NL01INHO0000000003" ,100.00, Account.TypeEnum.SAVINGS, -100.00, true);
         accountService.add(savingsAccountJohnDoe);
 
-        CreateTransactionDTO createTransactionDTO = new CreateTransactionDTO("NL01INHO0000000002", "NL01INHO0000000003", 50.00, CreateTransactionDTO.TransactionTypeEnum.DEPOSIT, "Test transaction");
+        User janeDoe = new User(null, "jane", "doe", "jane.doe@mail.nl", "password", Arrays.asList(Role.ROLE_USER), true, new ArrayList<>(), 100.00, 1000.00);
+        userService.add(janeDoe);
+        User janeDoeFromDB = userService.getUserByEmail("jane.doe@mail.nl");
+
+        Account currentAccountJaneDoe = new Account(UUID.randomUUID(), janeDoeFromDB, janeDoeFromDB.getUserID(), "Current account Jane Doe", "NL01INHO0000000004" ,0.00, Account.TypeEnum.CURRENT, 0.00, true);
+        accountService.add(currentAccountJaneDoe);
+
+        Account savingsAccountJaneDoe = new Account(UUID.randomUUID(), janeDoeFromDB, janeDoeFromDB.getUserID(), "Savings account Jane Doe", "NL01INHO0000000005" ,0.00, Account.TypeEnum.SAVINGS, 0.00, true);
+        accountService.add(savingsAccountJaneDoe);
+
+        CreateTransactionDTO createTransactionDTO = new CreateTransactionDTO("NL01INHO0000000001", "NL01INHO0000000002", 50.00, CreateTransactionDTO.TransactionTypeEnum.DEPOSIT, "Test transaction");
         Transaction transaction = objectMapper.convertValue(createTransactionDTO, Transaction.class);
+        transaction.setUserPerforming(bank2.getUserID());
         transactionService.add(transaction);
 
     }
