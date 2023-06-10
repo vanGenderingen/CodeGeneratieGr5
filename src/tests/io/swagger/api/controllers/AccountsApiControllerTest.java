@@ -1,16 +1,20 @@
 package io.swagger.api.controllers;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.swagger.api.controllers.AccountsApiController;
 import io.swagger.api.exceptions.ValidationException;
+import io.swagger.model.DTO.CreateUserDTO;
+import io.swagger.model.Role;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -29,6 +33,8 @@ import io.swagger.model.DTO.CreateAccountDTO;
 import io.swagger.model.DTO.GetAccountDTO;
 import io.swagger.model.DTO.UpdateAccountDTO;
 import io.swagger.model.User;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -40,6 +46,9 @@ public class AccountsApiControllerTest {
 
     @Mock
     private UserService userService;
+
+    @Mock
+    private ObjectMapper objectMapper;
 
     @InjectMocks
     private AccountsApiController accountsApiController;
@@ -56,23 +65,30 @@ public class AccountsApiControllerTest {
         accountsApiController = new AccountsApiController(userService, accountService, objectMapper, request);
     }
     @Test
-    public void testAccountsPost() {
-        UUID userId = UUID.randomUUID();
-        User user = new User();
-        user.setUserID(userId);
-        CreateAccountDTO createAccountDTO = new CreateAccountDTO();
-        createAccountDTO.setUserId(userId);
+    void testAccountsPost() {
+        User user = new User(UUID.fromString("bb0cc36d-69a7-471e-a665-3609bc14c27a"), "Test", "Account", "testaccount@mail.nl", "password", Arrays.asList(Role.ROLE_USER), true, new ArrayList<>(), 1000.00, 10000.00);
+        Account bankAccount = new Account(UUID.randomUUID(), user, user.getUserID(), "test account", "NL01INHO0000000001", 9999999999999999.00, Account.TypeEnum.CURRENT, -9999999999999999.00, true);
+        CreateAccountDTO createAccountDTO = new CreateAccountDTO("test account2", 100.00, CreateAccountDTO.TypeEnum.CURRENT, 1000.00, UUID.randomUUID());
 
-        when(userService.getUserByUserID(userId)).thenReturn(user);
-        when(accountService.add(any(Account.class))).thenReturn(new Account());
+        // Configure the mock userService to return the mock account when saving
+        when(userService.getUserByUserID(any(UUID.class))).thenReturn(user);
 
-        ResponseEntity<Account> responseEntity = accountsApiController.accountsPost(createAccountDTO);
+        // Configure the mock accountService to return the mock account when saving
+        when(accountService.add(any(Account.class))).thenReturn(bankAccount);
 
-        assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.OK);
-        assertThat(responseEntity.getBody()).isNotNull();
+        // Mock the behavior of objectMapper.convertValue to return the bankAccount directly
+        when(objectMapper.convertValue(any(CreateAccountDTO.class), eq(Account.class))).thenReturn(bankAccount);
 
-        verify(userService, times(1)).getUserByUserID(userId);
-        verify(accountService, times(1)).add(any(Account.class));
+        // Invoke the accountsPost method and assert the response
+        ResponseEntity<Account> response = accountsApiController.accountsPost(createAccountDTO);
+
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertNotNull(response.getBody());
+        assertEquals(bankAccount.getAccountID(), response.getBody().getAccountID());
+        assertEquals(user.getUserID(), response.getBody().getUserID());
+
+        // Verify that the accountService saveAccount method was called with the expected account
+        verify(accountService).add(any(Account.class));
     }
 
     @Test
@@ -100,6 +116,7 @@ public class AccountsApiControllerTest {
     public void testAccountsAccountIDGet() {
         UUID accountId = UUID.randomUUID();
         Account account = new Account();
+        account.setAccountID(accountId);
 
         when(accountService.getAccountByAccountID(accountId)).thenReturn(account);
 
