@@ -24,6 +24,7 @@ import org.springframework.web.server.ResponseStatusException;
 import javax.naming.AuthenticationException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.UUID;
 
 
@@ -123,14 +124,12 @@ public class UserService {
     public String login(String userEmail, String password) {
         try {
             User user = userRepository.getUserByEmail(userEmail);
-
-            if (bCryptPasswordEncoder.matches(password, user.getPassword())) {
+            //TODO IMPLEMENT LOGIC TO HASH PASSWORD AND CHECK IF IT MATCHES THE HASHED PASSWORD IN THE DATABASE
+            if (Objects.equals(password, user.getPassword())) {
                 return jwtTokenProvider.createToken(user.getUserID(), user.getRoles());
-
             } else {
                 throw new AuthenticationException("Invalid username/password");
             }
-
 
         } catch (Exception e) {
             throw new ResponseStatusException(HttpStatus.UNPROCESSABLE_ENTITY, "Username/password invalid");
