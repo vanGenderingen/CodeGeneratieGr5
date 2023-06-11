@@ -6,16 +6,18 @@ import io.swagger.api.repository.UserRepository;
 import io.swagger.model.Account;
 import io.swagger.model.DTO.CreateAccountDTO;
 import io.swagger.model.DTO.GetAccountDTO;
+import io.swagger.model.DTO.GetUserDTO;
 import io.swagger.model.DTO.UpdateAccountDTO;
 import io.swagger.model.User;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.*;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
@@ -56,6 +58,9 @@ public class AccountServiceTest {
         Account bankAccount = new Account(UUID.randomUUID(), user, user.getUserID(), "test account", "NL01INHO0000000001", 9999999999999999.00, Account.TypeEnum.CURRENT, -9999999999999999.00, true);
         CreateAccountDTO createAccountDTO = new CreateAccountDTO("test account2", 100.00, CreateAccountDTO.TypeEnum.CURRENT, 1000.00, userId);
 
+        GetUserDTO userDTO = new GetUserDTO();
+        userDTO.setUserID(userId);
+
         when(userRepository.getUserByUserID(any(UUID.class))).thenReturn(user);
         when(objectMapper.convertValue(any(CreateAccountDTO.class), eq(Account.class))).thenReturn(bankAccount);
         when(accountRepository.save(any(Account.class))).thenReturn(bankAccount);
@@ -65,14 +70,14 @@ public class AccountServiceTest {
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
         assertThat(response.getBody()).isEqualTo(bankAccount);
 
-        verify(userService).getUserByUserID(any(UUID.class));
+        verify(userRepository).getUserByUserID(any(UUID.class));
         verify(accountRepository).save(any(Account.class));
     }
 
     @Test
     public void testGetAllAccounts() {
-        int limit = 10;
-        int offset = 0;
+        Integer limit = 10;
+        Integer offset = 0;
         String searchStrings = null;
         String IBAN = null;
 
@@ -85,8 +90,16 @@ public class AccountServiceTest {
         account.setAccountID(accountId);
         accounts.add(account);
 
-        when(accountRepository.getAll(anyString(), anyString(), any())).thenReturn(accounts);
-        when(objectMapper.convertValue(any(Account.class), eq(GetAccountDTO.class))).thenReturn(accountDTO);
+        when(accountRepository.getAll(
+                ArgumentMatchers.<String>any(),
+                ArgumentMatchers.<String>any(),
+                ArgumentMatchers.<Pageable>any()
+        )).thenReturn(accounts);
+
+        when(objectMapper.convertValue(
+                Mockito.any(Account.class),
+                Mockito.eq(GetAccountDTO.class)
+        )).thenReturn(accountDTO);
 
         ResponseEntity<List<GetAccountDTO>> responseEntity = accountService.getAllAccounts(limit, offset, searchStrings, IBAN);
 
@@ -94,7 +107,11 @@ public class AccountServiceTest {
         assertThat(responseEntity.getBody()).hasSize(1);
         assertThat(responseEntity.getBody().get(0).getAccountID()).isEqualTo(accountId);
 
-        verify(accountRepository, times(1)).getAll(anyString(), anyString(), any());
+        verify(accountRepository, times(1)).getAll(
+                ArgumentMatchers.<String>any(),
+                ArgumentMatchers.<String>any(),
+                ArgumentMatchers.<Pageable>any()
+        );
     }
         @Test
         public void testGetAccountByAccountID() {
@@ -117,25 +134,36 @@ public class AccountServiceTest {
 
         @Test
         public void testGetAccountsOfUser() {
-            int limit = 10;
-            int offset = 0;
+            Integer limit = 10;
+            Integer offset = 0;
             String searchStrings = null;
 
             UUID userId = UUID.randomUUID();
             GetAccountDTO accountDTO = new GetAccountDTO();
             accountDTO.setUserID(userId);
 
+            // Create accounts
+            List<Account> accounts = new ArrayList<>();
+            UUID accountId = UUID.randomUUID();
             Account account = new Account();
             account.setUserID(userId);
-            account.setAccountID(UUID.randomUUID());
-            List<Account> accounts = new ArrayList<>();
+            account.setAccountID(accountId);
             accounts.add(account);
 
-            Page<Account> accountPage = mock(Page.class);
-            when(accountPage.getContent()).thenReturn(accounts);
-            when(accountPage.getTotalElements()).thenReturn(1L);
+            // Create Pageable
+            Pageable pageable = PageRequest.of(offset, limit);
 
-            when(accountRepository.getAccountsOfUser(any(UUID.class), anyString(), any())).thenReturn(accountPage);
+            // Create Page<Account> with the accounts list and pageable
+            Page<Account> accountPage = new PageImpl<>(accounts, pageable, accounts.size());
+
+            // Configure mock behavior
+            when(accountRepository.getAccountsOfUser(
+                    ArgumentMatchers.<UUID>any(),
+                    ArgumentMatchers.<String>any(),
+                    ArgumentMatchers.<Pageable>any()
+            )).thenReturn(accountPage);
+            //when(accountRepository.getAccountsOfUser(eq(userId), anyString(), any(Pageable.class))).thenReturn(accountPage);
+
             when(objectMapper.convertValue(any(Account.class), eq(GetAccountDTO.class))).thenReturn(accountDTO);
 
             ResponseEntity<List<GetAccountDTO>> responseEntity = accountService.getAccountsOfUser(userId, limit, offset, searchStrings);

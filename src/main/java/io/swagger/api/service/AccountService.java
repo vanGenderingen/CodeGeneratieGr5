@@ -97,10 +97,6 @@ public class AccountService {
         }
     }
 
-    public int getTotalPages(UUID userId, String searchStrings) {
-        return accountRepository.countAccountsOfUser(userId, searchStrings);
-    }
-
     public ResponseEntity<GetAccountDTO> updateAccount(UUID accountID, UpdateAccountDTO updateAccountDTO) {
         try {
             Account existingAccount = accountRepository.getAccountByAccountID(accountID);
