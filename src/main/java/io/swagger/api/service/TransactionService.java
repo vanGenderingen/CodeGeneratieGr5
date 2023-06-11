@@ -14,6 +14,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 
@@ -73,9 +74,9 @@ public class TransactionService {
         return transactionRepository.save(transaction);
     }
 
-    public List<Transaction> getTransactions(Integer offset, Integer limit, String toIBAN, String fromIBAN, Double lower, Double higher, Double equal, UUID accountID, String type) {
+    public List<Transaction> getTransactions(Integer offset, Integer limit, Date date, String toIBAN, String fromIBAN, Double lower, Double higher, Double equal, UUID accountID, String type) {
         Pageable pageRequest = PageRequest.of(offset, limit);
-//        if (dateRange != null){
+//        if (date != null){
 //            return transactionRepository.getTransactionsByTimeStampBetween(dateRange, dateRange.plusDays(1)).subList(offset, limit);
 //        }
 
@@ -101,6 +102,9 @@ public class TransactionService {
 
         if (accountID != null) {
             Account account = accountsRepository.getAccountByAccountID(accountID);
+            if (account != null) {
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "The account ID is not valid");
+            }
             return transactionRepository.getTransactionsByToIBANAndFromIBAN(account.getIBAN(), account.getIBAN(), pageRequest);
         }
 
