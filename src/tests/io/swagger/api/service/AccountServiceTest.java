@@ -18,6 +18,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
@@ -26,6 +27,8 @@ import java.util.List;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.hibernate.validator.internal.util.Contracts.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 
@@ -132,9 +135,8 @@ public class AccountServiceTest {
             verify(accountRepository, times(1)).getAccountByAccountID(accountId);
         }
 
-        @Test
-        public void testGetAccountsOfUser() {
-            Integer limit = 10;
+    /*
+    Integer limit = 10;
             Integer offset = 0;
             String searchStrings = null;
 
@@ -174,6 +176,40 @@ public class AccountServiceTest {
             assertThat(responseEntity.getHeaders().get("X-Total-Accounts").get(0)).isEqualTo("1");
 
             verify(accountRepository, times(1)).getAccountsOfUser(any(UUID.class), anyString(), any());
+     */
+
+        @Test
+        public void testGetAccountsOfUser() {
+            UUID userId = UUID.randomUUID();
+            Integer limit = 10;
+            Integer offset = 0;
+            String searchStrings = "example";
+            List<Account> accountList = new ArrayList<>();
+            accountList.add(new Account(/* account details */));
+
+            // Create a mock Page object
+            Page<Account> accountPage = new PageImpl<>(accountList);
+
+            // Mock the behavior of the accountRepository
+            when(accountRepository.getAccountsOfUser(eq(userId), eq(searchStrings), any(Pageable.class))).thenReturn(accountPage);
+            when(accountRepository.countAccountsOfUser(eq(userId), eq(searchStrings))).thenReturn(accountList.size());
+
+            // Invoke the method
+            ResponseEntity<List<GetAccountDTO>> response = accountService.getAccountsOfUser(userId, limit, offset, searchStrings);
+
+            // Verify the behavior of accountRepository.countAccountsOfUser()
+            verify(accountRepository).countAccountsOfUser(userId, searchStrings);
+
+            // Verify the response body
+            List<GetAccountDTO> responseBody = response.getBody();
+            assertNotNull(responseBody);
+            assertEquals(accountList.size(), responseBody.size());
+
+            // Verify the response headers
+            HttpHeaders headers = response.getHeaders();
+            assertNotNull(headers);
+            assertEquals(String.valueOf(accountList.size()), headers.getFirst("X-Total-Accounts"));
+
         }
 
         @Test
