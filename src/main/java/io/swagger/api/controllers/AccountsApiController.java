@@ -30,8 +30,7 @@ import java.util.UUID;
 @javax.annotation.Generated(value = "io.swagger.codegen.v3.generators.java.SpringCodegen", date = "2023-05-16T13:11:00.686570329Z[GMT]")
 @RestController
 public class AccountsApiController implements AccountsApi {
-    private static final Logger log = LoggerFactory.getLogger(AccountsApiController.class);
-
+    @Autowired
     private final ObjectMapper objectMapper;
 
     @Autowired
@@ -50,19 +49,7 @@ public class AccountsApiController implements AccountsApi {
     @PreAuthorize("hasRole('ROLE_EMPLOYEE')")
     @RequestMapping(value = "/accounts", produces = {"application/json"}, method = RequestMethod.POST)
     public ResponseEntity<Account> accountsPost(@RequestBody CreateAccountDTO createAccountDTO) {
-        UUID userId = createAccountDTO.getUserId();
-        User user = userService.getUserByUserID(userId);
-
-        if (user == null) {
-            // Handle the case when the user does not exist
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        }
-
-        Account account = objectMapper.convertValue(createAccountDTO, Account.class);
-        account.setUser(user);
-        Account result = accountService.add(account);
-
-        return new ResponseEntity<>(result, HttpStatus.OK);
+        return accountService.add(createAccountDTO);
     }
 
     @PreAuthorize("hasRole('ROLE_EMPLOYEE')")
@@ -73,33 +60,13 @@ public class AccountsApiController implements AccountsApi {
             @Parameter(in = ParameterIn.QUERY, description = "Comma-separated list of search strings to filter accounts.", schema = @Schema(type = "string")) @Valid @RequestParam(value = "searchstrings", required = false) String searchstrings,
             @Parameter(in = ParameterIn.QUERY, description = "IBAN to filter accounts.", schema = @Schema(type = "string")) @Valid @RequestParam(value = "IBAN", required = false) String IBAN)
     {
-        try {
-            List<Account> accounts = new ArrayList<>();
-            List<GetAccountDTO> accountDTOS = new ArrayList<>();
-            accounts = accountService.getAllAccounts(limit, offset, searchstrings, IBAN);
-            for (Account account : accounts) {
-                GetAccountDTO accountDTO = objectMapper.convertValue(account, GetAccountDTO.class);
-                accountDTOS.add(accountDTO);
-            }
-            return new ResponseEntity<List<GetAccountDTO>>(accountDTOS, HttpStatus.OK);
-        } catch (Exception e) {
-            log.error("Couldn't serialize response for content type application/json", e);
-            return new ResponseEntity<List<GetAccountDTO>>(HttpStatus.INTERNAL_SERVER_ERROR);
-        }
+        return accountService.getAllAccounts(limit, offset, searchstrings, IBAN);
     }
 
     @PreAuthorize("hasAnyRole('ROLE_USER', 'ROLE_EMPLOYEE')")
     @RequestMapping(value = "/accounts/{accountID}", produces = {"application/json"}, method = RequestMethod.GET)
     public ResponseEntity<GetAccountDTO> accountsAccountIDGet(@Parameter(in = ParameterIn.PATH, description = "ID of the account to retrieve", required=true, schema=@Schema()) @PathVariable("accountID") UUID accountID) {
-        try {
-            Account account = accountService.getAccountByAccountID(accountID);
-            GetAccountDTO accountDTO = objectMapper.convertValue(account, GetAccountDTO.class);
-            return new ResponseEntity<GetAccountDTO>(accountDTO, HttpStatus.OK);
-
-        } catch (Exception e) {
-            log.error("Couldn't serialize response for content type application/json", e);
-            return new ResponseEntity<GetAccountDTO>(HttpStatus.INTERNAL_SERVER_ERROR);
-        }
+        return accountService.getAccountByAccountID(accountID);
     }
 
     @PreAuthorize("hasRole('ROLE_USER')")
@@ -114,34 +81,12 @@ public class AccountsApiController implements AccountsApi {
             @Parameter(in = ParameterIn.QUERY, description = "Comma-separated list of search strings to filter accounts.", schema = @Schema(type = "string"))
             @Valid @RequestParam(value = "searchstrings", required = false) String searchstrings
     ) {
-        try {
-            List<Account> accounts = accountService.getAccountsOfUser(userId, limit, offset, searchstrings).getContent();
-            List<GetAccountDTO> accountDTOS = new ArrayList<>();
-            for (Account account : accounts) {
-                GetAccountDTO accountDTO = objectMapper.convertValue(account, GetAccountDTO.class);
-                accountDTOS.add(accountDTO);
-            }
-            int totalAccounts = accountService.getTotalPages(userId, searchstrings);
-            return ResponseEntity.ok()
-                    .header("X-Total-Accounts", String.valueOf(totalAccounts))
-                    .body(accountDTOS);
-        } catch (Exception e) {
-            log.error("Couldn't serialize response for content type application/json", e);
-            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
-        }
+        return accountService.getAccountsOfUser(userId, limit, offset, searchstrings);
     }
 
     @PreAuthorize("hasRole('ROLE_USER')")
     @RequestMapping(value = "/accounts/{accountID}", produces = {"application/json"}, method = RequestMethod.PUT)
     public ResponseEntity<GetAccountDTO> accountsAccountIDPut(@Parameter(in = ParameterIn.PATH, description = "ID of the account to update", required=true, schema=@Schema()) @PathVariable("accountID") UUID accountID, @Parameter(in = ParameterIn.DEFAULT, description = "New account details to update for the specified account", required=true, schema=@Schema()) @Valid @RequestBody UpdateAccountDTO updateAccountDTO) {
-        try {
-            Account account = objectMapper.convertValue(updateAccountDTO, Account.class);
-            Account result = accountService.update(updateAccountDTO, accountID);
-            GetAccountDTO accountDTO = objectMapper.convertValue(result, GetAccountDTO.class);
-            return new ResponseEntity<>(accountDTO, HttpStatus.OK);
-        } catch (Exception e) {
-            log.error("Couldn't serialize response for content type application/json", e);
-            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
-        }
+        return accountService.updateAccount(accountID, updateAccountDTO);
     }
 }
