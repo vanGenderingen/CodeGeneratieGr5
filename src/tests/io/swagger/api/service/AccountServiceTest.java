@@ -135,49 +135,6 @@ public class AccountServiceTest {
             verify(accountRepository, times(1)).getAccountByAccountID(accountId);
         }
 
-    /*
-    Integer limit = 10;
-            Integer offset = 0;
-            String searchStrings = null;
-
-            UUID userId = UUID.randomUUID();
-            GetAccountDTO accountDTO = new GetAccountDTO();
-            accountDTO.setUserID(userId);
-
-            // Create accounts
-            List<Account> accounts = new ArrayList<>();
-            UUID accountId = UUID.randomUUID();
-            Account account = new Account();
-            account.setUserID(userId);
-            account.setAccountID(accountId);
-            accounts.add(account);
-
-            // Create Pageable
-            Pageable pageable = PageRequest.of(offset, limit);
-
-            // Create Page<Account> with the accounts list and pageable
-            Page<Account> accountPage = new PageImpl<>(accounts, pageable, accounts.size());
-
-            // Configure mock behavior
-            when(accountRepository.getAccountsOfUser(
-                    ArgumentMatchers.<UUID>any(),
-                    ArgumentMatchers.<String>any(),
-                    ArgumentMatchers.<Pageable>any()
-            )).thenReturn(accountPage);
-            //when(accountRepository.getAccountsOfUser(eq(userId), anyString(), any(Pageable.class))).thenReturn(accountPage);
-
-            when(objectMapper.convertValue(any(Account.class), eq(GetAccountDTO.class))).thenReturn(accountDTO);
-
-            ResponseEntity<List<GetAccountDTO>> responseEntity = accountService.getAccountsOfUser(userId, limit, offset, searchStrings);
-
-            assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.OK);
-            assertThat(responseEntity.getBody()).hasSize(1);
-            assertThat(responseEntity.getBody().get(0).getUserID()).isEqualTo(userId);
-            assertThat(responseEntity.getHeaders().get("X-Total-Accounts").get(0)).isEqualTo("1");
-
-            verify(accountRepository, times(1)).getAccountsOfUser(any(UUID.class), anyString(), any());
-     */
-
         @Test
         public void testGetAccountsOfUser() {
             UUID userId = UUID.randomUUID();
