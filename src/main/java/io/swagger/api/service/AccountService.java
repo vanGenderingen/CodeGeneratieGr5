@@ -47,6 +47,9 @@ public class AccountService {
 
         Account account = objectMapper.convertValue(createAccountDTO, Account.class);
         account.setUser(user);
+        if (account.getIBAN() == null) {
+            account.setIBAN(IBANService.generateIBAN());
+        }
         Account result = accountRepository.save(account);
 
         return new ResponseEntity<>(result, HttpStatus.OK);
