@@ -7,6 +7,8 @@ import lombok.Getter;
 import lombok.Setter;
 import org.springframework.validation.annotation.Validated;
 
+import javax.persistence.ElementCollection;
+import javax.persistence.FetchType;
 import javax.validation.Valid;
 import java.util.List;
 import java.util.UUID;
@@ -32,7 +34,7 @@ public class GetUserDTO   {
   @JsonProperty("Email")
   private String email = null;
 
-  @JsonProperty("Roles")
+  @ElementCollection(fetch = FetchType.EAGER)
   private List<Role> roles = null;
 
   @JsonProperty("Active")

@@ -33,8 +33,10 @@ import java.util.UUID;
 @Validated
 public interface TransactionsApi {
 
-    @Operation(summary = "Retrieve transactions", description = "", security = {
-            @SecurityRequirement(name = "JWTAuth")}, tags = {"Transactions", "Customers", "Employees"})
+
+    //security = {
+    //            @SecurityRequirement(name = "JWTAuth")}
+    @Operation(summary = "Retrieve transactions", description = "", tags = {"Transactions", "Customers", "Employees"})
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "OK", content = @Content(mediaType = "application/json", schema = @Schema(implementation = Transaction.class))),
             @ApiResponse(responseCode = "400", description = "Bad request"),
@@ -44,9 +46,9 @@ public interface TransactionsApi {
             produces = {"application/json"},
             method = RequestMethod.GET)
     ResponseEntity<List<Transaction>> getTransactions(
-            @Parameter(in = ParameterIn.QUERY, description = "The maximum number of transactions to retrieve.", schema = @Schema(allowableValues = {"0", "100"}, maximum = "100", defaultValue = "0")) @Valid @RequestParam(value = "offset", required = false, defaultValue = "0") Integer offset,
+            @Parameter(in = ParameterIn.QUERY, description = "The offset for paginated results.", schema=@Schema(type = "integer", defaultValue = "0", minimum = "0")) @Valid @RequestParam(value = "offset", required = false, defaultValue = "0") Integer offset,
             @Parameter(in = ParameterIn.QUERY, description = "The maximum number of transactions to retrieve.", schema = @Schema(allowableValues = {"0", "100"}, maximum = "100", defaultValue = "20")) @Valid @RequestParam(value = "limit", required = false, defaultValue = "20") Integer limit,
-            @Parameter(in = ParameterIn.QUERY, description = "ID of t  he user", schema = @Schema()) @Valid @RequestParam(value = "userID", required = false) UUID userID, @Min(0) @Max(100)
+            @Parameter(in = ParameterIn.QUERY, description = "ID of the user", schema = @Schema()) @Valid @RequestParam(value = "userID", required = false) UUID userID, @Min(0) @Max(100)
 //            @Parameter(in = ParameterIn.QUERY, description = "The date range of the transactions to retrieve.", schema = @Schema()) @Valid @RequestParam(value = "dateRange", required = false) OffsetDateTime dateRange,
             @Parameter(in = ParameterIn.QUERY, description = "The the IBAN from who the transaction is done.", schema = @Schema()) @Valid @RequestParam(value = "from", required = false) String from,
             @Parameter(in = ParameterIn.QUERY, description = "The the IBAN to who the transaction is done.", schema = @Schema()) @Valid @RequestParam(value = "to", required = false) String to, @DecimalMin("0")
