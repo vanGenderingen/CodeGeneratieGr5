@@ -12,9 +12,6 @@ import javax.persistence.*;
 import java.util.List;
 import java.util.UUID;
 
-/**
- * User
- */
 @Validated
 @javax.annotation.Generated(value = "io.swagger.codegen.v3.generators.java.SpringCodegen", date = "2023-05-16T13:11:00.686570329Z[GMT]")
 
@@ -41,39 +38,6 @@ public class User{
 
   @JsonProperty("Password")
   private String password = null;
-
-  /**
-   * Role of the user.
-   */
-//  public enum RoleEnum {
-//    USER("User"),
-//
-//    EMPLOYEE("Employee");
-//
-//    private String value;
-//
-//    RoleEnum(String value) {
-//      this.value = value;
-//    }
-//
-//    @Override
-//    @JsonValue
-//    public String toString() {
-//      return String.valueOf(value);
-//    }
-//
-//    @JsonCreator
-//    public static RoleEnum fromValue(String text) {
-//      for (RoleEnum b : RoleEnum.values()) {
-//        if (String.valueOf(b.value).equals(text)) {
-//          return b;
-//        }
-//      }
-//      return null;
-//    }
-//  }
-//  @JsonProperty("Role")
-//  private RoleEnum role = null;
 
   @ElementCollection(fetch = FetchType.EAGER)
   private List<Role> roles = null;
