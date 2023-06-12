@@ -4,6 +4,7 @@ package io.swagger.api.controllers;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.swagger.api.LoginApi;
+import io.swagger.api.service.LoginService;
 import io.swagger.api.service.UserService;
 import io.swagger.model.DTO.LoginDTO;
 import io.swagger.model.DTO.LoginResponseDTO;
@@ -25,31 +26,31 @@ import javax.validation.Valid;
 @RestController
 public class LoginApiController implements LoginApi {
 
-    private static final Logger log = LoggerFactory.getLogger(LoginApiController.class);
+    private static final Logger log = LoggerFactory.getLogger(LoginApiController.class);//Logger to display messages on the console
 
-    private final ObjectMapper objectMapper;
+    private final ObjectMapper objectMapper;//ObjectMapper to map objects
 
-    private final HttpServletRequest request;
+    private final HttpServletRequest request;//HttpServletRequest to get the request
 
     @Autowired
-    private UserService userService;
+    private LoginService loginService;//LoginService to use the methods of the service
 
     @org.springframework.beans.factory.annotation.Autowired
     public LoginApiController(ObjectMapper objectMapper, HttpServletRequest request) {
-        this.objectMapper = objectMapper;
+        this.objectMapper = objectMapper;//Initialize the ObjectMapper and the HttpServletRequest
         this.request = request;
     }
 
     @RequestMapping(value = "/login", produces = {"application/json"}, method = RequestMethod.POST)
     public ResponseEntity<LoginResponseDTO> loginPost(@Parameter(in = ParameterIn.DEFAULT, description = "", required=true, schema=@Schema()) @Valid @RequestBody LoginDTO body) {
         try {
-            String token = userService.login(body.getEmail(), body.getPassword());
+            String token = loginService.login(body.getEmail(), body.getPassword());//Get the Email and the Password from the body and call the login method of the LoginService
             LoginResponseDTO loginResponse = new LoginResponseDTO();
-            loginResponse.setToken(token);
+            loginResponse.setToken(token);//Set the token in the LoginResponseDTO
 
             return new ResponseEntity<>(loginResponse, HttpStatus.OK);
         } catch (Exception e) {
-            log.error("Failed to generate JWT token", e);
+            log.error("Failed to generate JWT token", e);//Log the error message on the console if the token is not generated
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
