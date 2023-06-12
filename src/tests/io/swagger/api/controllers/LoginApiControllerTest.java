@@ -44,7 +44,9 @@ class LoginApiControllerTest {
         ResponseEntity<LoginResponseDTO> response = loginApiController.loginPost(loginDTO);
 
         // Assert
+
         assertEquals(HttpStatus.OK, response.getStatusCode());
+
     }
 
     @Test
@@ -65,4 +67,5 @@ class LoginApiControllerTest {
 
     private void assertEquals(HttpStatus httpStatus, HttpStatus statusCode) {
     }
+
 }

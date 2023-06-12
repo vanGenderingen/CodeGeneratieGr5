@@ -3,9 +3,7 @@ package io.swagger.api.service;
 import io.swagger.api.repository.AccountRepository;
 import io.swagger.api.repository.TransactionRepository;
 import io.swagger.api.repository.UserRepository;
-import io.swagger.model.Account;
-import io.swagger.model.Transaction;
-import io.swagger.model.User;
+import io.swagger.model.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -14,7 +12,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
-import java.util.UUID;
 
 @Service
 public class TransactionService {
@@ -28,6 +25,7 @@ public class TransactionService {
     @Autowired
     private UserRepository userRepository;
 
+
     public Transaction add(Transaction transaction) {
         Account fromAccount = accountsRepository.getAccountByIBAN(transaction.getFromIBAN());
         Account toAccount = accountsRepository.getAccountByIBAN(transaction.getToIBAN());
@@ -36,21 +34,33 @@ public class TransactionService {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "The IBAN is not valid");
         }
 
+        User userPerforming = userRepository.getUserByUserID(transaction.getUserPerforming());
+
+        if (userPerforming == null) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "The user performing the transaction is not valid");
+        }
+
         User fromUser = userRepository.getUserByUserID(fromAccount.getUserID());
         User toUser = userRepository.getUserByUserID(toAccount.getUserID());
 
-        if (transaction.getTransactionType() == Transaction.TransactionTypeEnum.WITHDRAWAL && fromAccount.getBalance() < fromAccount.getMinBal()+transaction.getAmount()) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "You don't have enough money to withdraw");
+        if(!userPerforming.getRoles().contains(Role.ROLE_EMPLOYEE)){
+            if(userPerforming.getUserID() != fromUser.getUserID()){
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "You can't perform a transaction from an account that isn't yours");
+            }
+            if (toAccount.getType() == Account.TypeEnum.SAVINGS && fromUser.getUserID() != toUser.getUserID()){
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "You can't transfer money to a savings account that isn't yours");
+            }
+            if (fromAccount.getType() == Account.TypeEnum.SAVINGS && fromUser.getUserID() != toUser.getUserID()) {
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "You can't transfer money from a savings account that isn't yours");
+            }
         }
-        if (transaction.getTransactionType() == Transaction.TransactionTypeEnum.WITHDRAWAL && fromUser.getTransactionLimit() < transaction.getAmount()) {
+
+        if (fromAccount.getBalance() < fromAccount.getMinBal()+transaction.getAmount()) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "You don't have enough money to transfer this amount");
+        }
+        if (fromUser.getTransactionLimit() < transaction.getAmount()) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "You can't withdraw more than your transaction limit");
         }
-//        if (toAccount.getType() == Account.TypeEnum.SAVINGS && fromUser.getUserID() != toUser.getUserID()){
-//            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "You can't transfer money to a savings account that isn't yours");
-//        }
-//        if (fromAccount.getType() == Account.TypeEnum.SAVINGS && fromUser.getUserID() != toUser.getUserID()) {
-//            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "You can't transfer money from a savings account that isn't yours");
-//        }
 
         fromAccount.setBalance(fromAccount.getBalance() - transaction.getAmount());
         toAccount.setBalance(toAccount.getBalance() + transaction.getAmount());
@@ -60,41 +70,90 @@ public class TransactionService {
         return transactionRepository.save(transaction);
     }
 
-    public List<Transaction> getTransactions(Integer offset, Integer limit, String toIBAN, String fromIBAN, Double lower, Double higher, Double equal, UUID accountID, String type) {
+    public List<Transaction> getTransactions(Integer offset, Integer limit, IBANFilter accountFilter, AmountFilter amountFilter, String type) {
         Pageable pageRequest = PageRequest.of(offset, limit);
-//        if (dateRange != null){
-//            return transactionRepository.getTransactionsByTimeStampBetween(dateRange, dateRange.plusDays(1)).subList(offset, limit);
-//        }
 
-        if (toIBAN != null) {
-            return transactionRepository.getTransactionsByToIBAN(toIBAN, pageRequest);
+        if (accountFilter == null && amountFilter == null && type == null) {
+            return transactionRepository.findAll(pageRequest).getContent();
         }
 
-        if (fromIBAN != null) {
-            return transactionRepository.getTransactionsByFromIBAN(fromIBAN, pageRequest);
+        if (accountFilter.getFromIBAN() != null) {
+            if (amountFilter.allNull()){
+                return transactionRepository.getTransactionsByFromIBAN(accountFilter.getFromIBAN(), pageRequest);
+            }
+            String fromIBAN = accountFilter.getFromIBAN();
+            return processAccountFilter(fromIBAN, null, amountFilter, pageRequest);
         }
 
-        if (lower != null) {
-            return transactionRepository.getTransactionsByAmountLessThan(lower, pageRequest);
+        if (accountFilter.getToIBAN() != null) {
+            if (amountFilter.allNull()){
+                return transactionRepository.getTransactionsByToIBAN(accountFilter.getToIBAN(), pageRequest);
+            }
+            String toIBAN = accountFilter.getToIBAN();
+            return processAccountFilter(null, toIBAN, amountFilter, pageRequest);
         }
 
-        if (higher != null) {
-            return transactionRepository.getTransactionsByAmountGreaterThan(higher, pageRequest);
+        if (accountFilter.getAccountID() != null) {
+            Account account = accountsRepository.getAccountByAccountID(accountFilter.getAccountID());
+            if (account == null) {
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "The account ID is not valid");
+            }
+            if (amountFilter.allNull()){
+                return transactionRepository.getTransactionsByToIBANAndFromIBAN(account.getIBAN(), account.getIBAN(), pageRequest);
+            }
+            String accountIBAN = account.getIBAN();
+            return processAccountFilter(accountIBAN, accountIBAN, amountFilter, pageRequest);
         }
 
-        if (equal != null) {
-            return transactionRepository.getTransactionsByAmountEquals(equal, pageRequest);
+        if (amountFilter != null){
+            return processAccountFilter(null, null, amountFilter, pageRequest);
         }
 
-        if (accountID != null) {
-            Account account = accountsRepository.getAccountByAccountID(accountID);
-            return transactionRepository.getTransactionsByToIBANAndFromIBAN(account.getIBAN(), account.getIBAN(), pageRequest);
+        return transactionRepository.findAll(pageRequest).getContent();
+
+    }
+
+    private List<Transaction> processAccountFilter(String fromIBAN, String toIBAN, AmountFilter amountFilter, Pageable pageRequest) {
+        if (amountFilter.getHigher() != null) {
+            Double higherAmount = amountFilter.getHigher();
+            if (fromIBAN != null && toIBAN != null) {
+                return transactionRepository.getTransactionsByToIBANAndFromIBANAndAmountGreaterThan(toIBAN, fromIBAN, higherAmount, pageRequest);
+            } else if (fromIBAN != null) {
+                return transactionRepository.getTransactionsByFromIBANAndAmountGreaterThan(fromIBAN, higherAmount, pageRequest);
+            } else if (toIBAN != null) {
+                return transactionRepository.getTransactionsByToIBANAndAmountGreaterThan(toIBAN, higherAmount, pageRequest);
+            } else {
+                return transactionRepository.getTransactionsByAmountGreaterThan(higherAmount, pageRequest);
+            }
         }
 
-        if (type != null) {
-            return transactionRepository.getTransactionsByTransactionType(Transaction.TransactionTypeEnum.valueOf(type), pageRequest);
+        if (amountFilter.getLower() != null) {
+            Double lowerAmount = amountFilter.getLower();
+            if (fromIBAN != null && toIBAN != null) {
+                return transactionRepository.getTransactionsByToIBANAndFromIBANAndAmountLessThan(toIBAN, fromIBAN, lowerAmount, pageRequest);
+            } else if (fromIBAN != null) {
+                return transactionRepository.getTransactionsByFromIBANAndAmountLessThan(fromIBAN, lowerAmount, pageRequest);
+            } else if (toIBAN != null) {
+                return transactionRepository.getTransactionsByToIBANAndAmountLessThan(toIBAN, lowerAmount, pageRequest);
+            } else {
+                return transactionRepository.getTransactionsByAmountLessThan(lowerAmount, pageRequest);
+            }
+        }
+
+        if (amountFilter.getEqual() != null) {
+            Double equalAmount = amountFilter.getEqual();
+            if (fromIBAN != null && toIBAN != null) {
+                return transactionRepository.getTransactionsByToIBANAndFromIBANAndAmountEquals(toIBAN, fromIBAN, equalAmount, pageRequest);
+            } else if (fromIBAN != null) {
+                return transactionRepository.getTransactionsByFromIBANAndAmountEquals(fromIBAN, equalAmount, pageRequest);
+            } else if (toIBAN != null) {
+                return transactionRepository.getTransactionsByToIBANAndAmountEquals(toIBAN, equalAmount, pageRequest);
+            } else {
+                return transactionRepository.getTransactionsByAmountEquals(equalAmount, pageRequest);
+            }
         }
 
         return transactionRepository.findAll(pageRequest).getContent();
     }
+
 }

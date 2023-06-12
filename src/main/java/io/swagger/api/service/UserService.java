@@ -58,7 +58,9 @@ public class UserService {
         if (existsByEmail(email)) {
             return new ResponseEntity<>(HttpStatus.valueOf(" User with email " + email + " already exists"));
         }
+
         passwordEncoder.encode(createUserDTO.getPassword());
+
         User user = objectMapper.convertValue(createUserDTO, User.class);
         User result = userRepository.save(user);
         return new ResponseEntity<>(result, HttpStatus.OK);
