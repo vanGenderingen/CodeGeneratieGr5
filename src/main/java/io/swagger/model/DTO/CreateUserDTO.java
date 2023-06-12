@@ -1,13 +1,16 @@
 package io.swagger.model.DTO;
 
-import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonValue;
+import io.swagger.model.Role;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.springframework.validation.annotation.Validated;
+
+import javax.persistence.ElementCollection;
+import javax.persistence.FetchType;
+import java.util.List;
 
 /**
  * CreateUserDTO
@@ -32,38 +35,8 @@ public class CreateUserDTO   {
   @JsonProperty("Password")
   private String password = null;
 
-  /**
-   * Role of the user.
-   */
-  public enum RoleEnum {
-    USER("User"),
-    
-    EMPLOYEE("Employee");
-
-    private String value;
-
-    RoleEnum(String value) {
-      this.value = value;
-    }
-
-    @Override
-    @JsonValue
-    public String toString() {
-      return String.valueOf(value);
-    }
-
-    @JsonCreator
-    public static RoleEnum fromValue(String text) {
-      for (RoleEnum b : RoleEnum.values()) {
-        if (String.valueOf(b.value).equals(text)) {
-          return b;
-        }
-      }
-      return null;
-    }
-  }
-  @JsonProperty("Role")
-  private RoleEnum role = null;
+  @ElementCollection(fetch = FetchType.EAGER)
+  private List<Role> roles = null;
 
   @JsonProperty("TransactionLimit")
   private Double transactionLimit = null;
