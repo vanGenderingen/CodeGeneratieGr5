@@ -1,7 +1,28 @@
 package io.swagger.api.security;
 
-public class JwtTokenProviderTest {
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.SignatureAlgorithm;
+import io.swagger.model.Role;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+import java.util.UUID;
+
+import static org.mockito.Mockito.when;
+
 /*
+
+public class JwtTokenProviderTest {
+
     @Mock
     private SecretKeyProvider secretKeyProvider;
 
@@ -72,5 +93,7 @@ public class JwtTokenProviderTest {
         Assertions.assertThrows(IllegalArgumentException.class, () -> {
             jwtTokenProvider.createToken(userId, roles);
         });
-    }*/
+    }
 }
+*/
+
