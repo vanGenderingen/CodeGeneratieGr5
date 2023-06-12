@@ -15,8 +15,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.ui.ModelMap;
-import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
@@ -56,8 +54,7 @@ public class TransactionsApiController {
             @Parameter(in = ParameterIn.QUERY, description = "The maximum number of transactions to retrieve.", schema = @Schema(allowableValues = {"0", "100"}, maximum = "100", defaultValue = "20")) @Valid @RequestParam(value = "limit", required = false, defaultValue = "20") Integer limit,
             @Parameter(in = ParameterIn.QUERY, description = "Retrieve transactions of a transaction type.", schema = @Schema(allowableValues = {"withdraw", "deposit"})) @Valid @RequestParam(value = "transactionType", required = false) String transactionType,
             @Parameter(in = ParameterIn.QUERY, description = "Filter on account on or toIBAN, fromIBAN, or accountID", schema = @Schema()) @Valid @ModelAttribute(value = "accountFilter") IBANFilter accountFilter,
-            @Parameter(in = ParameterIn.QUERY, description = "Retrieve transactions that are filtered on the amount.", schema = @Schema()) @Valid @ModelAttribute(value = "amountFilter") AmountFilter amountFilter,
-            BindingResult result, ModelMap model){
+            @Parameter(in = ParameterIn.QUERY, description = "Retrieve transactions that are filtered on the amount.", schema = @Schema()) @Valid @ModelAttribute(value = "amountFilter") AmountFilter amountFilter){
         try {
             List<Transaction> transactions = new ArrayList<>();
             transactions = transactionService.getTransactions(offset,limit, accountFilter, amountFilter, transactionType);
