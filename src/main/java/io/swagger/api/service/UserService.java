@@ -120,7 +120,23 @@ public class UserService {
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
+    public String login(String userEmail, String password) {
+        try {
+            User user = userRepository.getUserByEmail(userEmail);
+            //TODO IMPLEMENT LOGIC TO HASH PASSWORD AND CHECK IF IT MATCHES THE HASHED PASSWORD IN THE DATABASE
 
+            passwordEncoder.encode(password);
+
+            if (Objects.equals(password, user.getPassword())) {
+                return jwtTokenProvider.createToken(user.getUserID(), user.getRoles());
+            } else {
+                throw new AuthenticationException("Invalid username/password");
+            }
+
+        } catch (Exception e) {
+            throw new ResponseStatusException(HttpStatus.UNPROCESSABLE_ENTITY, "Username/password invalid");
+        }
+    }
 
     public User getUserByEmail(String email) {
         return userRepository.getUserByEmail(email);
