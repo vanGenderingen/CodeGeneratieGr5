@@ -10,16 +10,12 @@ import io.swagger.model.User;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.AdditionalAnswers;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.*;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -33,6 +29,8 @@ import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 public class UserServiceTest {
+    @Mock
+    private PasswordEncoder passwordEncoder;
 
     @Mock
     private UserRepository userRepository;
@@ -50,6 +48,10 @@ public class UserServiceTest {
 
     @Test
     void testUserAdd() {
+        String userPassword = "password";
+
+        when(passwordEncoder.encode(anyString())).thenReturn(userPassword);
+
         User user = new User(UUID.fromString("bb0cc36d-69a7-471e-a665-3609bc14c27a"), "Test", "Tester", "mail@example.com", "password", Arrays.asList(Role.ROLE_USER), true, new ArrayList<>(), 1000.00, 10000.00);
 
         CreateUserDTO createUserDTO = new CreateUserDTO("Test", "Tester", "mail@example.com", "password", Arrays.asList(Role.ROLE_USER), 1000.00, 10000.00);
@@ -67,31 +69,42 @@ public class UserServiceTest {
 
     @Test
     void testUsersGet() {
-        int limit = 10;
-        int offset = 0;
+        Integer limit = 10;
+        Integer offset = 0;
         String searchStrings = null;
-        String email = null;
+        String Email = null;
 
-        UUID userID = UUID.randomUUID();
-        User user = new User();
-        user.setUserID(userID);
+        UUID userId = UUID.randomUUID();
+        GetUserDTO userDTO = new GetUserDTO();
+        userDTO.setUserID(userId);
 
         List<User> users = new ArrayList<>();
+        User user = new User();
+        user.setUserID(userId);
         users.add(user);
 
-        Page<User> userPage = new PageImpl<>(users);
+        when(userRepository.getAll(
+                ArgumentMatchers.<String>any(),
+                ArgumentMatchers.<String>any(),
+                ArgumentMatchers.<Pageable>any()
+        )).thenReturn(users);
 
-        UserRepository userRepository = mock(UserRepository.class); // Create a mock of the UserRepository
-        when(userRepository.getAll(anyString(), anyString(), any(Pageable.class))).thenAnswer(AdditionalAnswers.returnsFirstArg());
+        when(objectMapper.convertValue(
+                Mockito.any(User.class),
+                Mockito.eq(GetUserDTO.class)
+        )).thenReturn(userDTO);
 
-       ResponseEntity<List<GetUserDTO>> responseEntity = userService.getAllUsers(limit, offset,
-                searchStrings, email);
+        ResponseEntity<List<GetUserDTO>> responseEntity = userService.getAllUsers(limit, offset, searchStrings, Email);
 
         assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.OK);
         assertThat(responseEntity.getBody()).hasSize(1);
-        assertThat(responseEntity.getBody().get(0).getUserID()).isEqualTo(user.getUserID());
+        assertThat(responseEntity.getBody().get(0).getUserID()).isEqualTo(userId);
 
-        verify(userRepository, times(1)).getAll(anyString(), anyString(), any(Pageable.class));
+        verify(userRepository, times(1)).getAll(
+                ArgumentMatchers.<String>any(),
+                ArgumentMatchers.<String>any(),
+                ArgumentMatchers.<Pageable>any()
+        );
     }
 
     @Test
