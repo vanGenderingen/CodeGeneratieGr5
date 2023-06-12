@@ -65,3 +65,4 @@ class LoginApiControllerTest {
 
     private void assertEquals(HttpStatus httpStatus, HttpStatus statusCode) {
     }
+}

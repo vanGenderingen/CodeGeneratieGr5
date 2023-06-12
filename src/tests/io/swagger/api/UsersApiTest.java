@@ -23,7 +23,7 @@ import java.util.List;
 import java.util.UUID;
 
 @ExtendWith(MockitoExtension.class)
-public class UsersApiControllerTest {
+public class UsersApiTest {
 
     @Mock
     private UserService userService;
