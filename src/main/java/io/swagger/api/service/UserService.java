@@ -58,7 +58,7 @@ public class UserService {
         if (existsByEmail(email)) {
             return new ResponseEntity<>(HttpStatus.valueOf(" User with email " + email + " already exists"));
         }
-
+        passwordEncoder.encode(createUserDTO.getPassword());
         User user = objectMapper.convertValue(createUserDTO, User.class);
         User result = userRepository.save(user);
         return new ResponseEntity<>(result, HttpStatus.OK);
@@ -125,6 +125,7 @@ public class UserService {
         try {
             User user = userRepository.getUserByEmail(userEmail);
             //TODO IMPLEMENT LOGIC TO HASH PASSWORD AND CHECK IF IT MATCHES THE HASHED PASSWORD IN THE DATABASE
+            passwordEncoder.encode(password);
             if (Objects.equals(password, user.getPassword())) {
                 return jwtTokenProvider.createToken(user.getUserID(), user.getRoles());
             } else {
