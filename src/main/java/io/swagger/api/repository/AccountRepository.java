@@ -12,7 +12,7 @@ import java.util.List;
 import java.util.UUID;
 
 @Repository
-public interface    AccountRepository extends JpaRepository<Account, Long> {
+public interface AccountRepository extends JpaRepository<Account, Long> {
     @Query("SELECT a FROM Account a WHERE (:IBAN IS NULL OR LOWER(a.IBAN) LIKE CONCAT('%', LOWER(:IBAN), '%')) AND (:searchStrings IS NULL OR LOWER(a.name) LIKE CONCAT('%', LOWER(:searchStrings), '%'))")
     List<Account> getAll(String IBAN, String searchStrings, Pageable pageable);
 
