@@ -25,6 +25,7 @@ public class TransactionService {
     @Autowired
     private UserRepository userRepository;
 
+
     public Transaction add(Transaction transaction) {
         Account fromAccount = accountsRepository.getAccountByIBAN(transaction.getFromIBAN());
         Account toAccount = accountsRepository.getAccountByIBAN(transaction.getToIBAN());
@@ -136,8 +137,5 @@ public class TransactionService {
 
         return transactionRepository.findAll(pageRequest).getContent();
     }
-
-
-
 
 }
