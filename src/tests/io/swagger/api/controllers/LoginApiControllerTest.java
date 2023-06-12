@@ -47,6 +47,7 @@ class LoginApiControllerTest {
 
         assertEquals(HttpStatus.OK, response.getStatusCode());
 
+
     }
 
     @Test
@@ -68,4 +69,6 @@ class LoginApiControllerTest {
     private void assertEquals(HttpStatus httpStatus, HttpStatus statusCode) {
     }
 
+
 }
+
