@@ -3,10 +3,7 @@ package io.swagger.api.service;
 import io.swagger.api.repository.AccountRepository;
 import io.swagger.api.repository.TransactionRepository;
 import io.swagger.api.repository.UserRepository;
-import io.swagger.model.Account;
-import io.swagger.model.Role;
-import io.swagger.model.Transaction;
-import io.swagger.model.User;
+import io.swagger.model.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -15,7 +12,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
-import java.util.UUID;
 
 @Service
 public class TransactionService {
@@ -73,41 +69,75 @@ public class TransactionService {
         return transactionRepository.save(transaction);
     }
 
-    public List<Transaction> getTransactions(Integer offset, Integer limit, String toIBAN, String fromIBAN, Double lower, Double higher, Double equal, UUID accountID, String type) {
+    public List<Transaction> getTransactions(Integer offset, Integer limit, IBANFilter accountFilter, AmountFilter amountFilter, String type) {
         Pageable pageRequest = PageRequest.of(offset, limit);
 
-        if (toIBAN != null) {
-            return transactionRepository.getTransactionsByToIBAN(toIBAN, pageRequest);
+        if (accountFilter.getFromIBAN() != null) {
+            String fromIBAN = accountFilter.getFromIBAN();
+            return processAccountFilter(fromIBAN, null, amountFilter, pageRequest);
         }
 
-        if (fromIBAN != null) {
-            return transactionRepository.getTransactionsByFromIBAN(fromIBAN, pageRequest);
+        if (accountFilter.getToIBAN() != null) {
+            String toIBAN = accountFilter.getToIBAN();
+            return processAccountFilter(null, toIBAN, amountFilter, pageRequest);
         }
 
-        if (lower != null) {
-            return transactionRepository.getTransactionsByAmountLessThan(lower, pageRequest);
-        }
-
-        if (higher != null) {
-            return transactionRepository.getTransactionsByAmountGreaterThan(higher, pageRequest);
-        }
-
-        if (equal != null) {
-            return transactionRepository.getTransactionsByAmountEquals(equal, pageRequest);
-        }
-
-        if (accountID != null) {
-            Account account = accountsRepository.getAccountByAccountID(accountID);
+        if (accountFilter.getAccountID() != null) {
+            Account account = accountsRepository.getAccountByAccountID(accountFilter.getAccountID());
             if (account == null) {
                 throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "The account ID is not valid");
             }
-            return transactionRepository.getTransactionsByToIBANAndFromIBAN(account.getIBAN(), account.getIBAN(), pageRequest);
+            String accountIBAN = account.getIBAN();
+            return processAccountFilter(accountIBAN, accountIBAN, amountFilter, pageRequest);
         }
 
-        if (type != null) {
-            return transactionRepository.getTransactionsByTransactionType(Transaction.TransactionTypeEnum.valueOf(type), pageRequest);
+        return processAccountFilter(null, null, amountFilter, pageRequest);
+    }
+
+    private List<Transaction> processAccountFilter(String fromIBAN, String toIBAN, AmountFilter amountFilter, Pageable pageRequest) {
+        if (amountFilter.getHigher() != null) {
+            Double higherAmount = amountFilter.getHigher();
+            if (fromIBAN != null && toIBAN != null) {
+                return transactionRepository.getTransactionsByToIBANAndFromIBANAndAmountGreaterThan(toIBAN, fromIBAN, higherAmount, pageRequest);
+            } else if (fromIBAN != null) {
+                return transactionRepository.getTransactionsByFromIBANAndAmountGreaterThan(fromIBAN, higherAmount, pageRequest);
+            } else if (toIBAN != null) {
+                return transactionRepository.getTransactionsByToIBANAndAmountGreaterThan(toIBAN, higherAmount, pageRequest);
+            } else {
+                return transactionRepository.getTransactionsByAmountGreaterThan(higherAmount, pageRequest);
+            }
+        }
+
+        if (amountFilter.getLower() != null) {
+            Double lowerAmount = amountFilter.getLower();
+            if (fromIBAN != null && toIBAN != null) {
+                return transactionRepository.getTransactionsByToIBANAndFromIBANAndAmountLessThan(toIBAN, fromIBAN, lowerAmount, pageRequest);
+            } else if (fromIBAN != null) {
+                return transactionRepository.getTransactionsByFromIBANAndAmountLessThan(fromIBAN, lowerAmount, pageRequest);
+            } else if (toIBAN != null) {
+                return transactionRepository.getTransactionsByToIBANAndAmountLessThan(toIBAN, lowerAmount, pageRequest);
+            } else {
+                return transactionRepository.getTransactionsByAmountLessThan(lowerAmount, pageRequest);
+            }
+        }
+
+        if (amountFilter.getEqual() != null) {
+            Double equalAmount = amountFilter.getEqual();
+            if (fromIBAN != null && toIBAN != null) {
+                return transactionRepository.getTransactionsByToIBANAndFromIBANAndAmountEquals(toIBAN, fromIBAN, equalAmount, pageRequest);
+            } else if (fromIBAN != null) {
+                return transactionRepository.getTransactionsByFromIBANAndAmountEquals(fromIBAN, equalAmount, pageRequest);
+            } else if (toIBAN != null) {
+                return transactionRepository.getTransactionsByToIBANAndAmountEquals(toIBAN, equalAmount, pageRequest);
+            } else {
+                return transactionRepository.getTransactionsByAmountEquals(equalAmount, pageRequest);
+            }
         }
 
         return transactionRepository.findAll(pageRequest).getContent();
     }
+
+
+
+
 }

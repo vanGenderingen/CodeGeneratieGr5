@@ -10,12 +10,23 @@ import java.util.List;
 
 @Repository
 public interface TransactionRepository extends JpaRepository<Transaction, Long>, PagingAndSortingRepository<Transaction, Long> {
-    List<Transaction> getTransactionsByToIBAN(String iban, Pageable pageable);
-    List<Transaction> getTransactionsByFromIBAN(String iban, Pageable pageable);
-    List<Transaction> getTransactionsByToIBANAndFromIBAN(String toIBAN, String fromIBAN, Pageable pageable);
     List<Transaction> getTransactionsByAmountLessThan(Double amount, Pageable pageable);
     List<Transaction> getTransactionsByAmountGreaterThan(Double amount, Pageable pageable);
     List<Transaction> getTransactionsByAmountEquals(Double amount, Pageable pageable);
-    List<Transaction> getTransactionsByTransactionType(Transaction.TransactionTypeEnum transactionType, Pageable pageable);
+
+    // Additional methods for combined filters
+    List<Transaction> getTransactionsByFromIBANAndAmountGreaterThan(String fromIBAN, Double amount, Pageable pageable);
+    List<Transaction> getTransactionsByFromIBANAndAmountLessThan(String fromIBAN, Double amount, Pageable pageable);
+    List<Transaction> getTransactionsByFromIBANAndAmountEquals(String fromIBAN, Double amount, Pageable pageable);
+    List<Transaction> getTransactionsByFromIBAN(String fromIBAN, Pageable pageable);
+    List<Transaction> getTransactionsByToIBANAndAmountLessThan(String toIBAN, Double amount, Pageable pageable);
+    List<Transaction> getTransactionsByToIBANAndAmountEquals(String toIBAN, Double amount, Pageable pageable);
+    List<Transaction> getTransactionsByToIBAN(String toIBAN, Pageable pageable);
+    List<Transaction> getTransactionsByToIBANAndFromIBAN(String toIBAN, String fromIBAN, Pageable pageable);
+    List<Transaction> getTransactionsByToIBANAndAmountGreaterThan(String toIBAN, Double amount, Pageable pageable);
+    List<Transaction> getTransactionsByToIBANAndFromIBANAndAmountGreaterThan(String toIBAN, String fromIBAN, Double amount, Pageable pageable);
+    List<Transaction> getTransactionsByToIBANAndFromIBANAndAmountLessThan(String toIBAN, String fromIBAN, Double amount, Pageable pageable);
+    List<Transaction> getTransactionsByToIBANAndFromIBANAndAmountEquals(String toIBAN, String fromIBAN, Double amount, Pageable pageable);
 
 }
+
