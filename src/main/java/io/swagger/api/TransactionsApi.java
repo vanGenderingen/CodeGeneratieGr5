@@ -26,7 +26,6 @@ import javax.validation.Valid;
 import javax.validation.constraints.DecimalMin;
 import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
-import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 
@@ -50,7 +49,6 @@ public interface TransactionsApi {
             @Parameter(in = ParameterIn.QUERY, description = "The offset for paginated results.", schema=@Schema(type = "integer", defaultValue = "0", minimum = "0")) @Valid @RequestParam(value = "offset", required = false, defaultValue = "0") Integer offset,
             @Parameter(in = ParameterIn.QUERY, description = "The maximum number of transactions to retrieve.", schema = @Schema(allowableValues = {"0", "100"}, maximum = "100", defaultValue = "20")) @Valid @RequestParam(value = "limit", required = false, defaultValue = "20") Integer limit,
             @Parameter(in = ParameterIn.QUERY, description = "ID of the user", schema = @Schema()) @Valid @RequestParam(value = "userID", required = false) UUID userID, @Min(0) @Max(100)
-            @Parameter(in = ParameterIn.QUERY, description = "The date range of the transactions to retrieve.", schema = @Schema()) @Valid @RequestParam(value = "dateRange", required = false) Date dateRange,
             @Parameter(in = ParameterIn.QUERY, description = "The the IBAN from who the transaction is done.", schema = @Schema()) @Valid @RequestParam(value = "from", required = false) String from,
             @Parameter(in = ParameterIn.QUERY, description = "The the IBAN to who the transaction is done.", schema = @Schema()) @Valid @RequestParam(value = "to", required = false) String to, @DecimalMin("0")
             @Parameter(in = ParameterIn.QUERY, description = "Retrieve transactions that are lower than number.", schema = @Schema()) @Valid @RequestParam(value = "lower", required = false) Double lower, @DecimalMin("0")
@@ -58,7 +56,6 @@ public interface TransactionsApi {
             @Parameter(in = ParameterIn.QUERY, description = "Retrieve transactions that are equal than number.", schema = @Schema()) @Valid @RequestParam(value = "equal", required = false) Double equal,
             @Parameter(in = ParameterIn.QUERY, description = "Retrieve transactions of a specific account.", schema = @Schema()) @Valid @RequestParam(value = "account", required = false) UUID account,
             @Parameter(in = ParameterIn.QUERY, description = "Retrieve transactions of a transaction type.", schema = @Schema(allowableValues = {"withdraw", "deposit"})) @Valid @RequestParam(value = "transactionType", required = false) String transactionType);
-
 
     @Operation(summary = "Create a transaction", description = "", security = {
             @SecurityRequirement(name = "JWTAuth")}, tags = {"Transactions", "Customers", "Employees"})

@@ -13,18 +13,9 @@ public interface TransactionRepository extends JpaRepository<Transaction, Long>,
     List<Transaction> getTransactionsByToIBAN(String iban, Pageable pageable);
     List<Transaction> getTransactionsByFromIBAN(String iban, Pageable pageable);
     List<Transaction> getTransactionsByToIBANAndFromIBAN(String toIBAN, String fromIBAN, Pageable pageable);
-
-//    List<Transaction> getTransactionsByTimeStampBetween(OffsetDateTime from, OffsetDateTime to);
-
     List<Transaction> getTransactionsByAmountLessThan(Double amount, Pageable pageable);
-
     List<Transaction> getTransactionsByAmountGreaterThan(Double amount, Pageable pageable);
-
     List<Transaction> getTransactionsByAmountEquals(Double amount, Pageable pageable);
-
     List<Transaction> getTransactionsByTransactionType(Transaction.TransactionTypeEnum transactionType, Pageable pageable);
 
-//    List<Transaction> getTransactionsByOwner(User user);
-//
-//    boolean existsByOwnerAndId(User owner, Long id);
 }
