@@ -19,6 +19,7 @@ import java.util.UUID;
 
 import static org.mockito.Mockito.when;
 
+
 public class JwtTokenProviderTest {
 
     @Mock
@@ -92,4 +93,3 @@ public class JwtTokenProviderTest {
             jwtTokenProvider.createToken(userId, roles);
         });
     }
-}

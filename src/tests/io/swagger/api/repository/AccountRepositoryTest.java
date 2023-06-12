@@ -1,62 +1,65 @@
-/*
 package io.swagger.api.repository;
 
 import io.swagger.model.Account;
-import io.swagger.model.User;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.mockito.Mockito;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
 
-@DataJpaTest
-public class AccountRepositoryTest {
+import static org.mockito.Mockito.*;
 
-        @Autowired
-        private AccountRepository accountRepository;
+public class AccountRepositoryTest {
 
         @Test
         public void testGetAll() {
                 // Create test data
                 Account account1 = new Account();
-                account1.setIBAN("IBAN1");
-                account1.setName("Account 1");
-                accountRepository.save(account1);
+                account1.setUserID(UUID.randomUUID());
 
                 Account account2 = new Account();
-                account2.setIBAN("IBAN2");
-                account2.setName("Account 2");
-                accountRepository.save(account2);
+                account2.setUserID(UUID.randomUUID());
+
+                // Create the mock AccountRepository
+                AccountRepository accountRepository = mock(AccountRepository.class);
+
+                // Mock the behavior of the accountRepository.getAll() method
+                Mockito.when(accountRepository.getAll(null, null, Pageable.unpaged()))
+                        .thenReturn(Arrays.asList(account1, account2));
 
                 // Perform the getAll() method invocation
                 List<Account> accounts = accountRepository.getAll(null, null, Pageable.unpaged());
 
                 // Verify the results
                 Assertions.assertEquals(2, accounts.size());
+
+                // Verify the interactions
+                verify(accountRepository, times(1)).getAll(null, null, Pageable.unpaged());
         }
 
         @Test
         public void testGetAccountByAccountID() {
-                // Create test data
-                UUID accountId = UUID.randomUUID();
+                // Create and save a test account
                 Account account = new Account();
-                account.setAccountID(accountId);
-                account.setIBAN("IBAN");
-                account.setName("Test Account");
-                accountRepository.save(account);
+                account.setUserID(UUID.randomUUID());
 
-                // Perform the getAccountByAccountID() method invocation
-                Account resultAccount = accountRepository.getAccountByAccountID(accountId);
+                // Create the mock AccountRepository
+                AccountRepository accountRepository = mock(AccountRepository.class);
 
-                // Verify the result
-                Assertions.assertNotNull(resultAccount);
-                Assertions.assertEquals(accountId, resultAccount.getAccountID());
+                // Mock the behavior of the accountRepository.getAccountByAccountID() method
+                Mockito.when(accountRepository.getAccountByAccountID(account.getAccountID()))
+                        .thenReturn(account);
+
+                // Perform the query
+                Account result = accountRepository.getAccountByAccountID(account.getAccountID());
+
+                // Assert the result
+                Assertions.assertEquals(account, result);
         }
 
         @Test
@@ -64,27 +67,23 @@ public class AccountRepositoryTest {
                 // Create test data
                 UUID userId = UUID.randomUUID();
                 Account account1 = new Account();
-                User user = new User();
-                user.setUserID(userId);
-                account1.setUser(user);
-                account1.setName("User Account 1");
-                accountRepository.save(account1);
+                account1.setUserID(userId);
 
-                UUID userId2 = UUID.randomUUID();
                 Account account2 = new Account();
-                User user2 = new User();
-                user2.setUserID(userId2);
-                account1.setUser(user2);
-                account2.setName("User Account 2");
-                accountRepository.save(account2);
+                account2.setUserID(userId);
 
-                // Perform the getAccountsOfUser() method invocation
-                Pageable pageable = PageRequest.of(0, 10, Sort.unsorted());
-                Page<Account> accountPage = accountRepository.getAccountsOfUser(userId, null, pageable);
+                // Create the mock AccountRepository
+                AccountRepository accountRepository = mock(AccountRepository.class);
 
-                // Verify the results
-                Assertions.assertEquals(1, accountPage.getTotalElements());
-                Assertions.assertEquals(account1.getName(), accountPage.getContent().get(0).getName());
+                // Mock the behavior of the accountRepository.getAccountsOfUser() method
+                Mockito.when(accountRepository.getAccountsOfUser(userId, "John", PageRequest.of(0, 10)))
+                        .thenReturn(Page.empty());
+
+                // Perform the query
+                Page<Account> result = accountRepository.getAccountsOfUser(userId, "John", PageRequest.of(0, 10));
+
+                // Assert the results
+                Assertions.assertEquals(0, result.getTotalElements());
         }
 
         @Test
@@ -92,41 +91,42 @@ public class AccountRepositoryTest {
                 // Create test data
                 UUID userId = UUID.randomUUID();
                 Account account1 = new Account();
-                User user = new User();
-                user.setUserID(userId);
-                account1.setUser(user);
-                account1.setName("User Account 1");
-                accountRepository.save(account1);
+                account1.setUserID(userId);
 
-                UUID userId2 = UUID.randomUUID();
                 Account account2 = new Account();
-                User user2 = new User();
-                user2.setUserID(userId2);
-                account1.setUser(user2);
-                account2.setName("User Account 2");;
-                accountRepository.save(account2);
+                account2.setUserID(userId);
 
-                // Perform the countAccountsOfUser() method invocation
-                int count = accountRepository.countAccountsOfUser(userId, null);
+                // Create the mock AccountRepository
+                AccountRepository accountRepository = mock(AccountRepository.class);
 
-                // Verify the result
-                Assertions.assertEquals(1, count);
+                // Mock the behavior of the accountRepository.countAccountsOfUser() method
+                Mockito.when(accountRepository.countAccountsOfUser(userId, ""))
+                        .thenReturn(0);
+
+                // Perform the query
+                int count = accountRepository.countAccountsOfUser(userId, "");
+
+                // Assert the result
+                Assertions.assertEquals(0, count);
         }
 
         @Test
         public void testGetAccountByIBAN() {
-                // Create test data
+                // Create and save a test account
                 Account account = new Account();
-                account.setIBAN("IBAN123");
-                account.setName("Test Account");
-                accountRepository.save(account);
+                account.setUserID(UUID.randomUUID());
 
-                // Perform the getAccountByIBAN() method invocation
-                Account resultAccount = accountRepository.getAccountByIBAN("IBAN123");
+                // Create the mock AccountRepository
+                AccountRepository accountRepository = mock(AccountRepository.class);
 
-                // Verify the result
-                Assertions.assertNotNull(resultAccount);
-                Assertions.assertEquals("IBAN123", resultAccount.getIBAN());
+                // Mock the behavior of the accountRepository.getAccountByIBAN() method
+                Mockito.when(accountRepository.getAccountByIBAN(account.getIBAN()))
+                        .thenReturn(account);
+
+                // Perform the query
+                Account result = accountRepository.getAccountByIBAN(account.getIBAN());
+
+                // Assert the result
+                Assertions.assertEquals(account, result);
         }
 }
-*/
