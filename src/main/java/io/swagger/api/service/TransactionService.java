@@ -73,12 +73,22 @@ public class TransactionService {
     public List<Transaction> getTransactions(Integer offset, Integer limit, IBANFilter accountFilter, AmountFilter amountFilter, String type) {
         Pageable pageRequest = PageRequest.of(offset, limit);
 
+        if (accountFilter == null && amountFilter == null && type == null) {
+            return transactionRepository.findAll(pageRequest).getContent();
+        }
+
         if (accountFilter.getFromIBAN() != null) {
+            if (amountFilter.allNull()){
+                return transactionRepository.getTransactionsByFromIBAN(accountFilter.getFromIBAN(), pageRequest);
+            }
             String fromIBAN = accountFilter.getFromIBAN();
             return processAccountFilter(fromIBAN, null, amountFilter, pageRequest);
         }
 
         if (accountFilter.getToIBAN() != null) {
+            if (amountFilter.allNull()){
+                return transactionRepository.getTransactionsByToIBAN(accountFilter.getToIBAN(), pageRequest);
+            }
             String toIBAN = accountFilter.getToIBAN();
             return processAccountFilter(null, toIBAN, amountFilter, pageRequest);
         }
@@ -88,11 +98,19 @@ public class TransactionService {
             if (account == null) {
                 throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "The account ID is not valid");
             }
+            if (amountFilter.allNull()){
+                return transactionRepository.getTransactionsByToIBANAndFromIBAN(account.getIBAN(), account.getIBAN(), pageRequest);
+            }
             String accountIBAN = account.getIBAN();
             return processAccountFilter(accountIBAN, accountIBAN, amountFilter, pageRequest);
         }
 
-        return processAccountFilter(null, null, amountFilter, pageRequest);
+        if (amountFilter != null){
+            return processAccountFilter(null, null, amountFilter, pageRequest);
+        }
+
+        return transactionRepository.findAll(pageRequest).getContent();
+
     }
 
     private List<Transaction> processAccountFilter(String fromIBAN, String toIBAN, AmountFilter amountFilter, Pageable pageRequest) {

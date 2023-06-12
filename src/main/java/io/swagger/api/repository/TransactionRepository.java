@@ -13,8 +13,6 @@ public interface TransactionRepository extends JpaRepository<Transaction, Long>,
     List<Transaction> getTransactionsByAmountLessThan(Double amount, Pageable pageable);
     List<Transaction> getTransactionsByAmountGreaterThan(Double amount, Pageable pageable);
     List<Transaction> getTransactionsByAmountEquals(Double amount, Pageable pageable);
-
-    // Additional methods for combined filters
     List<Transaction> getTransactionsByFromIBANAndAmountGreaterThan(String fromIBAN, Double amount, Pageable pageable);
     List<Transaction> getTransactionsByFromIBANAndAmountLessThan(String fromIBAN, Double amount, Pageable pageable);
     List<Transaction> getTransactionsByFromIBANAndAmountEquals(String fromIBAN, Double amount, Pageable pageable);

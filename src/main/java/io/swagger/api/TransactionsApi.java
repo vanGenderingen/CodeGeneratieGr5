@@ -19,16 +19,10 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
-import javax.validation.constraints.Max;
-import javax.validation.constraints.Min;
 import java.util.List;
-import java.util.UUID;
 
 @javax.annotation.Generated(value = "io.swagger.codegen.v3.generators.java.SpringCodegen", date = "2023-05-16T13:11:00.686570329Z[GMT]")
 @Validated
@@ -49,10 +43,9 @@ public interface TransactionsApi {
     ResponseEntity<List<Transaction>> getTransactions(
             @Parameter(in = ParameterIn.QUERY, description = "The offset for paginated results.", schema=@Schema(type = "integer", defaultValue = "0", minimum = "0")) @Valid @RequestParam(value = "offset", required = false, defaultValue = "0") Integer offset,
             @Parameter(in = ParameterIn.QUERY, description = "The maximum number of transactions to retrieve.", schema = @Schema(allowableValues = {"0", "100"}, maximum = "100", defaultValue = "20")) @Valid @RequestParam(value = "limit", required = false, defaultValue = "20") Integer limit,
-            @Parameter(in = ParameterIn.QUERY, description = "ID of the user", schema = @Schema()) @Valid @RequestParam(value = "userID", required = false) UUID userID, @Min(0) @Max(100)
-            @Parameter(in = ParameterIn.QUERY, description = "Filter on account on or toIBAN, fromIBAN, or accountID", schema = @Schema()) @Valid @RequestParam(value = "accountID", required = false) IBANFilter accountFilter,
-            @Parameter(in = ParameterIn.QUERY, description = "Retrieve transactions that are filterd on the amount.", schema = @Schema()) @Valid @RequestParam(value = "amountFilter", required = false) AmountFilter amountFilter,
-            @Parameter(in = ParameterIn.QUERY, description = "Retrieve transactions of a transaction type.", schema = @Schema(allowableValues = {"withdraw", "deposit"})) @Valid @RequestParam(value = "transactionType", required = false) String transactionType);
+            @Parameter(in = ParameterIn.QUERY, description = "Retrieve transactions of a transaction type.", schema = @Schema(allowableValues = {"withdraw", "deposit"})) @Valid @RequestParam(value = "transactionType", required = false) String transactionType,
+            @Parameter(in = ParameterIn.QUERY, description = "Filter on account on or toIBAN, fromIBAN, or accountID", schema = @Schema()) @Valid @ModelAttribute(value = "accountFilter") IBANFilter accountFilter,
+            @Parameter(in = ParameterIn.QUERY, description = "Retrieve transactions that are filtered on the amount.", schema = @Schema()) @Valid @ModelAttribute(value = "amountFilter") AmountFilter amountFilter);
 
     @Operation(summary = "Create a transaction", description = "", security = {
             @SecurityRequirement(name = "JWTAuth")}, tags = {"Transactions", "Customers", "Employees"})
