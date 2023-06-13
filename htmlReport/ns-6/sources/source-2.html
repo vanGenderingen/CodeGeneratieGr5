@@ -1,0 +1,98 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <title>Coverage Report > AccountRepository</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">io.swagger.api.repository</a>
+</div>
+
+<h1>Coverage Summary for Class: AccountRepository (io.swagger.api.repository)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+</tr>
+<tr>
+  <td class="name">AccountRepository</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package io.swagger.api.repository;
+&nbsp;
+&nbsp;import io.swagger.model.Account;
+&nbsp;import org.springframework.data.domain.Page;
+&nbsp;import org.springframework.data.domain.Pageable;
+&nbsp;import org.springframework.data.jpa.repository.JpaRepository;
+&nbsp;import org.springframework.data.jpa.repository.Query;
+&nbsp;import org.springframework.data.repository.query.Param;
+&nbsp;import org.springframework.stereotype.Repository;
+&nbsp;
+&nbsp;import java.util.List;
+&nbsp;import java.util.UUID;
+&nbsp;
+&nbsp;@Repository
+&nbsp;public interface AccountRepository extends JpaRepository&lt;Account, Long&gt; {
+&nbsp;    @Query(&quot;SELECT a FROM Account a WHERE (:IBAN IS NULL OR LOWER(a.IBAN) LIKE CONCAT(&#39;%&#39;, LOWER(:IBAN), &#39;%&#39;)) AND (:searchStrings IS NULL OR LOWER(a.name) LIKE CONCAT(&#39;%&#39;, LOWER(:searchStrings), &#39;%&#39;))&quot;)
+&nbsp;    List&lt;Account&gt; getAll(String IBAN, String searchStrings, Pageable pageable);
+&nbsp;
+&nbsp;    @Query(&quot;SELECT a FROM Account a WHERE a.accountID = :accountID&quot;)
+&nbsp;    Account getAccountByAccountID(UUID accountID);
+&nbsp;    @Query(&quot;SELECT a FROM Account a WHERE a.user.userID = :userId AND (:searchStrings IS NULL OR LOWER(a.name) LIKE CONCAT(&#39;%&#39;, LOWER(:searchStrings), &#39;%&#39;))&quot;)
+&nbsp;    Page&lt;Account&gt; getAccountsOfUser(
+&nbsp;            @Param(&quot;userId&quot;) UUID userId,
+&nbsp;            @Param(&quot;searchStrings&quot;) String searchStrings,
+&nbsp;            Pageable pageable
+&nbsp;    );
+&nbsp;    @Query(&quot;SELECT COUNT(a) FROM Account a WHERE a.userID = :userId AND (:searchStrings IS NULL OR a.name LIKE %:searchStrings%)&quot;)
+&nbsp;    int countAccountsOfUser(@Param(&quot;userId&quot;) UUID userId, @Param(&quot;searchStrings&quot;) String searchStrings);
+&nbsp;
+&nbsp;    Account getAccountByIBAN(String IBAN);
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2023-06-13 11:03</div>
+</div>
+</body>
+</html>
