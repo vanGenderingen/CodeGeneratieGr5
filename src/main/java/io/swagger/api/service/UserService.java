@@ -16,15 +16,11 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import org.springframework.web.server.ResponseStatusException;
 
-import javax.naming.AuthenticationException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 import java.util.UUID;
 
 
@@ -48,20 +44,14 @@ public class UserService {
     @Autowired
     private JwtTokenProvider jwtTokenProvider;
 
-    @Autowired
-    private BCryptPasswordEncoder bCryptPasswordEncoder;
-
     public ResponseEntity<User> add(CreateUserDTO createUserDTO) {
         String email = createUserDTO.getEmail();
-
         // Check if user with the given email already exists
         if (existsByEmail(email)) {
             return new ResponseEntity<>(HttpStatus.valueOf(" User with email " + email + " already exists"));
         }
-
-        passwordEncoder.encode(createUserDTO.getPassword());
-
         User user = objectMapper.convertValue(createUserDTO, User.class);
+        user.setPassword(passwordEncoder.encode(user.getPassword()));
         User result = userRepository.save(user);
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
@@ -123,23 +113,6 @@ public class UserService {
         }
     }
 
-    public String login(String userEmail, String password) {
-        try {
-            User user = userRepository.getUserByEmail(userEmail);
-            //TODO IMPLEMENT LOGIC TO HASH PASSWORD AND CHECK IF IT MATCHES THE HASHED PASSWORD IN THE DATABASE
-
-            passwordEncoder.encode(password);
-
-            if (Objects.equals(password, user.getPassword())) {
-                return jwtTokenProvider.createToken(user.getUserID(), user.getRoles());
-            } else {
-                throw new AuthenticationException("Invalid username/password");
-            }
-
-        } catch (Exception e) {
-            throw new ResponseStatusException(HttpStatus.UNPROCESSABLE_ENTITY, "Username/password invalid");
-        }
-    }
 
     public User getUserByEmail(String email) {
         return userRepository.getUserByEmail(email);

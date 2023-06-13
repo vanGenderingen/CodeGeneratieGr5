@@ -56,16 +56,12 @@ public class TransactionsApiController {
             @Parameter(in = ParameterIn.QUERY, description = "The maximum number of transactions to retrieve.", schema = @Schema(allowableValues = {"0", "100"}, maximum = "100", defaultValue = "20")) @Valid @RequestParam(value = "limit", required = false, defaultValue = "20") Integer limit,
             @Parameter(in = ParameterIn.QUERY, description = "Retrieve transactions of a transaction type.", schema = @Schema(allowableValues = {"withdraw", "deposit"})) @Valid @RequestParam(value = "transactionType", required = false) String transactionType,
             @Parameter(in = ParameterIn.QUERY, description = "Filter on account on or toIBAN, fromIBAN, or accountID", schema = @Schema()) @Valid @ModelAttribute(value = "accountFilter") IBANFilter accountFilter,
-            @Parameter(in = ParameterIn.QUERY, description = "Retrieve transactions that are filtered on the amount.", schema = @Schema()) @Valid @ModelAttribute(value = "amountFilter") AmountFilter amountFilter){
-        try {
-            List<Transaction> transactions = new ArrayList<>();
-            transactions = transactionService.getTransactions(offset,limit, accountFilter, amountFilter, transactionType);
-            return new ResponseEntity<List<Transaction>>(transactions, HttpStatus.OK);
+            @Parameter(in = ParameterIn.QUERY, description = "Retrieve transactions that are filtered on the amount.", schema = @Schema()) @Valid @ModelAttribute(value = "amountFilter") AmountFilter amountFilter
+    ){
 
-        } catch (Exception e) {
-            log.error("Couldn't serialize response for content type application/json", e);
-            return new ResponseEntity<List<Transaction>>(HttpStatus.INTERNAL_SERVER_ERROR);
-        }
+        List<Transaction> transactions = new ArrayList<>();
+        transactions = transactionService.getTransactions(offset,limit, accountFilter, amountFilter, transactionType);
+        return new ResponseEntity<List<Transaction>>(transactions, HttpStatus.OK);
     }
 
     @PreAuthorize("hasRole('ROLE_USER')")
@@ -74,16 +70,11 @@ public class TransactionsApiController {
             consumes = {"application/json"},
             method = RequestMethod.POST)
     public ResponseEntity<Transaction> postTransactions(@RequestBody CreateTransactionDTO body) {
-        try {
-            Principal principal = request.getUserPrincipal();
-            Transaction transaction = objectMapper.convertValue(body, Transaction.class);
-            transaction.setUserPerforming(UUID.fromString(principal.getName()));
+        Principal principal = request.getUserPrincipal();
+        Transaction transaction = objectMapper.convertValue(body, Transaction.class);
+        transaction.setUserPerforming(UUID.fromString(principal.getName()));
 
-            Transaction result = transactionService.add(transaction);
-            return new ResponseEntity<Transaction>(result, HttpStatus.OK);
-        } catch (Exception e) {
-            log.error("Couldn't serialize response for content type application/json", e);
-            return new ResponseEntity<Transaction>(HttpStatus.INTERNAL_SERVER_ERROR);
-        }
+        Transaction result = transactionService.add(transaction);
+        return new ResponseEntity<Transaction>(result, HttpStatus.OK);
     }
 }

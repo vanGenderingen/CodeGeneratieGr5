@@ -17,19 +17,19 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.server.ResponseStatusException;
 
 import javax.annotation.PostConstruct;
+import javax.crypto.SecretKey;
 import javax.servlet.http.HttpServletRequest;
-import java.util.*;
+import java.util.Date;
+import java.util.List;
+import java.util.Objects;
+import java.util.UUID;
 import java.util.stream.Collectors;
+
+import static io.jsonwebtoken.security.Keys.secretKeyFor;
 
 @Component
 public class JwtTokenProvider {
-
-    /**
-     * THIS IS NOT A SECURE PRACTICE! For simplicity, we are storing a static key here. Ideally, in a
-     * microservices environment, this key would be kept on a config-server.
-     */
-//    @Value("${security.jwt.token.secret-key:secret-key}")
-    private String secretKey = "dpJKRCao87g4SfE6tkhPG6Hff$CXnR8&DHXk@M9A";
+    private SecretKey secretKey;
 
     @Value("${security.jwt.token.expire-length:3600000}")
     private long validityInMilliseconds = 3600000; // 1h
@@ -39,7 +39,7 @@ public class JwtTokenProvider {
 
     @PostConstruct
     protected void init() {
-        secretKey = Base64.getEncoder().encodeToString(secretKey.getBytes());
+        secretKey = secretKeyFor(SignatureAlgorithm.HS256);
     }
 
     public String createToken(UUID userID, List<Role> roles) {
@@ -56,6 +56,16 @@ public class JwtTokenProvider {
                 .setExpiration(validity)//
                 .signWith(SignatureAlgorithm.HS256, secretKey)//
                 .compact();
+    }
+
+    public String generateSecretKey() {
+        // Generate a random secret key using the HS256 algorithm
+        byte[] keyBytes = secretKeyFor(SignatureAlgorithm.HS256).getEncoded();
+        return base64UrlEncode(keyBytes);
+    }
+
+    private String base64UrlEncode(byte[] bytes) {
+        return java.util.Base64.getUrlEncoder().withoutPadding().encodeToString(bytes);
     }
 
     public Authentication getAuthentication(String token) {
