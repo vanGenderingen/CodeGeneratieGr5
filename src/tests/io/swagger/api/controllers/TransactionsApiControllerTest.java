@@ -119,4 +119,26 @@ class TransactionsApiControllerTest {
         );
         assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, response.getStatusCode());
     }
+
+    @Test
+    void testPostTransactions_BadRequest() {
+        // Arrange
+        CreateTransactionDTO createTransactionDTO = new CreateTransactionDTO("NL01INHO0000000001", "NL01INHO0000000002", 100.00, CreateTransactionDTO.TransactionTypeEnum.DEPOSIT, "Test");
+        Transaction transaction = new Transaction(UUID.randomUUID(), "NL01INHO0000000001", "NL01INHO0000000002", 100.00, Transaction.TransactionTypeEnum.DEPOSIT, UUID.fromString("6a54d1d2-b39c-4952-b3a2-af04e9afd76e"), OffsetDateTime.now() ,"Test");
+        Principal principal = mock(Principal.class);
+        when(request.getUserPrincipal()).thenReturn(principal);
+        when(principal.getName()).thenReturn("6a54d1d2-b39c-4952-b3a2-af04e9afd76e");
+
+        when(transactionService.add(any(Transaction.class))).thenReturn(transaction);
+
+        // Act
+        ResponseEntity<Transaction> response = transactionsApiController.postTransactions(createTransactionDTO);
+
+        // Assert
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertEquals(transaction, response.getBody());
+        verify(transactionService, times(1)).add(any(Transaction.class));
+    }
+
+
 }
