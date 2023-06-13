@@ -1,5 +1,6 @@
 package io.swagger.model;
 
+import io.swagger.model.transactions.Transaction;
 import junit.framework.TestCase;
 import org.threeten.bp.OffsetDateTime;
 

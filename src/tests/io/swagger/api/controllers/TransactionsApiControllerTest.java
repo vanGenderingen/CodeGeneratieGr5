@@ -2,10 +2,11 @@ package io.swagger.api.controllers;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.swagger.api.service.TransactionService;
-import io.swagger.model.AmountFilter;
 import io.swagger.model.DTO.CreateTransactionDTO;
-import io.swagger.model.IBANFilter;
-import io.swagger.model.Transaction;
+import io.swagger.model.transactions.AmountFilter;
+import io.swagger.model.transactions.IBANFilter;
+import io.swagger.model.transactions.Transaction;
+import io.swagger.model.transactions.TransactionType;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -15,10 +16,10 @@ import org.mockito.MockitoAnnotations;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.threeten.bp.OffsetDateTime;
 
 import javax.servlet.http.HttpServletRequest;
 import java.security.Principal;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -48,7 +49,7 @@ class TransactionsApiControllerTest {
     void testPostTransactions() {
         // Arrange
         CreateTransactionDTO createTransactionDTO = new CreateTransactionDTO("NL01INHO0000000001", "NL01INHO0000000002", 100.00, CreateTransactionDTO.TransactionTypeEnum.DEPOSIT, "Test");
-        Transaction transaction = new Transaction(UUID.randomUUID(), "NL01INHO0000000001", "NL01INHO0000000002", 100.00, Transaction.TransactionTypeEnum.DEPOSIT, UUID.fromString("6a54d1d2-b39c-4952-b3a2-af04e9afd76e"), OffsetDateTime.now() ,"Test");
+        Transaction transaction = new Transaction(UUID.randomUUID(), "NL01INHO0000000001", "NL01INHO0000000002", 100.00, TransactionType.DEPOSIT, UUID.fromString("6a54d1d2-b39c-4952-b3a2-af04e9afd76e"), LocalDateTime.now() ,"Test");
         Principal principal = mock(Principal.class);
         when(request.getUserPrincipal()).thenReturn(principal);
         when(principal.getName()).thenReturn("6a54d1d2-b39c-4952-b3a2-af04e9afd76e");
@@ -90,7 +91,7 @@ class TransactionsApiControllerTest {
     void testPostTransactions_BadRequest() {
         // Arrange
         CreateTransactionDTO createTransactionDTO = new CreateTransactionDTO("NL01INHO0000000001", "NL01INHO0000000002", 100.00, CreateTransactionDTO.TransactionTypeEnum.DEPOSIT, "Test");
-        Transaction transaction = new Transaction(UUID.randomUUID(), "NL01INHO0000000001", "NL01INHO0000000002", 100.00, Transaction.TransactionTypeEnum.DEPOSIT, UUID.fromString("6a54d1d2-b39c-4952-b3a2-af04e9afd76e"), OffsetDateTime.now() ,"Test");
+        Transaction transaction = new Transaction(UUID.randomUUID(), "NL01INHO0000000001", "NL01INHO0000000002", 100.00, TransactionType.TRANSFER, UUID.fromString("6a54d1d2-b39c-4952-b3a2-af04e9afd76e"), LocalDateTime.now() ,"Test");
         Principal principal = mock(Principal.class);
         when(request.getUserPrincipal()).thenReturn(principal);
         when(principal.getName()).thenReturn("6a54d1d2-b39c-4952-b3a2-af04e9afd76e");

@@ -1,7 +1,7 @@
 package io.swagger.api.controllers;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import io.swagger.api.UsersApi;
+import io.swagger.api.interfaces.UsersApi;
 import io.swagger.api.service.UserService;
 import io.swagger.model.DTO.CreateUserDTO;
 import io.swagger.model.DTO.GetUserDTO;
@@ -21,7 +21,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 import javax.validation.ValidationException;
 import java.util.List;
-import java.util.Map;
 import java.util.UUID;
 
 @javax.annotation.Generated(value = "io.swagger.codegen.v3.generators.java.SpringCodegen", date = "2023-05-16T13:11:00.686570329Z[GMT]")

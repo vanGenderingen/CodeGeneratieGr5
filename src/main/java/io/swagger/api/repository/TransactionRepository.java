@@ -1,6 +1,6 @@
 package io.swagger.api.repository;
 
-import io.swagger.model.Transaction;
+import io.swagger.model.transactions.Transaction;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.repository.PagingAndSortingRepository;

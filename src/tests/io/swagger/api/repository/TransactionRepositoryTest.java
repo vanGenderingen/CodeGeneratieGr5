@@ -1,6 +1,6 @@
 package io.swagger.api.repository;
 
-import io.swagger.model.Transaction;
+import io.swagger.model.transactions.Transaction;
 import org.junit.Test;
 import org.junit.jupiter.api.Assertions;
 import org.mockito.Mock;

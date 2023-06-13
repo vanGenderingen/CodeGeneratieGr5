@@ -2,10 +2,10 @@ package io.swagger.api.controllers;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.swagger.api.service.TransactionService;
-import io.swagger.model.AmountFilter;
+import io.swagger.model.transactions.AmountFilter;
 import io.swagger.model.DTO.CreateTransactionDTO;
-import io.swagger.model.IBANFilter;
-import io.swagger.model.Transaction;
+import io.swagger.model.transactions.IBANFilter;
+import io.swagger.model.transactions.Transaction;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.enums.ParameterIn;
 import io.swagger.v3.oas.annotations.media.Schema;

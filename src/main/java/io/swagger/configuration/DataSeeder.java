@@ -9,7 +9,7 @@ import io.swagger.api.service.UserService;
 import io.swagger.model.Account;
 import io.swagger.model.DTO.CreateTransactionDTO;
 import io.swagger.model.Role;
-import io.swagger.model.Transaction;
+import io.swagger.model.transactions.Transaction;
 import io.swagger.model.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.ApplicationArguments;

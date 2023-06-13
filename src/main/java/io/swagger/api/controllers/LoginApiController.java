@@ -3,7 +3,7 @@ package io.swagger.api.controllers;
 //import com.sun.org.apache.xml.internal.security.algorithms.SignatureAlgorithm;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import io.swagger.api.LoginApi;
+import io.swagger.api.interfaces.LoginApi;
 import io.swagger.api.service.LoginService;
 import io.swagger.model.DTO.LoginDTO;
 import io.swagger.model.DTO.LoginResponseDTO;
