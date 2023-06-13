@@ -4,7 +4,6 @@ import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
-import io.jsonwebtoken.security.Keys;
 import io.swagger.configuration.UserDetailsService;
 import io.swagger.model.Role;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,20 +17,19 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.server.ResponseStatusException;
 
 import javax.annotation.PostConstruct;
+import javax.crypto.SecretKey;
 import javax.servlet.http.HttpServletRequest;
-import java.util.*;
+import java.util.Date;
+import java.util.List;
+import java.util.Objects;
+import java.util.UUID;
 import java.util.stream.Collectors;
+
+import static io.jsonwebtoken.security.Keys.secretKeyFor;
 
 @Component
 public class JwtTokenProvider {
-
-    /**
-     * THIS IS NOT A SECURE PRACTICE! For simplicity, we are storing a static key here. Ideally, in a
-     * microservices environment, this key would be kept on a config-server.
-     */
-    @Value("${security.jwt.token.secret-key:secret-key}")
-    private String secretKey = "sdahfsdhifhauifhdshfohsdfuhdshuofshudfhousdihuf";
-    //private String secretKey = generateSecretKey();
+    private SecretKey secretKey;
 
     @Value("${security.jwt.token.expire-length:3600000}")
     private long validityInMilliseconds = 3600000; // 1h
@@ -41,7 +39,7 @@ public class JwtTokenProvider {
 
     @PostConstruct
     protected void init() {
-        secretKey = Base64.getEncoder().encodeToString(secretKey.getBytes());
+        secretKey = secretKeyFor(SignatureAlgorithm.HS256);
     }
 
     public String createToken(UUID userID, List<Role> roles) {
@@ -56,14 +54,13 @@ public class JwtTokenProvider {
                 .setClaims(claims)//
                 .setIssuedAt(now)//
                 .setExpiration(validity)//
-                //.signWith(SignatureAlgorithm.HS256, secretKey)//
                 .signWith(SignatureAlgorithm.HS256, secretKey)//
                 .compact();
     }
 
     public String generateSecretKey() {
         // Generate a random secret key using the HS256 algorithm
-        byte[] keyBytes = Keys.secretKeyFor(SignatureAlgorithm.HS256).getEncoded();
+        byte[] keyBytes = secretKeyFor(SignatureAlgorithm.HS256).getEncoded();
         return base64UrlEncode(keyBytes);
     }
 
