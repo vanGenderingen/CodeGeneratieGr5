@@ -96,10 +96,10 @@ public class AccountsApiTest {
         String searchstrings = "";
 
         // Set the mock behaviour of the accountsApiController
-        when(accountsApiController.accountsUserUserIdAccountsGet(userId, limit, offset, searchstrings)).thenReturn(new ResponseEntity<List<GetAccountDTO>>(HttpStatus.OK));
+        when(accountsApiController.getAccountsOfUser(userId, limit, offset, searchstrings)).thenReturn(new ResponseEntity<List<GetAccountDTO>>(HttpStatus.OK));
 
         // Call the accountsUserUserIdAccountsGet method
-        ResponseEntity<List<GetAccountDTO>> response = accountsApiController.accountsUserUserIdAccountsGet(userId, limit, offset, searchstrings);
+        ResponseEntity<List<GetAccountDTO>> response = accountsApiController.getAccountsOfUser(userId, limit, offset, searchstrings);
 
         // Verify the response
         Assertions.assertEquals(HttpStatus.OK, response.getStatusCode());

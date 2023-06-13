@@ -9,6 +9,7 @@ import io.swagger.model.DTO.CreateAccountDTO;
 import io.swagger.model.DTO.GetAccountDTO;
 import io.swagger.model.DTO.UpdateAccountDTO;
 import io.swagger.model.User;
+import org.hibernate.MappingException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,16 +37,20 @@ public class AccountService {
     private ObjectMapper objectMapper;
 
     public Account add(CreateAccountDTO createAccountDTO) {
-        // Get the user
-        User user = getUserByID(createAccountDTO.getUserId());
+        try {
+            // Get the user
+            User user = getUserByID(createAccountDTO.getUserId());
 
-        // Set the user and generate IBAN
-        Account account = objectMapper.convertValue(createAccountDTO, Account.class);
-        account.setUser(user);
-        account.setIBAN(IBANService.generateIBAN());
+            // Set the user and generate IBAN
+            Account account = objectMapper.convertValue(createAccountDTO, Account.class);
+            account.setUser(user);
+            account.setIBAN(IBANService.generateIBAN());
 
-        // Save the account
-        return accountRepository.save(account);
+            // Save the account
+            return accountRepository.save(account);
+        }catch (IllegalArgumentException | NullPointerException e){
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Failed to add account due to invalid data");
+        }
     }
     public List<GetAccountDTO> getAllAccounts(Integer limit, Integer offset, String searchStrings, String IBAN) {
         return convertAccountsToGetAccountToDTO(accountRepository.getAll(IBAN, searchStrings, PageRequest.of(offset, limit)));
@@ -53,8 +58,7 @@ public class AccountService {
 
     public GetAccountDTO getAccountByAccountID(UUID accountID) {
         try {
-            Account account = accountRepository.getAccountByAccountID(accountID);
-            return objectMapper.convertValue(account, GetAccountDTO.class);
+            return objectMapper.convertValue(accountRepository.getAccountByAccountID(accountID), GetAccountDTO.class);
         } catch (Exception e) {
             log.error("Couldn't serialize response for content type application/json", e);
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Couldn't serialize response for content type application/json");
@@ -68,9 +72,11 @@ public class AccountService {
         try {
             return objectMapper.convertValue(accountRepository.save(updateAccountFieldsIfNeeded(
                     accountRepository.getAccountByAccountID(accountID), updateAccountDTO)), GetAccountDTO.class);
-        } catch (Exception e) {
+        } catch (MappingException e) {
             log.error("Couldn't serialize response for content type application/json", e);
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Couldn't serialize response for content type application/json");
+        }catch (NullPointerException e){
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "This account does not exist");
         }
     }
 

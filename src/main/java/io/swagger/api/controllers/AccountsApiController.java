@@ -89,7 +89,7 @@ public class AccountsApiController implements AccountsApi {
 
     @PreAuthorize("hasRole('ROLE_USER')")
     @RequestMapping(value = "/accounts/user/{userId}/accounts", produces = {"application/json"}, method = RequestMethod.GET)
-    public ResponseEntity<List<GetAccountDTO>> accountsUserUserIdAccountsGet(
+    public ResponseEntity<List<GetAccountDTO>> getAccountsOfUser(
             @Parameter(in = ParameterIn.PATH, description = "ID of the user whose accounts to retrieve", required = true, schema = @Schema(type = "string", format = "uuid"))
             @PathVariable("userId") UUID userId,
             @Parameter(in = ParameterIn.QUERY, description = "The maximum number of accounts to retrieve.", schema = @Schema(type = "integer", defaultValue = "10", maximum = "50"))
