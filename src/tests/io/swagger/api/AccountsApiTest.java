@@ -16,6 +16,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.mock.web.MockHttpServletRequest;
 
+import java.security.Principal;
 import java.util.List;
 import java.util.UUID;
 
@@ -72,12 +73,13 @@ public class AccountsApiTest {
     public void testAccountsAccountIDGet() {
         // Create test data
         UUID accountID = UUID.randomUUID();
+        Principal principal = Mockito.mock(Principal.class);
 
         // Set the mock behaviour of the accountsApiController
-        when(accountsApiController.accountsAccountIDGet(accountID)).thenReturn(new ResponseEntity<GetAccountDTO>(HttpStatus.OK));
+        when(accountsApiController.getAccountByAccountID(accountID, principal)).thenReturn(new ResponseEntity<GetAccountDTO>(HttpStatus.OK));
 
         // Call the accountsAccountIDGet method
-        ResponseEntity<GetAccountDTO> response = accountsApiController.accountsAccountIDGet(accountID);
+        ResponseEntity<GetAccountDTO> response = accountsApiController.getAccountByAccountID(accountID, principal);
 
         // Verify the response
         Assertions.assertEquals(HttpStatus.OK, response.getStatusCode());
@@ -111,12 +113,13 @@ public class AccountsApiTest {
         // Create test data
         UUID accountID = UUID.randomUUID();
         UpdateAccountDTO updateAccountDTO = new UpdateAccountDTO();
+        Principal principal = Mockito.mock(Principal.class);
 
         // Set the mock behaviour of the accountsApiController
-        when(accountsApiController.accountsAccountIDPut(accountID, updateAccountDTO)).thenReturn(new ResponseEntity<GetAccountDTO>(HttpStatus.OK));
+        when(accountsApiController.accountsAccountIDPut(accountID, updateAccountDTO, principal)).thenReturn(new ResponseEntity<GetAccountDTO>(HttpStatus.OK));
 
         // Call the accountsAccountIDPut method
-        ResponseEntity<GetAccountDTO> response = accountsApiController.accountsAccountIDPut(accountID, updateAccountDTO);
+        ResponseEntity<GetAccountDTO> response = accountsApiController.accountsAccountIDPut(accountID, updateAccountDTO, principal);
 
         // Verify the response
         Assertions.assertEquals(HttpStatus.OK, response.getStatusCode());

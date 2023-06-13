@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import io.swagger.api.AccountsApi;
 import io.swagger.api.service.AccountService;
 import io.swagger.api.service.UserService;
+import io.swagger.api.service.ValidationService;
 import io.swagger.model.Account;
 import io.swagger.model.DTO.CreateAccountDTO;
 import io.swagger.model.DTO.GetAccountDTO;
@@ -18,10 +19,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
+import java.security.Principal;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -30,6 +34,9 @@ import java.util.UUID;
 @javax.annotation.Generated(value = "io.swagger.codegen.v3.generators.java.SpringCodegen", date = "2023-05-16T13:11:00.686570329Z[GMT]")
 @RestController
 public class AccountsApiController implements AccountsApi {
+
+    //TODO: make sure that only a user can only access their own accounts
+
     @Autowired
     private final ObjectMapper objectMapper;
 
@@ -49,7 +56,7 @@ public class AccountsApiController implements AccountsApi {
     @PreAuthorize("hasRole('ROLE_EMPLOYEE')")
     @RequestMapping(value = "/accounts", produces = {"application/json"}, method = RequestMethod.POST)
     public ResponseEntity<Account> accountsPost(@RequestBody CreateAccountDTO createAccountDTO) {
-        return accountService.add(createAccountDTO);
+        return new ResponseEntity<>(accountService.add(createAccountDTO), HttpStatus.CREATED);
     }
 
     @PreAuthorize("hasRole('ROLE_EMPLOYEE')")
@@ -60,13 +67,24 @@ public class AccountsApiController implements AccountsApi {
             @Parameter(in = ParameterIn.QUERY, description = "Comma-separated list of search strings to filter accounts.", schema = @Schema(type = "string")) @Valid @RequestParam(value = "searchstrings", required = false) String searchstrings,
             @Parameter(in = ParameterIn.QUERY, description = "IBAN to filter accounts.", schema = @Schema(type = "string")) @Valid @RequestParam(value = "IBAN", required = false) String IBAN)
     {
-        return accountService.getAllAccounts(limit, offset, searchstrings, IBAN);
+        return new ResponseEntity<>(accountService.getAllAccounts(limit, offset, searchstrings, IBAN), HttpStatus.OK);
     }
 
-    @PreAuthorize("hasAnyRole('ROLE_USER', 'ROLE_EMPLOYEE')")
+    @PreAuthorize("hasAnyRole('ROLE_USER')")
     @RequestMapping(value = "/accounts/{accountID}", produces = {"application/json"}, method = RequestMethod.GET)
-    public ResponseEntity<GetAccountDTO> accountsAccountIDGet(@Parameter(in = ParameterIn.PATH, description = "ID of the account to retrieve", required=true, schema=@Schema()) @PathVariable("accountID") UUID accountID) {
-        return accountService.getAccountByAccountID(accountID);
+    public ResponseEntity<GetAccountDTO> getAccountByAccountID(
+            @Parameter(in = ParameterIn.PATH, description = "ID of the account to retrieve", required=true, schema=@Schema())
+            @PathVariable("accountID") UUID accountID,
+            Principal principal
+    ) {
+        //Get the requested account from the database
+        GetAccountDTO getAccountDTO = accountService.getAccountByAccountID(accountID);
+
+        //Validate the user is authorized to access the account
+        ValidationService.validateAccountGetAndPutAccess(getAccountDTO.getAccountID(), principal);
+
+        // Return the account if the user is authorized
+        return new ResponseEntity<>(getAccountDTO, HttpStatus.OK);
     }
 
     @PreAuthorize("hasRole('ROLE_USER')")
@@ -81,12 +99,25 @@ public class AccountsApiController implements AccountsApi {
             @Parameter(in = ParameterIn.QUERY, description = "Comma-separated list of search strings to filter accounts.", schema = @Schema(type = "string"))
             @Valid @RequestParam(value = "searchstrings", required = false) String searchstrings
     ) {
-        return accountService.getAccountsOfUser(userId, limit, offset, searchstrings);
+        return new ResponseEntity<>(accountService.getAccountsOfUser(userId, limit, offset, searchstrings), HttpStatus.OK);
     }
 
     @PreAuthorize("hasRole('ROLE_USER')")
     @RequestMapping(value = "/accounts/{accountID}", produces = {"application/json"}, method = RequestMethod.PUT)
-    public ResponseEntity<GetAccountDTO> accountsAccountIDPut(@Parameter(in = ParameterIn.PATH, description = "ID of the account to update", required=true, schema=@Schema()) @PathVariable("accountID") UUID accountID, @Parameter(in = ParameterIn.DEFAULT, description = "New account details to update for the specified account", required=true, schema=@Schema()) @Valid @RequestBody UpdateAccountDTO updateAccountDTO) {
-        return accountService.updateAccount(accountID, updateAccountDTO);
+    public ResponseEntity<GetAccountDTO> accountsAccountIDPut(
+            @Parameter(in = ParameterIn.PATH, description = "ID of the account to update", required=true, schema=@Schema())
+            @PathVariable("accountID") UUID accountID,
+            @Parameter(in = ParameterIn.DEFAULT, description = "New account details to update for the specified account", required=true, schema=@Schema()) @Valid
+            @RequestBody UpdateAccountDTO updateAccountDTO,
+            Principal principal
+    ){
+        //Get the requested account from the database
+        GetAccountDTO getAccountDTO = accountService.updateAccount(accountID, updateAccountDTO);
+
+        //Validate the user is authorized to access the account
+        ValidationService.validateAccountGetAndPutAccess(getAccountDTO.getAccountID(), principal);
+
+        // Return the account if the user is authorized
+        return new ResponseEntity<>(getAccountDTO, HttpStatus.OK);
     }
 }

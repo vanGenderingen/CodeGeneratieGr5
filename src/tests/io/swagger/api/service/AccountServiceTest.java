@@ -68,10 +68,9 @@ public class AccountServiceTest {
         when(objectMapper.convertValue(any(CreateAccountDTO.class), eq(Account.class))).thenReturn(bankAccount);
         when(accountRepository.save(any(Account.class))).thenReturn(bankAccount);
 
-        ResponseEntity<Account> response = accountService.add(createAccountDTO);
+        Account response = accountService.add(createAccountDTO);
 
-        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
-        assertThat(response.getBody()).isEqualTo(bankAccount);
+        assertThat(response).isEqualTo(bankAccount);
 
         verify(userRepository).getUserByUserID(any(UUID.class));
         verify(accountRepository).save(any(Account.class));
@@ -104,11 +103,10 @@ public class AccountServiceTest {
                 Mockito.eq(GetAccountDTO.class)
         )).thenReturn(accountDTO);
 
-        ResponseEntity<List<GetAccountDTO>> responseEntity = accountService.getAllAccounts(limit, offset, searchStrings, IBAN);
+        List<GetAccountDTO> response = accountService.getAllAccounts(limit, offset, searchStrings, IBAN);
 
-        assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.OK);
-        assertThat(responseEntity.getBody()).hasSize(1);
-        assertThat(responseEntity.getBody().get(0).getAccountID()).isEqualTo(accountId);
+        assertThat(response).hasSize(1);
+        assertThat(response.get(0).getAccountID()).isEqualTo(accountId);
 
         verify(accountRepository, times(1)).getAll(
                 ArgumentMatchers.<String>any(),
@@ -127,10 +125,10 @@ public class AccountServiceTest {
             when(accountRepository.getAccountByAccountID(accountId)).thenReturn(account);
             when(objectMapper.convertValue(any(Account.class), eq(GetAccountDTO.class))).thenReturn(accountDTO);
 
-            ResponseEntity<GetAccountDTO> responseEntity = accountService.getAccountByAccountID(accountId);
+            GetAccountDTO response = accountService.getAccountByAccountID(accountId);
 
-            assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.OK);
-            assertThat(responseEntity.getBody().getAccountID()).isEqualTo(accountId);
+            assertThat(response).isEqualTo(HttpStatus.OK);
+            assertThat(response.getAccountID()).isEqualTo(accountId);
 
             verify(accountRepository, times(1)).getAccountByAccountID(accountId);
         }
@@ -142,31 +140,16 @@ public class AccountServiceTest {
             Integer offset = 0;
             String searchStrings = "example";
             List<Account> accountList = new ArrayList<>();
-            accountList.add(new Account(/* account details */));
-
-            // Create a mock Page object
-            Page<Account> accountPage = new PageImpl<>(accountList);
+            accountList.add(new Account());
 
             // Mock the behavior of the accountRepository
-            when(accountRepository.getAccountsOfUser(eq(userId), eq(searchStrings), any(Pageable.class))).thenReturn(accountPage);
-            when(accountRepository.countAccountsOfUser(eq(userId), eq(searchStrings))).thenReturn(accountList.size());
+            when(accountRepository.getAccountsOfUser(eq(userId), eq(searchStrings), any(Pageable.class))).thenReturn(accountList);
 
             // Invoke the method
-            ResponseEntity<List<GetAccountDTO>> response = accountService.getAccountsOfUser(userId, limit, offset, searchStrings);
+            List<GetAccountDTO> response = accountService.getAccountsOfUser(userId, limit, offset, searchStrings);
 
-            // Verify the behavior of accountRepository.countAccountsOfUser()
-            verify(accountRepository).countAccountsOfUser(userId, searchStrings);
-
-            // Verify the response body
-            List<GetAccountDTO> responseBody = response.getBody();
-            assertNotNull(responseBody);
-            assertEquals(accountList.size(), responseBody.size());
-
-            // Verify the response headers
-            HttpHeaders headers = response.getHeaders();
-            assertNotNull(headers);
-            assertEquals(String.valueOf(accountList.size()), headers.getFirst("X-Total-Accounts"));
-
+            assertNotNull(response);
+            assertEquals(accountList.size(), response.size());
         }
 
         @Test
@@ -184,10 +167,9 @@ public class AccountServiceTest {
             when(accountRepository.save(any(Account.class))).thenReturn(existingAccount);
             when(objectMapper.convertValue(any(Account.class), eq(GetAccountDTO.class))).thenReturn(accountDTO);
 
-            ResponseEntity<GetAccountDTO> responseEntity = accountService.updateAccount(accountId, updateAccountDTO);
+            GetAccountDTO response = accountService.updateAccount(accountId, updateAccountDTO);
 
-            assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.OK);
-            assertThat(responseEntity.getBody().getAccountID()).isEqualTo(accountId);
+            assertThat(response.getAccountID()).isEqualTo(accountId);
 
             verify(accountRepository, times(1)).getAccountByAccountID(accountId);
             verify(accountRepository, times(1)).save(any(Account.class));

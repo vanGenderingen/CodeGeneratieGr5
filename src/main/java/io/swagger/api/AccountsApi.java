@@ -8,6 +8,8 @@ package io.swagger.api;
 import io.swagger.model.Account;
 import io.swagger.model.DTO.CreateAccountDTO;
 import io.swagger.model.DTO.GetAccountDTO;
+
+import java.security.Principal;
 import java.util.UUID;
 import io.swagger.model.DTO.UpdateAccountDTO;
 import io.swagger.v3.oas.annotations.Operation;
@@ -56,8 +58,7 @@ public interface AccountsApi {
             @ApiResponse(responseCode = "200", description = "Successful operation", content = @Content(mediaType = "application/json", schema = @Schema(implementation = GetAccountDTO.class))),
             @ApiResponse(responseCode = "400", description = "Invalid request body."),
             @ApiResponse(responseCode = "401", description = "Access token is missing or invalid"),
-            @ApiResponse(responseCode = "403", description = "Forbidden. The client does not have access"),
-            @ApiResponse(responseCode = "500", description = "Internal server error.") })
+            @ApiResponse(responseCode = "403", description = "Forbidden. The client does not have access")})
     @RequestMapping(value = "/accounts",
             produces = { "application/json" },
             method = RequestMethod.GET)
@@ -69,21 +70,22 @@ public interface AccountsApi {
             @ApiResponse(responseCode = "200", description = "OK", content = @Content(mediaType = "application/json", schema = @Schema(implementation = GetAccountDTO.class))),
             @ApiResponse(responseCode = "400", description = "Invalid request body."),
             @ApiResponse(responseCode = "401", description = "Access token is missing or invalid"),
-            @ApiResponse(responseCode = "403", description = "Forbidden. The client does not have access"),
-            @ApiResponse(responseCode = "500", description = "Internal server error.") })
+            @ApiResponse(responseCode = "403", description = "Forbidden. The client does not have access")})
     @RequestMapping(value = "/accounts/{accountID}",
             produces = { "application/json" },
             method = RequestMethod.GET)
-    ResponseEntity<GetAccountDTO> accountsAccountIDGet(@Parameter(in = ParameterIn.PATH, description = "ID of the account to retrieve", required = true, schema=@Schema(type = "string", format = "uuid")) @PathVariable("accountID") UUID accountID);
-
+    ResponseEntity<GetAccountDTO> getAccountByAccountID(
+            @Parameter(in = ParameterIn.PATH, description = "ID of the account to retrieve", required = true, schema=@Schema(type = "string", format = "uuid"))
+            @PathVariable("accountID") UUID accountID,
+            Principal principal
+    );
     @Operation(summary = "Get accounts for a specific user", description = "", security = {
             @SecurityRequirement(name = "JWTAuth")}, tags = { "Accounts", "Employees", "Customers" })
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "OK", content = @Content(mediaType = "application/json", schema = @Schema(implementation = GetAccountDTO.class))),
             @ApiResponse(responseCode = "400", description = "Invalid request body."),
             @ApiResponse(responseCode = "401", description = "Access token is missing or invalid"),
-            @ApiResponse(responseCode = "403", description = "Forbidden. The client does not have access"),
-            @ApiResponse(responseCode = "500", description = "Internal server error.") })
+            @ApiResponse(responseCode = "403", description = "Forbidden. The client does not have access")})
     @RequestMapping(value = "/accounts/user/{userId}/accounts",
             produces = { "application/json" },
             method = RequestMethod.GET)
@@ -95,11 +97,14 @@ public interface AccountsApi {
             @ApiResponse(responseCode = "200", description = "OK", content = @Content(mediaType = "application/json", schema = @Schema(implementation = UpdateAccountDTO.class))),
             @ApiResponse(responseCode = "400", description = "Invalid request body."),
             @ApiResponse(responseCode = "401", description = "Access token is missing or invalid"),
-            @ApiResponse(responseCode = "403", description = "Forbidden. The client does not have access"),
-            @ApiResponse(responseCode = "500", description = "Internal server error.") })
+            @ApiResponse(responseCode = "403", description = "Forbidden. The client does not have access")})
     @RequestMapping(value = "/accounts/{accountID}",
             produces = { "application/json" },
             consumes = { "application/json" },
             method = RequestMethod.PUT)
-    ResponseEntity<GetAccountDTO> accountsAccountIDPut(@Parameter(in = ParameterIn.PATH, description = "ID of the account to update", required = true, schema=@Schema(type = "string", format = "uuid")) @PathVariable("accountID") UUID accountID, @Parameter(in = ParameterIn.DEFAULT, description = "New account details to update for the specified account", required=true, schema=@Schema()) @Valid @RequestBody UpdateAccountDTO body);
+    ResponseEntity<GetAccountDTO> accountsAccountIDPut(
+            @Parameter(in = ParameterIn.PATH, description = "ID of the account to update", required = true, schema=@Schema(type = "string", format = "uuid"))
+            @PathVariable("accountID") UUID accountID, @Parameter(in = ParameterIn.DEFAULT, description = "New account details to update for the specified account", required=true, schema=@Schema()) @Valid
+            @RequestBody UpdateAccountDTO body,
+            Principal principal);
 }
