@@ -18,4 +18,10 @@ public class TransactionServiceTest extends TestCase {
 
     public void testGetTransactionsByIBAN() {
     }
+
+    public void testTestAdd() {
+    }
+
+    public void testGetTransactions() {
+    }
 }
