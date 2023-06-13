@@ -1,0 +1,193 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <title>Coverage Report > UsersApiController</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">io.swagger.api.controllers</a>
+</div>
+
+<h1>Coverage Summary for Class: UsersApiController (io.swagger.api.controllers)</h1>
+
+<table class="coverageStats">
+
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">UsersApiController</td>
+<td class="coverageStat">
+  <span class="percent">
+    28.6%
+  </span>
+  <span class="absValue">
+    (2/7)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    38.5%
+  </span>
+  <span class="absValue">
+    (5/13)
+  </span>
+</td>
+</tr>
+  <tr>
+    <td class="name">UsersApiController$$EnhancerBySpringCGLIB$$3b63c2a3</td>
+  </tr>
+<tr>
+  <td class="name"><strong>Total</strong></td>
+<td class="coverageStat">
+  <span class="percent">
+    28.6%
+  </span>
+  <span class="absValue">
+    (2/7)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    38.5%
+  </span>
+  <span class="absValue">
+    (5/13)
+  </span>
+</td>
+</tr>
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package io.swagger.api.controllers;
+&nbsp;
+&nbsp;import com.fasterxml.jackson.databind.ObjectMapper;
+&nbsp;import io.swagger.api.UsersApi;
+&nbsp;import io.swagger.api.service.UserService;
+&nbsp;import io.swagger.model.DTO.CreateUserDTO;
+&nbsp;import io.swagger.model.DTO.GetUserDTO;
+&nbsp;import io.swagger.model.DTO.UpdateUserDTO;
+&nbsp;import io.swagger.model.User;
+&nbsp;import io.swagger.v3.oas.annotations.Parameter;
+&nbsp;import io.swagger.v3.oas.annotations.enums.ParameterIn;
+&nbsp;import io.swagger.v3.oas.annotations.media.Schema;
+&nbsp;import org.slf4j.Logger;
+&nbsp;import org.slf4j.LoggerFactory;
+&nbsp;import org.springframework.beans.factory.annotation.Autowired;
+&nbsp;import org.springframework.http.ResponseEntity;
+&nbsp;import org.springframework.security.access.prepost.PreAuthorize;
+&nbsp;import org.springframework.web.bind.annotation.*;
+&nbsp;
+&nbsp;import javax.servlet.http.HttpServletRequest;
+&nbsp;import javax.validation.Valid;
+&nbsp;import javax.validation.ValidationException;
+&nbsp;import java.util.List;
+&nbsp;import java.util.UUID;
+&nbsp;
+&nbsp;@javax.annotation.Generated(value = &quot;io.swagger.codegen.v3.generators.java.SpringCodegen&quot;, date = &quot;2023-05-16T13:11:00.686570329Z[GMT]&quot;)
+&nbsp;@CrossOrigin(origins = &quot;*&quot;)
+&nbsp;@RestController
+&nbsp;public class UsersApiController implements UsersApi {
+&nbsp;
+<b class="fc">&nbsp;    private static final Logger log = LoggerFactory.getLogger(UsersApiController.class);</b>
+&nbsp;
+&nbsp;    private final ObjectMapper objectMapper;
+&nbsp;
+&nbsp;    @Autowired
+&nbsp;    private UserService userService;
+&nbsp;    private final HttpServletRequest request;
+&nbsp;
+&nbsp;
+<b class="nc">&nbsp;    public UsersApiController(ObjectMapper objectMapper, HttpServletRequest request) {</b>
+<b class="nc">&nbsp;        this.userService = userService;</b>
+<b class="nc">&nbsp;        this.objectMapper = objectMapper;</b>
+<b class="nc">&nbsp;        this.request = request;</b>
+&nbsp;    }
+&nbsp;    @Autowired
+<b class="fc">&nbsp;    public UsersApiController(ObjectMapper objectMapper, UserService userService, HttpServletRequest request) {</b>
+<b class="fc">&nbsp;        this.userService = userService;</b>
+<b class="fc">&nbsp;        this.objectMapper = objectMapper;</b>
+<b class="fc">&nbsp;        this.request = request;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    @PreAuthorize(&quot;hasRole(&#39;ROLE_EMPLOYEE&#39;)&quot;)
+&nbsp;    @RequestMapping(value = &quot;/users&quot;, produces = &quot;application/json&quot;, method = RequestMethod.POST)
+&nbsp;    public ResponseEntity&lt;User&gt; usersPost(@RequestBody CreateUserDTO createUserDTO) {
+<b class="nc">&nbsp;        return userService.add(createUserDTO);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    @PreAuthorize(&quot;hasRole(&#39;ROLE_EMPLOYEE&#39;)&quot;)
+&nbsp;    @RequestMapping(value = &quot;/users&quot;, produces = {&quot;application/json&quot;}, method = RequestMethod.GET)
+&nbsp;    public ResponseEntity&lt;List&lt;GetUserDTO&gt;&gt; usersGet(
+&nbsp;            @Parameter(in = ParameterIn.QUERY, description = &quot;The maximum number of accounts to retrieve.&quot;, schema = @Schema(allowableValues = {&quot;0&quot;, &quot;50&quot;}, type = &quot;integer&quot;, defaultValue = &quot;20&quot;, maximum = &quot;50&quot;)) @Valid @RequestParam(value = &quot;limit&quot;, required = false, defaultValue = &quot;10&quot;) Integer limit,
+&nbsp;            @Parameter(in = ParameterIn.QUERY, description = &quot;The offset for paginated results.&quot;, schema = @Schema(type = &quot;integer&quot;, defaultValue = &quot;0&quot;, minimum = &quot;0&quot;)) @Valid @RequestParam(value = &quot;offset&quot;, required = false, defaultValue = &quot;0&quot;) Integer offset,
+&nbsp;            @Parameter(in = ParameterIn.QUERY, description = &quot;Comma-separated list of search strings to filter accounts.&quot;, schema = @Schema(type = &quot;string&quot;)) @Valid @RequestParam(value = &quot;searchstrings&quot;, required = false) String searchstrings,
+&nbsp;            @Parameter(in = ParameterIn.QUERY, description = &quot;Email to filter by email&quot;, schema = @Schema(type = &quot;string&quot;)) @Valid @RequestParam(value = &quot;Email&quot;, required = false) String Email)
+&nbsp;    {
+<b class="nc">&nbsp;        return userService.getAllUsers(limit, offset, searchstrings, Email);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    @PreAuthorize(&quot;hasRole(&#39;ROLE_EMPLOYEE&#39;)&quot;)
+&nbsp;    @RequestMapping(value = &quot;/users/{userID}&quot;, produces = {&quot;application/json&quot;}, method = RequestMethod.GET)
+&nbsp;    public ResponseEntity&lt;GetUserDTO&gt; usersUserIDGet(@PathVariable(&quot;userID&quot;) UUID userID) {
+<b class="nc">&nbsp;        return userService.getUserByUserID(userID);</b>
+&nbsp;    }
+&nbsp;    @PreAuthorize(&quot;hasRole(&#39;ROLE_EMPLOYEE&#39;)&quot;)
+&nbsp;   @RequestMapping(value = &quot;/users/{userID}&quot;, produces = {&quot;application/json&quot;}, method = RequestMethod.PUT)
+&nbsp;    public ResponseEntity&lt;GetUserDTO&gt; usersUserIDPut(@PathVariable(&quot;userID&quot;) UUID userID, @RequestBody UpdateUserDTO updateUserDTO) throws ValidationException {
+<b class="nc">&nbsp;        return userService.updateUser(userID, updateUserDTO);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2023-06-13 11:03</div>
+</div>
+</body>
+</html>

@@ -1,0 +1,169 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <title>Coverage Report > LoginApiController</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">io.swagger.api.controllers</a>
+</div>
+
+<h1>Coverage Summary for Class: LoginApiController (io.swagger.api.controllers)</h1>
+
+<table class="coverageStats">
+
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">LoginApiController</td>
+<td class="coverageStat">
+  <span class="percent">
+    66.7%
+  </span>
+  <span class="absValue">
+    (2/3)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    36.4%
+  </span>
+  <span class="absValue">
+    (4/11)
+  </span>
+</td>
+</tr>
+  <tr>
+    <td class="name">LoginApiController$$EnhancerBySpringCGLIB$$bb7f0e10</td>
+  </tr>
+<tr>
+  <td class="name"><strong>Total</strong></td>
+<td class="coverageStat">
+  <span class="percent">
+    66.7%
+  </span>
+  <span class="absValue">
+    (2/3)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    36.4%
+  </span>
+  <span class="absValue">
+    (4/11)
+  </span>
+</td>
+</tr>
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package io.swagger.api.controllers;
+&nbsp;
+&nbsp;//import com.sun.org.apache.xml.internal.security.algorithms.SignatureAlgorithm;
+&nbsp;
+&nbsp;import com.fasterxml.jackson.databind.ObjectMapper;
+&nbsp;import io.swagger.api.LoginApi;
+&nbsp;import io.swagger.api.service.UserService;
+&nbsp;import io.swagger.model.DTO.LoginDTO;
+&nbsp;import io.swagger.model.DTO.LoginResponseDTO;
+&nbsp;import io.swagger.v3.oas.annotations.Parameter;
+&nbsp;import io.swagger.v3.oas.annotations.enums.ParameterIn;
+&nbsp;import io.swagger.v3.oas.annotations.media.Schema;
+&nbsp;import org.slf4j.Logger;
+&nbsp;import org.slf4j.LoggerFactory;
+&nbsp;import org.springframework.beans.factory.annotation.Autowired;
+&nbsp;import org.springframework.http.HttpStatus;
+&nbsp;import org.springframework.http.ResponseEntity;
+&nbsp;import org.springframework.web.bind.annotation.*;
+&nbsp;
+&nbsp;import javax.servlet.http.HttpServletRequest;
+&nbsp;import javax.validation.Valid;
+&nbsp;
+&nbsp;@CrossOrigin(origins = &quot;*&quot;)
+&nbsp;@javax.annotation.Generated(value = &quot;io.swagger.codegen.v3.generators.java.SpringCodegen&quot;, date = &quot;2023-05-16T13:11:00.686570329Z[GMT]&quot;)
+&nbsp;@RestController
+&nbsp;public class LoginApiController implements LoginApi {
+&nbsp;
+<b class="fc">&nbsp;    private static final Logger log = LoggerFactory.getLogger(LoginApiController.class);</b>
+&nbsp;
+&nbsp;    private final ObjectMapper objectMapper;
+&nbsp;
+&nbsp;    private final HttpServletRequest request;
+&nbsp;
+&nbsp;    @Autowired
+&nbsp;    private UserService userService;
+&nbsp;
+&nbsp;    @org.springframework.beans.factory.annotation.Autowired
+<b class="fc">&nbsp;    public LoginApiController(ObjectMapper objectMapper, HttpServletRequest request) {</b>
+<b class="fc">&nbsp;        this.objectMapper = objectMapper;</b>
+<b class="fc">&nbsp;        this.request = request;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    @RequestMapping(value = &quot;/login&quot;, produces = {&quot;application/json&quot;}, method = RequestMethod.POST)
+&nbsp;    public ResponseEntity&lt;LoginResponseDTO&gt; loginPost(@Parameter(in = ParameterIn.DEFAULT, description = &quot;&quot;, required=true, schema=@Schema()) @Valid @RequestBody LoginDTO body) {
+&nbsp;        try {
+<b class="nc">&nbsp;            String token = userService.login(body.getEmail(), body.getPassword());</b>
+<b class="nc">&nbsp;            LoginResponseDTO loginResponse = new LoginResponseDTO();</b>
+<b class="nc">&nbsp;            loginResponse.setToken(token);</b>
+&nbsp;
+<b class="nc">&nbsp;            return new ResponseEntity&lt;&gt;(loginResponse, HttpStatus.OK);</b>
+<b class="nc">&nbsp;        } catch (Exception e) {</b>
+<b class="nc">&nbsp;            log.error(&quot;Failed to generate JWT token&quot;, e);</b>
+<b class="nc">&nbsp;            return new ResponseEntity&lt;&gt;(HttpStatus.INTERNAL_SERVER_ERROR);</b>
+&nbsp;        }
+&nbsp;    }
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2023-06-13 11:03</div>
+</div>
+</body>
+</html>

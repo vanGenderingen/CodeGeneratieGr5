@@ -64,19 +64,4 @@ class LoginApiControllerTest {
 
     private void assertEquals(HttpStatus httpStatus, HttpStatus statusCode) {
     }
-
-
-    /*@Test
-    void testGenerateJwtToken() {
-        User user = TestDataUtil.createTestUser();
-
-        String jwtToken = TestJwtUtil.generateJwtToken(user);
-
-        boolean isValid = TestJwtUtil.validateJwtToken(jwtToken);
-
-        assertEquals(true, isValid);
-
-    }
-    */
-
 }
