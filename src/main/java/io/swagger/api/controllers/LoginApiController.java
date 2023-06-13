@@ -5,7 +5,6 @@ package io.swagger.api.controllers;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.swagger.api.LoginApi;
 import io.swagger.api.service.LoginService;
-import io.swagger.api.service.UserService;
 import io.swagger.model.DTO.LoginDTO;
 import io.swagger.model.DTO.LoginResponseDTO;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -43,15 +42,10 @@ public class LoginApiController implements LoginApi {
 
     @RequestMapping(value = "/login", produces = {"application/json"}, method = RequestMethod.POST)
     public ResponseEntity<LoginResponseDTO> loginPost(@Parameter(in = ParameterIn.DEFAULT, description = "", required=true, schema=@Schema()) @Valid @RequestBody LoginDTO body) {
-        try {
-            String token = loginService.login(body.getEmail(), body.getPassword());//Get the Email and the Password from the body and call the login method of the LoginService
-            LoginResponseDTO loginResponse = new LoginResponseDTO();
-            loginResponse.setToken(token);//Set the token in the LoginResponseDTO
+        String token = loginService.login(body.getEmail(), body.getPassword());//Get the Email and the Password from the body and call the login method of the LoginService
+        LoginResponseDTO loginResponse = new LoginResponseDTO();
+        loginResponse.setToken(token);//Set the token in the LoginResponseDTO
 
-            return new ResponseEntity<>(loginResponse, HttpStatus.OK);
-        } catch (Exception e) {
-            log.error("Failed to generate JWT token", e);//Log the error message on the console if the token is not generated
-            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
-        }
+        return new ResponseEntity<LoginResponseDTO>(loginResponse, HttpStatus.OK);
     }
 }
