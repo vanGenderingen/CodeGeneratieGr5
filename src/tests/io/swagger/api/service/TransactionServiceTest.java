@@ -9,13 +9,14 @@ import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.web.server.ResponseStatusException;
 import org.threeten.bp.OffsetDateTime;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
@@ -305,5 +306,152 @@ class TransactionServiceTest {
         verify(transactionRepository).save(transaction);
     }
 
+    @Test
+    void getTransactions_shouldReturnAllTransactions_whenNoFilters() {
+        // Arrange
+        Integer offset = 0;
+        Integer limit = 10;
+        Pageable pageRequest = PageRequest.of(offset, limit);
+        List<Transaction> expectedTransactions = Collections.singletonList(new Transaction());
+        Page<Transaction> page = new PageImpl<>(expectedTransactions, pageRequest, expectedTransactions.size());
+        when(transactionRepository.findAll(pageRequest)).thenReturn(page);
+
+        // Act
+        List<Transaction> actualTransactions = transactionService.getTransactions(offset, limit, null, null, null);
+
+        // Assert
+        assertEquals(expectedTransactions, actualTransactions);
+        verify(transactionRepository).findAll(pageRequest);
+    }
+
+    @Test
+    void getTransactions_shouldReturnTransactionsByFromIBAN_whenFromIBANFilterProvided() {
+        // Arrange
+        Integer offset = 0;
+        Integer limit = 10;
+        String fromIBAN = "fromIBAN";
+        Pageable pageRequest = PageRequest.of(offset, limit);
+        List<Transaction> expectedTransactions = Collections.singletonList(new Transaction());
+        IBANFilter accountFilter = new IBANFilter();
+        accountFilter.setFromIBAN(fromIBAN);
+        when(transactionRepository.getTransactionsByFromIBAN(fromIBAN, pageRequest)).thenReturn(expectedTransactions);
+
+        // Act
+        List<Transaction> actualTransactions = transactionService.getTransactions(offset, limit, accountFilter, new AmountFilter(), null);
+
+        // Assert
+        assertEquals(expectedTransactions, actualTransactions);
+        verify(transactionRepository).getTransactionsByFromIBAN(fromIBAN, pageRequest);
+    }
+
+    @Test
+    void getTransactions_shouldReturnTransactionsByToIBAN_whenToIBANFilterProvided() {
+        // Arrange
+        Integer offset = 0;
+        Integer limit = 10;
+        String toIBAN = "toIBAN";
+        Pageable pageRequest = PageRequest.of(offset, limit);
+        List<Transaction> expectedTransactions = Collections.singletonList(new Transaction());
+        IBANFilter accountFilter = new IBANFilter();
+        accountFilter.setToIBAN(toIBAN);
+        when(transactionRepository.getTransactionsByToIBAN(toIBAN, pageRequest)).thenReturn(expectedTransactions);
+
+        // Act
+        List<Transaction> actualTransactions = transactionService.getTransactions(offset, limit, accountFilter, new AmountFilter(), null);
+
+        // Assert
+        assertEquals(expectedTransactions, actualTransactions);
+        verify(transactionRepository).getTransactionsByToIBAN(toIBAN, pageRequest);
+    }
+
+    @Test
+    void getTransactions_shouldReturnTransactionsByAccountID_whenAccountIDFilterProvided() {
+        // Arrange
+        Integer offset = 0;
+        Integer limit = 10;
+        UUID accountID = UUID.randomUUID();
+        String accountIBAN = "accountIBAN";
+        Pageable pageRequest = PageRequest.of(offset, limit);
+        List<Transaction> expectedTransactions = Collections.singletonList(new Transaction());
+        IBANFilter accountFilter = new IBANFilter();
+        accountFilter.setAccountID(accountID);
+        Account mockAccount = new Account();
+        mockAccount.setIBAN(accountIBAN);
+        when(accountRepository.getAccountByAccountID(accountID)).thenReturn(mockAccount);
+        when(transactionRepository.getTransactionsByToIBANAndFromIBAN(accountIBAN, accountIBAN, pageRequest))
+                .thenReturn(expectedTransactions);
+
+        // Act
+        List<Transaction> actualTransactions = transactionService.getTransactions(offset, limit, accountFilter, new AmountFilter(), null);
+
+        // Assert
+        assertEquals(expectedTransactions, actualTransactions);
+        verify(accountRepository).getAccountByAccountID(accountID);
+        verify(transactionRepository).getTransactionsByToIBANAndFromIBAN(accountIBAN, accountIBAN, pageRequest);
+    }
+
+    @Test
+    void getTransactions_shouldReturnTransactionsByAmount_whenAmountFilterProvided() {
+        // Arrange
+        Integer offset = 0;
+        Integer limit = 10;
+        Double amount = 100.0;
+        Pageable pageRequest = PageRequest.of(offset, limit);
+        List<Transaction> expectedTransactions = Collections.singletonList(new Transaction());
+        AmountFilter amountFilter = new AmountFilter();
+        amountFilter.setEqual(amount);
+        when(transactionRepository.getTransactionsByAmountEquals(amount, pageRequest)).thenReturn(expectedTransactions);
+
+        // Act
+        List<Transaction> actualTransactions = transactionService.getTransactions(offset, limit, new IBANFilter(), amountFilter, null);
+
+        // Assert
+        assertEquals(expectedTransactions, actualTransactions);
+        verify(transactionRepository).getTransactionsByAmountEquals(amount, pageRequest);
+    }
+
+    @Test
+    void getTransactions_shouldReturnTransactionsByFromIBANAndAmount_whenFromIBANAndAmountFiltersProvided() {
+        // Arrange
+        Integer offset = 0;
+        Integer limit = 10;
+        String fromIBAN = "fromIBAN";
+        Double amount = 100.0;
+        Pageable pageRequest = PageRequest.of(offset, limit);
+        List<Transaction> expectedTransactions = Collections.singletonList(new Transaction());
+        IBANFilter accountFilter = new IBANFilter();
+        accountFilter.setFromIBAN(fromIBAN);
+        AmountFilter amountFilter = new AmountFilter();
+        amountFilter.setEqual(amount);
+        when(transactionRepository.getTransactionsByFromIBANAndAmountEquals(fromIBAN, amount, pageRequest))
+                .thenReturn(expectedTransactions);
+
+        // Act
+        List<Transaction> actualTransactions = transactionService.getTransactions(offset, limit, accountFilter, amountFilter, null);
+
+        // Assert
+        assertEquals(expectedTransactions, actualTransactions);
+        verify(transactionRepository).getTransactionsByFromIBANAndAmountEquals(fromIBAN, amount, pageRequest);
+    }
+
+    // Add more test cases to cover other scenarios and filters
+
+    @Test
+    void getTransactions_shouldThrowException_whenInvalidAccountID() {
+        // Arrange
+        Integer offset = 0;
+        Integer limit = 10;
+        UUID invalidAccountID = UUID.randomUUID();
+        Pageable pageRequest = PageRequest.of(offset, limit);
+        IBANFilter accountFilter = new IBANFilter();
+        accountFilter.setAccountID(invalidAccountID);
+        when(accountRepository.getAccountByAccountID(invalidAccountID)).thenReturn(null);
+
+        // Act & Assert
+        assertThrows(ResponseStatusException.class, () -> {
+            transactionService.getTransactions(offset, limit, accountFilter, new AmountFilter(), null);
+        });
+        verify(accountRepository).getAccountByAccountID(invalidAccountID);
+    }
 
 }
