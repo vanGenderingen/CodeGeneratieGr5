@@ -1,0 +1,190 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <title>Coverage Report > JwtTokenProvider</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">io.swagger.api.security</a>
+</div>
+
+<h1>Coverage Summary for Class: JwtTokenProvider (io.swagger.api.security)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">JwtTokenProvider</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (1/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    28.6%
+  </span>
+  <span class="absValue">
+    (2/7)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    16%
+  </span>
+  <span class="absValue">
+    (4/25)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package io.swagger.api.security;
+&nbsp;
+&nbsp;import io.jsonwebtoken.Claims;
+&nbsp;import io.jsonwebtoken.JwtException;
+&nbsp;import io.jsonwebtoken.Jwts;
+&nbsp;import io.jsonwebtoken.SignatureAlgorithm;
+&nbsp;import io.swagger.configuration.UserDetailsService;
+&nbsp;import io.swagger.model.Role;
+&nbsp;import org.springframework.beans.factory.annotation.Autowired;
+&nbsp;import org.springframework.beans.factory.annotation.Value;
+&nbsp;import org.springframework.http.HttpStatus;
+&nbsp;import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+&nbsp;import org.springframework.security.core.Authentication;
+&nbsp;import org.springframework.security.core.authority.SimpleGrantedAuthority;
+&nbsp;import org.springframework.security.core.userdetails.UserDetails;
+&nbsp;import org.springframework.stereotype.Component;
+&nbsp;import org.springframework.web.server.ResponseStatusException;
+&nbsp;
+&nbsp;import javax.annotation.PostConstruct;
+&nbsp;import javax.servlet.http.HttpServletRequest;
+&nbsp;import java.util.*;
+&nbsp;import java.util.stream.Collectors;
+&nbsp;
+&nbsp;@Component
+<b class="fc">&nbsp;public class JwtTokenProvider {</b>
+&nbsp;
+&nbsp;    /**
+&nbsp;     * THIS IS NOT A SECURE PRACTICE! For simplicity, we are storing a static key here. Ideally, in a
+&nbsp;     * microservices environment, this key would be kept on a config-server.
+&nbsp;     */
+&nbsp;//    @Value(&quot;${security.jwt.token.secret-key:secret-key}&quot;)
+<b class="fc">&nbsp;    private String secretKey = &quot;dpJKRCao87g4SfE6tkhPG6Hff$CXnR8&amp;DHXk@M9A&quot;;</b>
+&nbsp;
+<b class="fc">&nbsp;    @Value(&quot;${security.jwt.token.expire-length:3600000}&quot;)</b>
+&nbsp;    private long validityInMilliseconds = 3600000; // 1h
+&nbsp;
+&nbsp;    @Autowired
+&nbsp;    private UserDetailsService userDetailsService;
+&nbsp;
+&nbsp;    @PostConstruct
+&nbsp;    protected void init() {
+<b class="fc">&nbsp;        secretKey = Base64.getEncoder().encodeToString(secretKey.getBytes());</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    public String createToken(UUID userID, List&lt;Role&gt; roles) {
+&nbsp;
+<b class="nc">&nbsp;        Claims claims = Jwts.claims().setSubject(userID.toString());</b>
+<b class="nc">&nbsp;        claims.put(&quot;auth&quot;, roles.stream().map(s -&gt; new SimpleGrantedAuthority(s.getAuthority())).filter(Objects::nonNull).collect(Collectors.toList()));</b>
+&nbsp;
+<b class="nc">&nbsp;        Date now = new Date();</b>
+<b class="nc">&nbsp;        Date validity = new Date(now.getTime() + validityInMilliseconds);</b>
+&nbsp;
+<b class="nc">&nbsp;        return Jwts.builder()//</b>
+<b class="nc">&nbsp;                .setClaims(claims)//</b>
+<b class="nc">&nbsp;                .setIssuedAt(now)//</b>
+<b class="nc">&nbsp;                .setExpiration(validity)//</b>
+<b class="nc">&nbsp;                .signWith(SignatureAlgorithm.HS256, secretKey)//</b>
+<b class="nc">&nbsp;                .compact();</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    public Authentication getAuthentication(String token) {
+<b class="nc">&nbsp;        UserDetails userDetails = userDetailsService.loadUserByUsername(getUserID(token));</b>
+<b class="nc">&nbsp;        return new UsernamePasswordAuthenticationToken(userDetails, &quot;&quot;, userDetails.getAuthorities());</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    public String getUserID(String token) {
+<b class="nc">&nbsp;        return Jwts.parser().setSigningKey(secretKey).parseClaimsJws(token).getBody().getSubject();</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    public String resolveToken(HttpServletRequest req) {
+<b class="nc">&nbsp;        String bearerToken = req.getHeader(&quot;Authorization&quot;);</b>
+<b class="nc">&nbsp;        if (bearerToken != null &amp;&amp; bearerToken.startsWith(&quot;Bearer &quot;)) {</b>
+<b class="nc">&nbsp;            return bearerToken.substring(7);</b>
+&nbsp;        }
+<b class="nc">&nbsp;        return null;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    public boolean validateToken(String token) {
+&nbsp;        try {
+<b class="nc">&nbsp;            Jwts.parser().setSigningKey(secretKey).parseClaimsJws(token);</b>
+<b class="nc">&nbsp;            return true;</b>
+<b class="nc">&nbsp;        } catch (JwtException | IllegalArgumentException e) {</b>
+<b class="nc">&nbsp;            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, &quot;Expired or invalid JWT token&quot;);</b>
+&nbsp;        }
+&nbsp;    }
+&nbsp;
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2023-06-13 11:03</div>
+</div>
+</body>
+</html>

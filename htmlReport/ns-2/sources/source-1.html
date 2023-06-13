@@ -1,0 +1,205 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <title>Coverage Report > AccountsApiController</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">io.swagger.api.controllers</a>
+</div>
+
+<h1>Coverage Summary for Class: AccountsApiController (io.swagger.api.controllers)</h1>
+
+<table class="coverageStats">
+
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">AccountsApiController</td>
+<td class="coverageStat">
+  <span class="percent">
+    16.7%
+  </span>
+  <span class="absValue">
+    (1/6)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    37.5%
+  </span>
+  <span class="absValue">
+    (3/8)
+  </span>
+</td>
+</tr>
+  <tr>
+    <td class="name">AccountsApiController$$EnhancerBySpringCGLIB$$16b2891f</td>
+  </tr>
+<tr>
+  <td class="name"><strong>Total</strong></td>
+<td class="coverageStat">
+  <span class="percent">
+    16.7%
+  </span>
+  <span class="absValue">
+    (1/6)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    37.5%
+  </span>
+  <span class="absValue">
+    (3/8)
+  </span>
+</td>
+</tr>
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package io.swagger.api.controllers;
+&nbsp;
+&nbsp;import com.fasterxml.jackson.databind.ObjectMapper;
+&nbsp;import io.swagger.api.AccountsApi;
+&nbsp;import io.swagger.api.service.AccountService;
+&nbsp;import io.swagger.api.service.UserService;
+&nbsp;import io.swagger.model.Account;
+&nbsp;import io.swagger.model.DTO.CreateAccountDTO;
+&nbsp;import io.swagger.model.DTO.GetAccountDTO;
+&nbsp;import io.swagger.model.DTO.UpdateAccountDTO;
+&nbsp;import io.swagger.model.User;
+&nbsp;import io.swagger.v3.oas.annotations.Parameter;
+&nbsp;import io.swagger.v3.oas.annotations.enums.ParameterIn;
+&nbsp;import io.swagger.v3.oas.annotations.media.Schema;
+&nbsp;import org.slf4j.Logger;
+&nbsp;import org.slf4j.LoggerFactory;
+&nbsp;import org.springframework.beans.factory.annotation.Autowired;
+&nbsp;import org.springframework.http.HttpStatus;
+&nbsp;import org.springframework.http.ResponseEntity;
+&nbsp;import org.springframework.security.access.prepost.PreAuthorize;
+&nbsp;import org.springframework.web.bind.annotation.*;
+&nbsp;
+&nbsp;import javax.servlet.http.HttpServletRequest;
+&nbsp;import javax.validation.Valid;
+&nbsp;import java.util.ArrayList;
+&nbsp;import java.util.List;
+&nbsp;import java.util.UUID;
+&nbsp;
+&nbsp;@CrossOrigin(origins = &quot;*&quot;)
+&nbsp;@javax.annotation.Generated(value = &quot;io.swagger.codegen.v3.generators.java.SpringCodegen&quot;, date = &quot;2023-05-16T13:11:00.686570329Z[GMT]&quot;)
+&nbsp;@RestController
+&nbsp;public class AccountsApiController implements AccountsApi {
+&nbsp;    @Autowired
+&nbsp;    private final ObjectMapper objectMapper;
+&nbsp;
+&nbsp;    @Autowired
+&nbsp;    private AccountService accountService;
+&nbsp;
+&nbsp;    @Autowired
+&nbsp;    private UserService userService;
+&nbsp;    private final HttpServletRequest request;
+&nbsp;
+&nbsp;    @org.springframework.beans.factory.annotation.Autowired
+<b class="fc">&nbsp;    public AccountsApiController(ObjectMapper objectMapper, HttpServletRequest request) {</b>
+<b class="fc">&nbsp;        this.objectMapper = objectMapper;</b>
+<b class="fc">&nbsp;        this.request = request;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    @PreAuthorize(&quot;hasRole(&#39;ROLE_EMPLOYEE&#39;)&quot;)
+&nbsp;    @RequestMapping(value = &quot;/accounts&quot;, produces = {&quot;application/json&quot;}, method = RequestMethod.POST)
+&nbsp;    public ResponseEntity&lt;Account&gt; accountsPost(@RequestBody CreateAccountDTO createAccountDTO) {
+<b class="nc">&nbsp;        return accountService.add(createAccountDTO);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    @PreAuthorize(&quot;hasRole(&#39;ROLE_EMPLOYEE&#39;)&quot;)
+&nbsp;    @RequestMapping(value = &quot;/accounts&quot;, produces = {&quot;application/json&quot;}, method = RequestMethod.GET)
+&nbsp;    public ResponseEntity&lt;List&lt;GetAccountDTO&gt;&gt; accountsGet(
+&nbsp;            @Parameter(in = ParameterIn.QUERY, description = &quot;The maximum number of accounts to retrieve.&quot;, schema = @Schema(allowableValues = {&quot;0&quot;, &quot;50&quot;}, type = &quot;integer&quot;, defaultValue = &quot;20&quot;, maximum = &quot;50&quot;)) @Valid @RequestParam(value = &quot;limit&quot;, required = false, defaultValue = &quot;10&quot;) Integer limit,
+&nbsp;            @Parameter(in = ParameterIn.QUERY, description = &quot;The offset for paginated results.&quot;, schema = @Schema(type = &quot;integer&quot;, defaultValue = &quot;0&quot;, minimum = &quot;0&quot;)) @Valid @RequestParam(value = &quot;offset&quot;, required = false, defaultValue = &quot;0&quot;) Integer offset,
+&nbsp;            @Parameter(in = ParameterIn.QUERY, description = &quot;Comma-separated list of search strings to filter accounts.&quot;, schema = @Schema(type = &quot;string&quot;)) @Valid @RequestParam(value = &quot;searchstrings&quot;, required = false) String searchstrings,
+&nbsp;            @Parameter(in = ParameterIn.QUERY, description = &quot;IBAN to filter accounts.&quot;, schema = @Schema(type = &quot;string&quot;)) @Valid @RequestParam(value = &quot;IBAN&quot;, required = false) String IBAN)
+&nbsp;    {
+<b class="nc">&nbsp;        return accountService.getAllAccounts(limit, offset, searchstrings, IBAN);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    @PreAuthorize(&quot;hasAnyRole(&#39;ROLE_USER&#39;, &#39;ROLE_EMPLOYEE&#39;)&quot;)
+&nbsp;    @RequestMapping(value = &quot;/accounts/{accountID}&quot;, produces = {&quot;application/json&quot;}, method = RequestMethod.GET)
+&nbsp;    public ResponseEntity&lt;GetAccountDTO&gt; accountsAccountIDGet(@Parameter(in = ParameterIn.PATH, description = &quot;ID of the account to retrieve&quot;, required=true, schema=@Schema()) @PathVariable(&quot;accountID&quot;) UUID accountID) {
+<b class="nc">&nbsp;        return accountService.getAccountByAccountID(accountID);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    @PreAuthorize(&quot;hasRole(&#39;ROLE_USER&#39;)&quot;)
+&nbsp;    @RequestMapping(value = &quot;/accounts/user/{userId}/accounts&quot;, produces = {&quot;application/json&quot;}, method = RequestMethod.GET)
+&nbsp;    public ResponseEntity&lt;List&lt;GetAccountDTO&gt;&gt; accountsUserUserIdAccountsGet(
+&nbsp;            @Parameter(in = ParameterIn.PATH, description = &quot;ID of the user whose accounts to retrieve&quot;, required = true, schema = @Schema(type = &quot;string&quot;, format = &quot;uuid&quot;))
+&nbsp;            @PathVariable(&quot;userId&quot;) UUID userId,
+&nbsp;            @Parameter(in = ParameterIn.QUERY, description = &quot;The maximum number of accounts to retrieve.&quot;, schema = @Schema(type = &quot;integer&quot;, defaultValue = &quot;10&quot;, maximum = &quot;50&quot;))
+&nbsp;            @Valid @RequestParam(value = &quot;limit&quot;, required = false, defaultValue = &quot;10&quot;) Integer limit,
+&nbsp;            @Parameter(in = ParameterIn.QUERY, description = &quot;The offset for paginated results.&quot;, schema = @Schema(type = &quot;integer&quot;, defaultValue = &quot;0&quot;, minimum = &quot;0&quot;))
+&nbsp;            @Valid @RequestParam(value = &quot;offset&quot;, required = false, defaultValue = &quot;0&quot;) Integer offset,
+&nbsp;            @Parameter(in = ParameterIn.QUERY, description = &quot;Comma-separated list of search strings to filter accounts.&quot;, schema = @Schema(type = &quot;string&quot;))
+&nbsp;            @Valid @RequestParam(value = &quot;searchstrings&quot;, required = false) String searchstrings
+&nbsp;    ) {
+<b class="nc">&nbsp;        return accountService.getAccountsOfUser(userId, limit, offset, searchstrings);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    @PreAuthorize(&quot;hasRole(&#39;ROLE_USER&#39;)&quot;)
+&nbsp;    @RequestMapping(value = &quot;/accounts/{accountID}&quot;, produces = {&quot;application/json&quot;}, method = RequestMethod.PUT)
+&nbsp;    public ResponseEntity&lt;GetAccountDTO&gt; accountsAccountIDPut(@Parameter(in = ParameterIn.PATH, description = &quot;ID of the account to update&quot;, required=true, schema=@Schema()) @PathVariable(&quot;accountID&quot;) UUID accountID, @Parameter(in = ParameterIn.DEFAULT, description = &quot;New account details to update for the specified account&quot;, required=true, schema=@Schema()) @Valid @RequestBody UpdateAccountDTO updateAccountDTO) {
+<b class="nc">&nbsp;        return accountService.updateAccount(accountID, updateAccountDTO);</b>
+&nbsp;    }
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2023-06-13 11:03</div>
+</div>
+</body>
+</html>
