@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import io.swagger.api.repository.AccountRepository;
 import io.swagger.api.repository.UserRepository;
 import io.swagger.model.Account;
+import io.swagger.model.AccountType;
 import io.swagger.model.DTO.CreateAccountDTO;
 import io.swagger.model.DTO.GetAccountDTO;
 import io.swagger.model.DTO.GetUserDTO;
@@ -59,8 +60,8 @@ public class AccountServiceTest {
     void testAdd() {
         UUID userId = UUID.fromString("bb0cc36d-69a7-471e-a665-3609bc14c27a");
         User user = new User(userId, "Test", "Account", "testaccount@mail.nl", "password", new ArrayList<>(), true, new ArrayList<>(), 1000.00, 10000.00);
-        Account bankAccount = new Account(UUID.randomUUID(), user, user.getUserID(), "test account", "NL01INHO0000000001", 9999999999999999.00, Account.TypeEnum.CURRENT, -9999999999999999.00, true);
-        CreateAccountDTO createAccountDTO = new CreateAccountDTO("test account2", 100.00, CreateAccountDTO.TypeEnum.CURRENT, 1000.00, userId);
+        Account bankAccount = new Account(UUID.randomUUID(), user, user.getUserID(), "test account", "NL01INHO0000000001", 9999999999999999.00, AccountType.TypeEnum.CURRENT, -9999999999999999.00, true);
+        CreateAccountDTO createAccountDTO = new CreateAccountDTO("test account2", 100.00, AccountType.TypeEnum.CURRENT, 1000.00, userId);
 
         GetUserDTO userDTO = new GetUserDTO();
         userDTO.setUserID(userId);
@@ -87,7 +88,7 @@ public class AccountServiceTest {
 
     @Test
     public void testAdd_NullUserID() {
-        CreateAccountDTO createAccountDTO = new CreateAccountDTO("test account2", 100.00, CreateAccountDTO.TypeEnum.CURRENT, 1000.00, null);
+        CreateAccountDTO createAccountDTO = new CreateAccountDTO("test account2", 100.00, AccountType.TypeEnum.CURRENT, 1000.00, null);
 
         // Invoke the method and assert that it throws an IllegalArgumentException
         assertThrows(ResponseStatusException.class, () -> accountService.add(createAccountDTO));
@@ -183,7 +184,7 @@ public class AccountServiceTest {
 
         // Invoke the method and assert that it throws a ResponseStatusException with HTTP status 404
         ResponseStatusException exception = assertThrows(ResponseStatusException.class, () -> accountService.updateAccount(accountId, updateAccountDTO));
-        assertEquals(HttpStatus.BAD_REQUEST, exception.getStatus());
+        assertEquals(HttpStatus.NOT_FOUND, exception.getStatus());
         assertEquals("This account does not exist", exception.getReason());
 
         verify(accountRepository, times(1)).getAccountByAccountID(accountId);

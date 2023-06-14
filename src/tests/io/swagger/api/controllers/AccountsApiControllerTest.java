@@ -3,6 +3,7 @@ package io.swagger.api.controllers;
 import io.swagger.api.service.AccountService;
 import io.swagger.api.service.ValidationService;
 import io.swagger.model.Account;
+import io.swagger.model.AccountType;
 import io.swagger.model.DTO.CreateAccountDTO;
 import io.swagger.model.DTO.GetAccountDTO;
 import io.swagger.model.DTO.UpdateAccountDTO;
@@ -51,8 +52,8 @@ class AccountsApiControllerTest {
     @Test
     void testAccountsPost() {
         User user = new User(UUID.fromString("bb0cc36d-69a7-471e-a665-3609bc14c27a"), "Test", "Account", "testaccount@mail.nl", "password", Arrays.asList(Role.ROLE_USER), true, new ArrayList<>(), 1000.00, 10000.00);
-        Account bankAccount = new Account(UUID.randomUUID(), user, user.getUserID(), "test account", "NL01INHO0000000001", 9999999999999999.00, Account.TypeEnum.CURRENT, -9999999999999999.00, true);
-        CreateAccountDTO createAccountDTO = new CreateAccountDTO("test account2", 100.00, CreateAccountDTO.TypeEnum.CURRENT, 1000.00, UUID.randomUUID());
+        Account bankAccount = new Account(UUID.randomUUID(), user, user.getUserID(), "test account", "NL01INHO0000000001", 9999999999999999.00, AccountType.TypeEnum.CURRENT, -9999999999999999.00, true);
+        CreateAccountDTO createAccountDTO = new CreateAccountDTO("test account2", 100.00, AccountType.TypeEnum.CURRENT, 1000.00, UUID.randomUUID());
 
         when(accountService.add(any(CreateAccountDTO.class))).thenReturn(bankAccount);
 
@@ -66,7 +67,7 @@ class AccountsApiControllerTest {
 
     @Test
     void testAccountsPost_UserDoesntExist_BAD_REQUEST() {
-        CreateAccountDTO createAccountDTO = new CreateAccountDTO("test account2", 100.00, CreateAccountDTO.TypeEnum.CURRENT, 1000.00, UUID.randomUUID());
+        CreateAccountDTO createAccountDTO = new CreateAccountDTO("test account2", 100.00, AccountType.TypeEnum.CURRENT, 1000.00, UUID.randomUUID());
         when(accountService.add(any(CreateAccountDTO.class))).thenThrow(new ResponseStatusException(HttpStatus.BAD_REQUEST, "This user does not exist"));
 
         try {

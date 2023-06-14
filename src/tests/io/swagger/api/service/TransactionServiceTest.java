@@ -221,12 +221,12 @@ class TransactionServiceTest {
         fromAccount.setUserID(UUID.fromString("6a54d1d2-b39c-4952-b3a2-af04e9afd76e"));
         fromAccount.setBalance(100.0);
         fromAccount.setMinBal(100.0);
-        fromAccount.setType(Account.TypeEnum.SAVINGS);
+        fromAccount.setType(AccountType.TypeEnum.SAVINGS);
 
         Account toAccount = new Account();
         toAccount.setUserID(UUID.fromString("6a54d1d2-b39c-4952-b3a2-af04e9afd76e"));
         toAccount.setBalance(100.00);
-        toAccount.setType(Account.TypeEnum.SAVINGS);
+        toAccount.setType(AccountType.TypeEnum.SAVINGS);
 
         User userPerforming = new User();
         userPerforming.setUserID(UUID.fromString("6a54d1d2-b39c-4952-b3a2-af04e9afd76e"));

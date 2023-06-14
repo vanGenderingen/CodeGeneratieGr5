@@ -50,7 +50,7 @@ public interface AccountsApi {
     @PutMapping("/{accountID}")
     ResponseEntity<GetAccountDTO> updateAccount(
             @Valid @PathVariable("accountID") UUID accountID,
-            @Valid @RequestBody UpdateAccountDTO updateAccountDTO,
+            @RequestBody UpdateAccountDTO updateAccountDTO,
             Principal principal
     );
 }
