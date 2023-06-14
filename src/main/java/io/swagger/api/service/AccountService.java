@@ -94,6 +94,7 @@ public class AccountService {
 
     // Convert A list of accounts to a list of GetAccountDTOs
     private List<GetAccountDTO> convertAccountsToGetAccountToDTO(List<Account> accounts) {
+        if (accounts == null) throw new ResponseStatusException(HttpStatus.NOT_FOUND, "No Accounts found");
         try {
             return accounts.stream()
                     .map(account -> objectMapper.convertValue(account, GetAccountDTO.class))
@@ -101,8 +102,6 @@ public class AccountService {
         } catch (MappingException e) {
             log.error("Couldn't serialize response for content type application/json", e);
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Couldn't serialize response for content type application/json");
-        } catch (NullPointerException e){
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "No Accounts found");
         }
     }
 
