@@ -18,29 +18,74 @@ import static org.mockito.Mockito.mock;
 class ValidationServiceTest {
 
     @Test
-    void testValidateAccountGetAndPutAccess_EmployeeAccess() {
+    void testValidateAccountGetAccess_EmployeeAccess() {
         UUID accountId = UUID.randomUUID();
         Principal principal = createPrincipal(accountId.toString(), "ROLE_EMPLOYEE");
 
-        assertDoesNotThrow(() -> ValidationService.validateAccountGetAndPutAccess(accountId, principal));
+        assertDoesNotThrow(() -> ValidationService.validateAccountGetAccess(accountId, principal));
     }
 
     @Test
-    void testValidateAccountGetAndPutAccess_UserAccessWithMatchingAccountId() {
+    void testValidateAccountGetAccess_UserAccessWithMatchingAccountId() {
         UUID accountId = UUID.randomUUID();
         Principal principal = createPrincipal(accountId.toString(), "ROLE_USER");
 
-        assertDoesNotThrow(() -> ValidationService.validateAccountGetAndPutAccess(accountId, principal));
+        assertDoesNotThrow(() -> ValidationService.validateAccountGetAccess(accountId, principal));
     }
 
     @Test
-    void testValidateAccountGetAndPutAccess_UserAccessWithDifferentAccountId() {
+    void testValidateAccountGetAccess_UserAccessWithDifferentAccountId() {
         UUID accountId = UUID.randomUUID();
         UUID differentAccountId = UUID.randomUUID();
         Principal principal = createPrincipal(differentAccountId.toString(), "ROLE_USER");
 
         ResponseStatusException exception = assertThrows(ResponseStatusException.class,
-                () -> ValidationService.validateAccountGetAndPutAccess(accountId, principal));
+                () -> ValidationService.validateAccountGetAccess(accountId, principal));
+
+        assertEquals("The user is not authorized to access this account", exception.getReason());
+        assertEquals(403, exception.getStatus().value());
+    }
+
+    @Test
+    void testValidateAccountPutAccess_EmployeeAccess() {
+        UUID accountId = UUID.randomUUID();
+        Principal principal = createPrincipal(accountId.toString(), "ROLE_EMPLOYEE");
+        String IBAN = "NL01INHO0000000002";
+
+        assertDoesNotThrow(() -> ValidationService.validateAccountPutAccess(accountId, IBAN, principal));
+    }
+
+    @Test
+    void testValidateAccountPutAccess_UserAccessWithMatchingAccountId() {
+        UUID accountId = UUID.randomUUID();
+        Principal principal = createPrincipal(accountId.toString(), "ROLE_USER");
+        String IBAN = "NL01INHO0000000002";
+
+        assertDoesNotThrow(() -> ValidationService.validateAccountPutAccess(accountId, IBAN, principal));
+    }
+
+    @Test
+    void testValidateAccountPutAccess_UpdatingBankAccount() {
+        UUID accountId = UUID.randomUUID();
+        Principal principal = createPrincipal(accountId.toString(), "ROLE_USER");
+        String IBAN = "NL01INHO0000000001";
+
+        ResponseStatusException exception = assertThrows(ResponseStatusException.class,
+                () -> ValidationService.validateAccountPutAccess(accountId, IBAN, principal));
+
+        assertEquals("The bank's account can not be adjusted", exception.getReason());
+        assertEquals(403, exception.getStatus().value());
+    }
+
+    @Test
+    void testValidateAccountPutAccess_UserAccessWithDifferentAccountId() {
+        UUID accountId = UUID.randomUUID();
+        UUID differentAccountId = UUID.randomUUID();
+        Principal principal = createPrincipal(differentAccountId.toString(), "ROLE_USER");
+        String IBAN = "NL01INHO0000000002";
+
+        ResponseStatusException exception = assertThrows(ResponseStatusException.class,
+                () -> ValidationService.validateAccountPutAccess(accountId, IBAN, principal));
 
         assertEquals("The user is not authorized to access this account", exception.getReason());
         assertEquals(403, exception.getStatus().value());

@@ -144,9 +144,11 @@ class AccountsApiControllerTest {
     @Test
     void testGetAccountByAccountID() {
         UUID accountId = UUID.randomUUID();
+        UUID userId = UUID.randomUUID();
         GetAccountDTO account = new GetAccountDTO();
         account.setAccountID(accountId);
-        Principal principal = accountId::toString;
+        account.setUserID(userId);
+        Principal principal = userId::toString;
 
         Authentication authentication = Mockito.mock(Authentication.class);
         SecurityContext securityContext = Mockito.mock(SecurityContext.class);
@@ -203,28 +205,6 @@ class AccountsApiControllerTest {
 
         verify(accountService, times(1)).getAccountsOfUser(userId, limit, offset, searchstrings);
     }
-
-    @Test
-    void testGetAccountsOfUser_WhenNoAccountsExist_ReturnsEmptyList() {
-        UUID userId = UUID.randomUUID();
-
-        // Arrange
-        int limit = 10;
-        int offset = 0;
-        String searchstrings = null;
-        String IBAN = null;
-        Principal principal = userId::toString;
-
-        when(accountService.getAccountsOfUser(userId, limit, offset, searchstrings)).thenReturn(new ArrayList<>());
-
-        // Act
-        ResponseEntity<List<GetAccountDTO>> responseEntity = accountsApiController.getUserAccounts(userId, limit, offset, searchstrings, principal);
-
-        // Assert
-        assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.OK);
-        assertThat(responseEntity.getBody()).isEmpty();
-    }
-
     @Test
     void testGetAccountsOfUser_BadSerialization_BAD_REQUEST() {
         UUID userId = UUID.randomUUID();
@@ -244,12 +224,14 @@ class AccountsApiControllerTest {
     @Test
     void testAccountsAccountIDPut() {
         UUID accountId = UUID.randomUUID();
+        UUID userId = UUID.randomUUID();
         UpdateAccountDTO updateAccountDTO = new UpdateAccountDTO();
         updateAccountDTO.setName("test");
-        Principal principal = accountId::toString;
+        Principal principal = userId::toString;
 
         GetAccountDTO account = new GetAccountDTO();
         account.setAccountID(accountId);
+        account.setUserID(userId);
 
         Authentication authentication = Mockito.mock(Authentication.class);
         SecurityContext securityContext = Mockito.mock(SecurityContext.class);

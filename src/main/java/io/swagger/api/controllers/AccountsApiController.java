@@ -8,26 +8,16 @@ import io.swagger.api.service.ValidationService;
 import io.swagger.model.Account;
 import io.swagger.model.DTO.CreateAccountDTO;
 import io.swagger.model.DTO.GetAccountDTO;
-import io.swagger.model.DTO.GetUserDTO;
 import io.swagger.model.DTO.UpdateAccountDTO;
-import io.swagger.model.User;
-import io.swagger.v3.oas.annotations.Parameter;
-import io.swagger.v3.oas.annotations.enums.ParameterIn;
-import io.swagger.v3.oas.annotations.media.Schema;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.server.ResponseStatusException;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 import java.security.Principal;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -83,7 +73,7 @@ public class AccountsApiController implements AccountsApi {
         GetAccountDTO getAccountDTO = accountService.getAccountByAccountID(accountID);
 
         //Validate the user is authorized to access the account
-        ValidationService.validateAccountGetAndPutAccess(getAccountDTO.getUserID(), principal);
+        ValidationService.validateAccountGetAccess(getAccountDTO.getUserID(), principal);
 
         // Return the account if the user is authorized
         return ResponseEntity.ok(getAccountDTO);
@@ -100,7 +90,7 @@ public class AccountsApiController implements AccountsApi {
             Principal principal
     ) {
         //Validate the user is authorized to access the account
-        ValidationService.validateAccountGetAndPutAccess(userId, principal);
+        ValidationService.validateAccountGetAccess(userId, principal);
 
         //Get the requested accounts from the database
         List<GetAccountDTO> getAccountDTOList = accountService.getAccountsOfUser(userId, limit, offset, searchStrings);
@@ -121,7 +111,7 @@ public class AccountsApiController implements AccountsApi {
         GetAccountDTO getAccountDTO = accountService.updateAccount(accountID, updateAccountDTO);
 
         //Validate the user is authorized to access the account
-        ValidationService.validateAccountGetAndPutAccess(getAccountDTO.getUserID(), principal);
+        ValidationService.validateAccountPutAccess(getAccountDTO.getUserID(), getAccountDTO.getIban(), principal);
 
         // Return the account if the user is authorized
         return new ResponseEntity<>(getAccountDTO, HttpStatus.OK);

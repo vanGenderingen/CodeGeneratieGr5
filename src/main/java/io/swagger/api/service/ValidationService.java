@@ -6,12 +6,28 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.security.Principal;
+import java.util.Objects;
 import java.util.UUID;
 
 @Service
 public class ValidationService {
 
-    public static void validateAccountGetAndPutAccess(UUID userID, Principal principal) {
+    public static void validateAccountGetAccess(UUID userID, Principal principal) {
+        validate(userID, principal);
+}
+
+    public static void validateAccountPutAccess(UUID userID, String IBAN, Principal principal) {
+        boolean isEmployee = SecurityContextHolder.getContext().getAuthentication().getAuthorities()
+                .stream()
+                .anyMatch(role -> role.getAuthority().equals("ROLE_EMPLOYEE"));
+        if (!Objects.equals(IBAN, "NL01INHO0000000001")) {
+            validate(userID, principal);
+        }else{
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "The bank's account can not be adjusted");
+        }
+    }
+
+    private static void validate (UUID userID, Principal principal) {
         String userIdFromToken = principal.getName();
 
         boolean isEmployee = SecurityContextHolder.getContext().getAuthentication().getAuthorities()
