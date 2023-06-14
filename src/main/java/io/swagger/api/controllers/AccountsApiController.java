@@ -73,7 +73,7 @@ public class AccountsApiController implements AccountsApi {
         GetAccountDTO getAccountDTO = accountService.getAccountByAccountID(accountID);
 
         //Validate the user is authorized to access the account
-        ValidationService.validateAccountGetAccess(getAccountDTO.getUserID(), principal);
+        ValidationService.validateAccountAndUserGetAccess(getAccountDTO.getUserID(), principal);
 
         // Return the account if the user is authorized
         return ResponseEntity.ok(getAccountDTO);
@@ -90,7 +90,7 @@ public class AccountsApiController implements AccountsApi {
             Principal principal
     ) {
         //Validate the user is authorized to access the account
-        ValidationService.validateAccountGetAccess(userId, principal);
+        ValidationService.validateAccountAndUserGetAccess(userId, principal);
 
         //Get the requested accounts from the database
         List<GetAccountDTO> getAccountDTOList = accountService.getAccountsOfUser(userId, limit, offset, searchStrings);

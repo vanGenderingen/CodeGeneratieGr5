@@ -12,7 +12,7 @@ import java.util.UUID;
 @Service
 public class ValidationService {
 
-    public static void validateAccountGetAccess(UUID userID, Principal principal) {
+    public static void validateAccountAndUserGetAccess(UUID userID, Principal principal) {
         validate(userID, principal);
 }
 

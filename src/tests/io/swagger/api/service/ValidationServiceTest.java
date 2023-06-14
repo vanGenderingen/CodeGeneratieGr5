@@ -22,7 +22,7 @@ class ValidationServiceTest {
         UUID accountId = UUID.randomUUID();
         Principal principal = createPrincipal(accountId.toString(), "ROLE_EMPLOYEE");
 
-        assertDoesNotThrow(() -> ValidationService.validateAccountGetAccess(accountId, principal));
+        assertDoesNotThrow(() -> ValidationService.validateAccountAndUserGetAccess(accountId, principal));
     }
 
     @Test
@@ -30,7 +30,7 @@ class ValidationServiceTest {
         UUID accountId = UUID.randomUUID();
         Principal principal = createPrincipal(accountId.toString(), "ROLE_USER");
 
-        assertDoesNotThrow(() -> ValidationService.validateAccountGetAccess(accountId, principal));
+        assertDoesNotThrow(() -> ValidationService.validateAccountAndUserGetAccess(accountId, principal));
     }
 
     @Test
@@ -40,7 +40,7 @@ class ValidationServiceTest {
         Principal principal = createPrincipal(differentAccountId.toString(), "ROLE_USER");
 
         ResponseStatusException exception = assertThrows(ResponseStatusException.class,
-                () -> ValidationService.validateAccountGetAccess(accountId, principal));
+                () -> ValidationService.validateAccountAndUserGetAccess(accountId, principal));
 
         assertEquals("The user is not authorized to access this account", exception.getReason());
         assertEquals(403, exception.getStatus().value());
