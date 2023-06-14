@@ -6,7 +6,7 @@ import io.swagger.api.repository.UserRepository;
 import io.swagger.api.service.AccountService;
 import io.swagger.api.service.TransactionService;
 import io.swagger.api.service.UserService;
-import io.swagger.model.Account;
+import io.swagger.model.*;
 import io.swagger.model.DTO.CreateTransactionDTO;
 import io.swagger.model.Role;
 import io.swagger.model.transactions.Transaction;
@@ -83,48 +83,48 @@ public class DataSeeder implements ApplicationRunner {
 
         //create accounts
         //create one account for bank
-        Account bankAccount = new Account(UUID.randomUUID(), bank2, bank2.getUserID(), "Bank account", "NL01INHO0000000001" ,9999999999999999.00, Account.TypeEnum.CURRENT, -9999999999999999.00, true);
+        Account bankAccount = new Account(UUID.randomUUID(), bank2, bank2.getUserID(), "Bank account", "NL01INHO0000000001" ,9999999999999999.00, AccountType.CURRENT, -9999999999999999.00, true);
         accountRepository.save(bankAccount);
 
         //create a current account and savings account for every user
-        Account bankAccountEmployee1 = new Account(UUID.randomUUID(), bank4, bank4.getUserID(), "Current account Harry Potter", "NL01INHO0000000002" ,100.00, Account.TypeEnum.CURRENT, -100.00, true);
+        Account bankAccountEmployee1 = new Account(UUID.randomUUID(), bank4, bank4.getUserID(), "Current account Harry Potter", "NL01INHO0000000002" ,100.00, AccountType.CURRENT, -100.00, true);
         accountRepository.save(bankAccountEmployee1);
 
-        Account savingsAccountEmployee1 = new Account(UUID.randomUUID(), bank4, bank4.getUserID(), "Savings account Harry Potter", "NL01INHO0000000003" ,100.00, Account.TypeEnum.SAVINGS, -100.00, true);
+        Account savingsAccountEmployee1 = new Account(UUID.randomUUID(), bank4, bank4.getUserID(), "Savings account Harry Potter", "NL01INHO0000000003" ,100.00, AccountType.SAVINGS, -100.00, true);
         accountRepository.save(savingsAccountEmployee1);
 
-        Account bankAccountEmployee2 = new Account(UUID.randomUUID(), bank6, bank6.getUserID(), "Current account Ronald Weasly", "NL01INHO0000000004" ,100.00, Account.TypeEnum.CURRENT, -100.00, true);
+        Account bankAccountEmployee2 = new Account(UUID.randomUUID(), bank6, bank6.getUserID(), "Current account Ronald Weasly", "NL01INHO0000000004" ,100.00, AccountType.CURRENT, -100.00, true);
         accountRepository.save(bankAccountEmployee2);
 
-        Account bankAccountEmployee3 = new Account(UUID.randomUUID(), bank8, bank8.getUserID(), "Current account Hermione Granger", "NL01INHO0000000006" ,100.00, Account.TypeEnum.CURRENT, -100.00, true);
+        Account bankAccountEmployee3 = new Account(UUID.randomUUID(), bank8, bank8.getUserID(), "Current account Hermione Granger", "NL01INHO0000000006" ,100.00, AccountType.CURRENT, -100.00, true);
         accountRepository.save(bankAccountEmployee3);
 
-        Account savingsAccountEmployee3 = new Account(UUID.randomUUID(), bank8, bank8.getUserID(), "Savings account Hermione Granger", "NL01INHO0000000007" ,100.00, Account.TypeEnum.SAVINGS, -100.00, true);
+        Account savingsAccountEmployee3 = new Account(UUID.randomUUID(), bank8, bank8.getUserID(), "Savings account Hermione Granger", "NL01INHO0000000007" ,100.00, AccountType.SAVINGS, -100.00, true);
         accountRepository.save(savingsAccountEmployee3);
 
         //create user accounts
-        Account currentAccountUser2 = new Account(UUID.randomUUID(), user2, user2.getUserID(), "Current account Ronald Weasly", "NL01INHO0000000010", 100.00, Account.TypeEnum.CURRENT, -100.00, true);
+        Account currentAccountUser2 = new Account(UUID.randomUUID(), user2, user2.getUserID(), "Current account Ronald Weasly", "NL01INHO0000000010", 100.00, AccountType.CURRENT, -100.00, true);
         accountRepository.save(currentAccountUser2);
 
-        Account savingsAccountUser2 = new Account(UUID.randomUUID(), user2, user2.getUserID(), "Savings account Ronald Weasly", "NL01INHO0000000011", 100.00, Account.TypeEnum.SAVINGS, -100.00, true);
+        Account savingsAccountUser2 = new Account(UUID.randomUUID(), user2, user2.getUserID(), "Savings account Ronald Weasly", "NL01INHO0000000011", 100.00, AccountType.SAVINGS, -100.00, true);
         accountRepository.save(savingsAccountUser2);
 
-        Account currentAccountUser4 = new Account(UUID.randomUUID(), user4, user4.getUserID(), "Current account Severus Snape", "NL01INHO0000000012", 100.00, Account.TypeEnum.CURRENT, -100.00, true);
+        Account currentAccountUser4 = new Account(UUID.randomUUID(), user4, user4.getUserID(), "Current account Severus Snape", "NL01INHO0000000012", 100.00, AccountType.CURRENT, -100.00, true);
         accountRepository.save(currentAccountUser4);
 
-        Account savingsAccountUser4 = new Account(UUID.randomUUID(), user4, user4.getUserID(), "Savings account Severus Snape", "NL01INHO0000000013", 100.00, Account.TypeEnum.SAVINGS, -100.00, true);
+        Account savingsAccountUser4 = new Account(UUID.randomUUID(), user4, user4.getUserID(), "Savings account Severus Snape", "NL01INHO0000000013", 100.00, AccountType.SAVINGS, -100.00, true);
         accountRepository.save(savingsAccountUser4);
 
-        Account currentAccountUser6 = new Account(UUID.randomUUID(), user6, user6.getUserID(), "Current account Albus Dumbledore", "NL01INHO0000000014", 100.00, Account.TypeEnum.CURRENT, -100.00, true);
+        Account currentAccountUser6 = new Account(UUID.randomUUID(), user6, user6.getUserID(), "Current account Albus Dumbledore", "NL01INHO0000000014", 100.00, AccountType.CURRENT, -100.00, true);
         accountRepository.save(currentAccountUser6);
 
-        Account savingsAccountUser6 = new Account(UUID.randomUUID(), user6, user6.getUserID(), "Savings account Albus Dumbledore", "NL01INHO0000000015", 100.00, Account.TypeEnum.SAVINGS, -100.00, true);
+        Account savingsAccountUser6 = new Account(UUID.randomUUID(), user6, user6.getUserID(), "Savings account Albus Dumbledore", "NL01INHO0000000015", 100.00, AccountType.SAVINGS, -100.00, true);
         accountRepository.save(savingsAccountUser6);
 
-        Account currentAccountUser8 = new Account(UUID.randomUUID(), user8, user8.getUserID(), "Current account Sir Lancelot", "NL01INHO0000000016", 100.00, Account.TypeEnum.CURRENT, -100.00, true);
+        Account currentAccountUser8 = new Account(UUID.randomUUID(), user8, user8.getUserID(), "Current account Sir Lancelot", "NL01INHO0000000016", 100.00, AccountType.CURRENT, -100.00, true);
         accountRepository.save(currentAccountUser8);
 
-        Account savingsAccountUser8 = new Account(UUID.randomUUID(), user8, user8.getUserID(), "Savings account Sir Lancelot", "NL01INHO0000000017", 100.00, Account.TypeEnum.SAVINGS, -100.00, true);
+        Account savingsAccountUser8 = new Account(UUID.randomUUID(), user8, user8.getUserID(), "Savings account Sir Lancelot", "NL01INHO0000000017", 100.00, AccountType.SAVINGS, -100.00, true);
         accountRepository.save(savingsAccountUser8);
 
         //create transactions, 4 for every account

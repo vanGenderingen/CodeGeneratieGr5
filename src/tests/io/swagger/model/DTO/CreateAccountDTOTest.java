@@ -1,5 +1,6 @@
 package io.swagger.model.DTO;
 
+import io.swagger.model.AccountType;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
@@ -12,7 +13,7 @@ public class CreateAccountDTOTest {
         // Create test data
         String name = "John Doe";
         Double balance = 1000.0;
-        CreateAccountDTO.TypeEnum type = CreateAccountDTO.TypeEnum.CURRENT;
+        AccountType.TypeEnum type = AccountType.TypeEnum.CURRENT;
         Double minBal = 100.0;
         UUID userId = UUID.randomUUID();
 
@@ -35,15 +36,15 @@ public class CreateAccountDTOTest {
     @Test
     public void testTypeEnumToString() {
         String expected = "Current";
-        String actual = CreateAccountDTO.TypeEnum.CURRENT.toString();
+        String actual = AccountType.TypeEnum.CURRENT.toString();
 
         Assertions.assertEquals(expected, actual);
     }
 
     @Test
     public void testTypeEnumFromValue() {
-        CreateAccountDTO.TypeEnum expected = CreateAccountDTO.TypeEnum.SAVINGS;
-        CreateAccountDTO.TypeEnum actual = CreateAccountDTO.TypeEnum.fromValue("Savings");
+        AccountType.TypeEnum expected = AccountType.TypeEnum.SAVINGS;
+        AccountType.TypeEnum actual = AccountType.TypeEnum.fromValue("Savings");
 
         Assertions.assertEquals(expected, actual);
     }

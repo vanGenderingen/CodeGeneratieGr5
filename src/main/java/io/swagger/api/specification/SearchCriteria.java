@@ -4,6 +4,7 @@ import io.swagger.model.transactions.TransactionType;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Getter
@@ -16,5 +17,5 @@ public class SearchCriteria {
     private Double lower;
     private Double higher;
     private Double equal;
-
+    private LocalDateTime date;
 }

@@ -72,42 +72,20 @@ public class AccountRepositoryTest {
                 Account account2 = new Account();
                 account2.setUserID(userId);
 
+                List<Account> accounts = Arrays.asList(account1, account2);
+
                 // Create the mock AccountRepository
                 AccountRepository accountRepository = mock(AccountRepository.class);
 
                 // Mock the behavior of the accountRepository.getAccountsOfUser() method
                 Mockito.when(accountRepository.getAccountsOfUser(userId, "John", PageRequest.of(0, 10)))
-                        .thenReturn(Page.empty());
+                        .thenReturn(accounts);
 
                 // Perform the query
-                Page<Account> result = accountRepository.getAccountsOfUser(userId, "John", PageRequest.of(0, 10));
+                List<Account> result = accountRepository.getAccountsOfUser(userId, "John", PageRequest.of(0, 10));
 
                 // Assert the results
-                Assertions.assertEquals(0, result.getTotalElements());
-        }
-
-        @Test
-        public void testCountAccountsOfUser() {
-                // Create test data
-                UUID userId = UUID.randomUUID();
-                Account account1 = new Account();
-                account1.setUserID(userId);
-
-                Account account2 = new Account();
-                account2.setUserID(userId);
-
-                // Create the mock AccountRepository
-                AccountRepository accountRepository = mock(AccountRepository.class);
-
-                // Mock the behavior of the accountRepository.countAccountsOfUser() method
-                Mockito.when(accountRepository.countAccountsOfUser(userId, ""))
-                        .thenReturn(0);
-
-                // Perform the query
-                int count = accountRepository.countAccountsOfUser(userId, "");
-
-                // Assert the result
-                Assertions.assertEquals(0, count);
+                Assertions.assertEquals(2, result.size());
         }
 
         @Test

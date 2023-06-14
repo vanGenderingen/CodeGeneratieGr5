@@ -42,6 +42,8 @@ public class TransactionSpecification implements Specification<Transaction> {
         Optional.ofNullable(criteria.getEqual())
                 .ifPresent(equal -> predicates.add(criteriaBuilder.equal(root.get("amount"), equal)));
 
+        Optional.ofNullable(criteria.getDate())
+                .ifPresent(date -> predicates.add(criteriaBuilder.equal(root.get("timeStamp"), date)));
 
         return criteriaBuilder.and(predicates.toArray(new Predicate[0]));
     }

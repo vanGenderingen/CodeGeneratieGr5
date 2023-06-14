@@ -58,8 +58,6 @@ class LoginApiControllerTest {
         // Assert
 
         assertEquals(HttpStatus.OK, response.getStatusCode());
-
-
     }
 
     @Test

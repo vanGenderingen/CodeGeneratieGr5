@@ -1,7 +1,7 @@
 package io.swagger.api.controllers;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import io.swagger.api.interfaces.UsersApi;
+import io.swagger.api.UsersApi;
 import io.swagger.api.service.UserService;
 import io.swagger.model.DTO.CreateUserDTO;
 import io.swagger.model.DTO.GetUserDTO;

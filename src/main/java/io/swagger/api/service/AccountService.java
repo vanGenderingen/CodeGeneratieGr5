@@ -9,22 +9,24 @@ import io.swagger.model.DTO.CreateAccountDTO;
 import io.swagger.model.DTO.GetAccountDTO;
 import io.swagger.model.DTO.UpdateAccountDTO;
 import io.swagger.model.User;
+import org.hibernate.MappingException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Service
 public class AccountService {
+
+    //TODO: Better Errors -> ikzelf vind het wel goed zo, kan iemand hier naar kijken?
+
     private static final Logger log = LoggerFactory.getLogger(AccountsApiController.class);
 
     @Autowired
@@ -33,94 +35,90 @@ public class AccountService {
     private UserRepository userRepository;
     @Autowired
     private ObjectMapper objectMapper;
-    @Autowired
-    private UserService userService;
 
-    public ResponseEntity<Account> add(CreateAccountDTO createAccountDTO) {
-        UUID userId = createAccountDTO.getUserId();
-        User user = userRepository.getUserByUserID(userId);
+    public Account add(CreateAccountDTO createAccountDTO) {
+        try {
+            // Get the user
+            User user = getUserByID(createAccountDTO.getUserId());
 
-        if (user == null) {
-            // Handle the case when the user does not exist
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        }
-
-        Account account = objectMapper.convertValue(createAccountDTO, Account.class);
-        account.setUser(user);
-        if (account.getIBAN() == null) {
+            // Set the user and generate IBAN
+            Account account = objectMapper.convertValue(createAccountDTO, Account.class);
+            account.setUser(user);
             account.setIBAN(IBANService.generateIBAN());
-        }
-        Account result = accountRepository.save(account);
 
-        return new ResponseEntity<>(result, HttpStatus.OK);
-    }
-
-    public ResponseEntity<List<GetAccountDTO>> getAllAccounts(Integer limit, Integer offset, String searchStrings, String IBAN) {
-        try {
-            Pageable pageable = PageRequest.of(offset, limit);
-            List<Account> accounts = accountRepository.getAll(IBAN, searchStrings, pageable);
-            List<GetAccountDTO> accountDTOS = new ArrayList<>();
-            for (Account account : accounts) {
-                GetAccountDTO accountDTO = objectMapper.convertValue(account, GetAccountDTO.class);
-                accountDTOS.add(accountDTO);
-            }
-            return new ResponseEntity<>(accountDTOS, HttpStatus.OK);
-        } catch (Exception e) {
-            log.error("Couldn't serialize response for content type application/json", e);
-            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+            // Save the account
+            return accountRepository.save(account);
+        }catch (IllegalArgumentException | NullPointerException e){
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Failed to add account due to invalid data");
         }
     }
+    public List<GetAccountDTO> getAllAccounts(Integer limit, Integer offset, String searchStrings, String IBAN) {
+        return convertAccountsToGetAccountToDTO(accountRepository.getAll(IBAN, searchStrings, PageRequest.of(offset, limit)));
+    }
 
-    public ResponseEntity<GetAccountDTO> getAccountByAccountID(UUID accountID) {
+    public GetAccountDTO getAccountByAccountID(UUID accountID) {
         try {
-            Account account = accountRepository.getAccountByAccountID(accountID);
-            GetAccountDTO accountDTO = objectMapper.convertValue(account, GetAccountDTO.class);
-            return new ResponseEntity<>(accountDTO, HttpStatus.OK);
-        } catch (Exception e) {
+            return objectMapper.convertValue(accountRepository.getAccountByAccountID(accountID), GetAccountDTO.class);
+        } catch (MappingException e) {
             log.error("Couldn't serialize response for content type application/json", e);
-            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Couldn't serialize response for content type application/json");
+        }catch (NullPointerException e){
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "This account does not exist");
         }
     }
-    public ResponseEntity<List<GetAccountDTO>> getAccountsOfUser(UUID userId, Integer limit, Integer offset, String searchStrings) {
+    public List<GetAccountDTO> getAccountsOfUser(UUID userId, Integer limit, Integer offset, String searchStrings) {
+        return convertAccountsToGetAccountToDTO(accountRepository.getAccountsOfUser(userId, searchStrings, PageRequest.of(offset, limit)));
+    }
+
+    public GetAccountDTO updateAccount(UUID accountID, UpdateAccountDTO updateAccountDTO) {
         try {
-            Pageable pageable = PageRequest.of(offset, limit);
-            Page<Account> accounts = accountRepository.getAccountsOfUser(userId, searchStrings, pageable);
-            List<GetAccountDTO> accountDTOS = new ArrayList<>();
-            for (Account account : accounts) {
-                GetAccountDTO accountDTO = objectMapper.convertValue(account, GetAccountDTO.class);
-                accountDTOS.add(accountDTO);
-            }
-            int totalAccounts = accountRepository.countAccountsOfUser(userId, searchStrings);
-            return ResponseEntity.ok()
-                    .header("X-Total-Accounts", String.valueOf(totalAccounts))
-                    .body(accountDTOS);
-        } catch (Exception e) {
+            return objectMapper.convertValue(accountRepository.save(updateAccountFieldsIfNeeded(
+                    accountRepository.getAccountByAccountID(accountID), updateAccountDTO)), GetAccountDTO.class);
+        } catch (MappingException e) {
             log.error("Couldn't serialize response for content type application/json", e);
-            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Couldn't serialize response for content type application/json");
+        }catch (NullPointerException e){
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "This account does not exist");
         }
     }
 
-    public ResponseEntity<GetAccountDTO> updateAccount(UUID accountID, UpdateAccountDTO updateAccountDTO) {
-        try {
-            Account existingAccount = accountRepository.getAccountByAccountID(accountID);
-            if (updateAccountDTO.getName() != null) {
-                existingAccount.setName(updateAccountDTO.getName());
-            }
-            if (updateAccountDTO.getBalance() != null) {
-                existingAccount.setBalance(updateAccountDTO.getBalance());
-            }
-            if (updateAccountDTO.getMinBal() != null) {
-                existingAccount.setMinBal(updateAccountDTO.getMinBal());
-            }
-            if (updateAccountDTO.isActive() != null) {
-                existingAccount.setActive(updateAccountDTO.isActive());
-            }
-            Account updatedAccount = accountRepository.save(existingAccount);
-            GetAccountDTO accountDTO = objectMapper.convertValue(updatedAccount, GetAccountDTO.class);
-            return new ResponseEntity<>(accountDTO, HttpStatus.OK);
-        } catch (Exception e) {
-            log.error("Couldn't serialize response for content type application/json", e);
-            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+    // Check if user exists
+    // Directly use the repository instead of using the service since we need a whole user and not a DTO
+    private User getUserByID(UUID userID) {
+        User user = userRepository.getUserByUserID(userID);
+        if (user == null){
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "This user does not exist");
         }
+        return user;
+    }
+
+    // Convert A list of accounts to a list of GetAccountDTOs
+    private List<GetAccountDTO> convertAccountsToGetAccountToDTO(List<Account> accounts) {
+        if (accounts == null) throw new ResponseStatusException(HttpStatus.NOT_FOUND, "No Accounts found");
+        try {
+            return accounts.stream()
+                    .map(account -> objectMapper.convertValue(account, GetAccountDTO.class))
+                    .collect(Collectors.toList());
+        } catch (MappingException e) {
+            log.error("Couldn't serialize response for content type application/json", e);
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Couldn't serialize response for content type application/json");
+        }
+    }
+
+    // Make sure that only the fields that are not null are updated
+    private Account updateAccountFieldsIfNeeded(Account existingAccount, UpdateAccountDTO updateAccountDTO) {
+        if (updateAccountDTO.getName() != null) {
+            existingAccount.setName(updateAccountDTO.getName());
+        }
+        if (updateAccountDTO.getBalance() != null) {
+            existingAccount.setBalance(updateAccountDTO.getBalance());
+        }
+        if (updateAccountDTO.getMinBal() != null) {
+            existingAccount.setMinBal(updateAccountDTO.getMinBal());
+        }
+        if (updateAccountDTO.isActive() != null) {
+            existingAccount.setActive(updateAccountDTO.isActive());
+        }
+        return existingAccount;
     }
 }
