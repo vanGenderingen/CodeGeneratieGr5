@@ -66,7 +66,7 @@ public class AccountTest {
 
     @Test
     public void testSetAndGetType() {
-        Account.TypeEnum type = Account.TypeEnum.CURRENT;
+        AccountType.TypeEnum type = AccountType.TypeEnum.CURRENT;
         account.setType(type);
 
         assertEquals(type, account.getType());
@@ -91,15 +91,15 @@ public class AccountTest {
     @Test
     public void testTypeEnumToString() {
         String expected = "Current";
-        String actual = Account.TypeEnum.CURRENT.toString();
+        String actual = AccountType.TypeEnum.CURRENT.toString();
 
         assertEquals(expected, actual);
     }
 
     @Test
     public void testTypeEnumFromValue() {
-        Account.TypeEnum expected = Account.TypeEnum.SAVINGS;
-        Account.TypeEnum actual = Account.TypeEnum.fromValue("Savings");
+        AccountType.TypeEnum expected = AccountType.TypeEnum.SAVINGS;
+        AccountType.TypeEnum actual = AccountType.TypeEnum.fromValue("Savings");
 
         assertEquals(expected, actual);
     }

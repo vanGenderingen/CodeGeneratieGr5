@@ -1,6 +1,7 @@
 package io.swagger.api.controllers;
 
 import io.swagger.api.repository.UserRepository;
+import io.swagger.api.service.LoginService;
 import io.swagger.model.DTO.LoginDTO;
 import io.swagger.model.DTO.LoginResponseDTO;
 import io.swagger.model.User;
@@ -45,8 +46,6 @@ class LoginApiControllerTest {
         // Assert
 
         assertEquals(HttpStatus.OK, response.getStatusCode());
-
-
     }
 
     @Test
@@ -68,7 +67,3 @@ class LoginApiControllerTest {
     private void assertEquals(HttpStatus httpStatus, HttpStatus statusCode) {
     }
 }
-
-
-}
-

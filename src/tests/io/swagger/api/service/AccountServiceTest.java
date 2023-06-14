@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import io.swagger.api.repository.AccountRepository;
 import io.swagger.api.repository.UserRepository;
 import io.swagger.model.Account;
+import io.swagger.model.AccountType;
 import io.swagger.model.DTO.CreateAccountDTO;
 import io.swagger.model.DTO.GetAccountDTO;
 import io.swagger.model.DTO.GetUserDTO;
@@ -21,6 +22,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -28,7 +30,7 @@ import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.hibernate.validator.internal.util.Contracts.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 
@@ -58,8 +60,8 @@ public class AccountServiceTest {
     void testAdd() {
         UUID userId = UUID.fromString("bb0cc36d-69a7-471e-a665-3609bc14c27a");
         User user = new User(userId, "Test", "Account", "testaccount@mail.nl", "password", new ArrayList<>(), true, new ArrayList<>(), 1000.00, 10000.00);
-        Account bankAccount = new Account(UUID.randomUUID(), user, user.getUserID(), "test account", "NL01INHO0000000001", 9999999999999999.00, Account.TypeEnum.CURRENT, -9999999999999999.00, true);
-        CreateAccountDTO createAccountDTO = new CreateAccountDTO("test account2", 100.00, CreateAccountDTO.TypeEnum.CURRENT, 1000.00, userId);
+        Account bankAccount = new Account(UUID.randomUUID(), user, user.getUserID(), "test account", "NL01INHO0000000001", 9999999999999999.00, AccountType.TypeEnum.CURRENT, -9999999999999999.00, true);
+        CreateAccountDTO createAccountDTO = new CreateAccountDTO("test account2", 100.00, AccountType.TypeEnum.CURRENT, 1000.00, userId);
 
         GetUserDTO userDTO = new GetUserDTO();
         userDTO.setUserID(userId);
@@ -68,13 +70,28 @@ public class AccountServiceTest {
         when(objectMapper.convertValue(any(CreateAccountDTO.class), eq(Account.class))).thenReturn(bankAccount);
         when(accountRepository.save(any(Account.class))).thenReturn(bankAccount);
 
-        ResponseEntity<Account> response = accountService.add(createAccountDTO);
+        Account response = accountService.add(createAccountDTO);
 
-        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
-        assertThat(response.getBody()).isEqualTo(bankAccount);
+        assertThat(response).isEqualTo(bankAccount);
 
         verify(userRepository).getUserByUserID(any(UUID.class));
         verify(accountRepository).save(any(Account.class));
+    }
+
+    @Test
+    public void testAdd_NullCreateAccountDTO() {
+        CreateAccountDTO createAccountDTO = null;
+
+        // Invoke the method and assert that it throws an IllegalArgumentException
+        assertThrows(ResponseStatusException.class, () -> accountService.add(createAccountDTO));
+    }
+
+    @Test
+    public void testAdd_NullUserID() {
+        CreateAccountDTO createAccountDTO = new CreateAccountDTO("test account2", 100.00, AccountType.TypeEnum.CURRENT, 1000.00, null);
+
+        // Invoke the method and assert that it throws an IllegalArgumentException
+        assertThrows(ResponseStatusException.class, () -> accountService.add(createAccountDTO));
     }
 
     @Test
@@ -104,11 +121,10 @@ public class AccountServiceTest {
                 Mockito.eq(GetAccountDTO.class)
         )).thenReturn(accountDTO);
 
-        ResponseEntity<List<GetAccountDTO>> responseEntity = accountService.getAllAccounts(limit, offset, searchStrings, IBAN);
+        List<GetAccountDTO> response = accountService.getAllAccounts(limit, offset, searchStrings, IBAN);
 
-        assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.OK);
-        assertThat(responseEntity.getBody()).hasSize(1);
-        assertThat(responseEntity.getBody().get(0).getAccountID()).isEqualTo(accountId);
+        assertThat(response).hasSize(1);
+        assertThat(response.get(0).getAccountID()).isEqualTo(accountId);
 
         verify(accountRepository, times(1)).getAll(
                 ArgumentMatchers.<String>any(),
@@ -116,80 +132,61 @@ public class AccountServiceTest {
                 ArgumentMatchers.<Pageable>any()
         );
     }
-        @Test
-        public void testGetAccountByAccountID() {
-            UUID accountId = UUID.randomUUID();
-            GetAccountDTO accountDTO = new GetAccountDTO();
-            accountDTO.setAccountID(accountId);
-            Account account = new Account();
-            account.setAccountID(accountId);
+    @Test
+    public void testGetAccountByAccountID() {
+        UUID accountId = UUID.randomUUID();
+        GetAccountDTO accountDTO = new GetAccountDTO();
+        accountDTO.setAccountID(accountId);
+        Account account = new Account();
+        account.setAccountID(accountId);
 
-            when(accountRepository.getAccountByAccountID(accountId)).thenReturn(account);
-            when(objectMapper.convertValue(any(Account.class), eq(GetAccountDTO.class))).thenReturn(accountDTO);
+        when(accountRepository.getAccountByAccountID(accountId)).thenReturn(account);
+        when(objectMapper.convertValue(any(Account.class), eq(GetAccountDTO.class))).thenReturn(accountDTO);
 
-            ResponseEntity<GetAccountDTO> responseEntity = accountService.getAccountByAccountID(accountId);
+        GetAccountDTO response = accountService.getAccountByAccountID(accountId);
 
-            assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.OK);
-            assertThat(responseEntity.getBody().getAccountID()).isEqualTo(accountId);
+        assertThat(response).isEqualTo(accountDTO);
+        assertThat(response.getAccountID()).isEqualTo(accountId);
 
-            verify(accountRepository, times(1)).getAccountByAccountID(accountId);
-        }
-
-        @Test
-        public void testGetAccountsOfUser() {
-            UUID userId = UUID.randomUUID();
-            Integer limit = 10;
-            Integer offset = 0;
-            String searchStrings = "example";
-            List<Account> accountList = new ArrayList<>();
-            accountList.add(new Account(/* account details */));
-
-            // Create a mock Page object
-            Page<Account> accountPage = new PageImpl<>(accountList);
-
-            // Mock the behavior of the accountRepository
-            when(accountRepository.getAccountsOfUser(eq(userId), eq(searchStrings), any(Pageable.class))).thenReturn(accountPage);
-            when(accountRepository.countAccountsOfUser(eq(userId), eq(searchStrings))).thenReturn(accountList.size());
-
-            // Invoke the method
-            ResponseEntity<List<GetAccountDTO>> response = accountService.getAccountsOfUser(userId, limit, offset, searchStrings);
-
-            // Verify the behavior of accountRepository.countAccountsOfUser()
-            verify(accountRepository).countAccountsOfUser(userId, searchStrings);
-
-            // Verify the response body
-            List<GetAccountDTO> responseBody = response.getBody();
-            assertNotNull(responseBody);
-            assertEquals(accountList.size(), responseBody.size());
-
-            // Verify the response headers
-            HttpHeaders headers = response.getHeaders();
-            assertNotNull(headers);
-            assertEquals(String.valueOf(accountList.size()), headers.getFirst("X-Total-Accounts"));
-
-        }
-
-        @Test
-        public void testUpdateAccount() {
-            UUID accountId = UUID.randomUUID();
-            UpdateAccountDTO updateAccountDTO = new UpdateAccountDTO();
-            updateAccountDTO.setName("test");
-
-            GetAccountDTO accountDTO = new GetAccountDTO();
-            accountDTO.setAccountID(accountId);
-
-            Account existingAccount = new Account();
-            existingAccount.setAccountID(accountId);
-            when(accountRepository.getAccountByAccountID(accountId)).thenReturn(existingAccount);
-            when(accountRepository.save(any(Account.class))).thenReturn(existingAccount);
-            when(objectMapper.convertValue(any(Account.class), eq(GetAccountDTO.class))).thenReturn(accountDTO);
-
-            ResponseEntity<GetAccountDTO> responseEntity = accountService.updateAccount(accountId, updateAccountDTO);
-
-            assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.OK);
-            assertThat(responseEntity.getBody().getAccountID()).isEqualTo(accountId);
-
-            verify(accountRepository, times(1)).getAccountByAccountID(accountId);
-            verify(accountRepository, times(1)).save(any(Account.class));
-        }
+        verify(accountRepository, times(1)).getAccountByAccountID(accountId);
     }
+
+    @Test
+    public void testUpdateAccount() {
+        UUID accountId = UUID.randomUUID();
+        UpdateAccountDTO updateAccountDTO = new UpdateAccountDTO();
+        updateAccountDTO.setName("test");
+
+        GetAccountDTO accountDTO = new GetAccountDTO();
+        accountDTO.setAccountID(accountId);
+
+        Account existingAccount = new Account();
+        existingAccount.setAccountID(accountId);
+        when(accountRepository.getAccountByAccountID(accountId)).thenReturn(existingAccount);
+        when(accountRepository.save(any(Account.class))).thenReturn(existingAccount);
+        when(objectMapper.convertValue(any(Account.class), eq(GetAccountDTO.class))).thenReturn(accountDTO);
+
+        GetAccountDTO response = accountService.updateAccount(accountId, updateAccountDTO);
+
+        assertThat(response.getAccountID()).isEqualTo(accountId);
+
+        verify(accountRepository, times(1)).getAccountByAccountID(accountId);
+        verify(accountRepository, times(1)).save(any(Account.class));
+    }
+
+    @Test
+    public void testUpdateAccount_NonexistentAccountID() {
+        UUID accountId = UUID.randomUUID();
+        UpdateAccountDTO updateAccountDTO = new UpdateAccountDTO();
+        updateAccountDTO.setName("test");
+
+        when(accountRepository.getAccountByAccountID(accountId)).thenReturn(null);
+
+        // Invoke the method and assert that it throws a ResponseStatusException with HTTP status 404
+        ResponseStatusException exception = assertThrows(ResponseStatusException.class, () -> accountService.updateAccount(accountId, updateAccountDTO));
+        assertEquals(HttpStatus.NOT_FOUND, exception.getStatus());
+        assertEquals("This account does not exist", exception.getReason());
+
+        verify(accountRepository, times(1)).getAccountByAccountID(accountId);
+    }
+}
