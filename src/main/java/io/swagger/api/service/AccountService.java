@@ -59,9 +59,11 @@ public class AccountService {
     public GetAccountDTO getAccountByAccountID(UUID accountID) {
         try {
             return objectMapper.convertValue(accountRepository.getAccountByAccountID(accountID), GetAccountDTO.class);
-        } catch (Exception e) {
+        } catch (MappingException e) {
             log.error("Couldn't serialize response for content type application/json", e);
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Couldn't serialize response for content type application/json");
+        }catch (NullPointerException e){
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "This account does not exist");
         }
     }
     public List<GetAccountDTO> getAccountsOfUser(UUID userId, Integer limit, Integer offset, String searchStrings) {
@@ -76,7 +78,7 @@ public class AccountService {
             log.error("Couldn't serialize response for content type application/json", e);
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Couldn't serialize response for content type application/json");
         }catch (NullPointerException e){
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "This account does not exist");
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "This account does not exist");
         }
     }
 
@@ -96,9 +98,11 @@ public class AccountService {
             return accounts.stream()
                     .map(account -> objectMapper.convertValue(account, GetAccountDTO.class))
                     .collect(Collectors.toList());
-        } catch (Exception e) {
+        } catch (MappingException e) {
             log.error("Couldn't serialize response for content type application/json", e);
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Couldn't serialize response for content type application/json");
+        } catch (NullPointerException e){
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "No Accounts found");
         }
     }
 
