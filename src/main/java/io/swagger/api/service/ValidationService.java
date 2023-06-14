@@ -11,14 +11,14 @@ import java.util.UUID;
 @Service
 public class ValidationService {
 
-    public static void validateAccountGetAndPutAccess(UUID accountID, Principal principal) {
+    public static void validateAccountGetAndPutAccess(UUID userID, Principal principal) {
         String userIdFromToken = principal.getName();
 
         boolean isEmployee = SecurityContextHolder.getContext().getAuthentication().getAuthorities()
                 .stream()
                 .anyMatch(role -> role.getAuthority().equals("ROLE_EMPLOYEE"));
         if (!isEmployee) {
-            boolean isExpectedUser = userIdFromToken.equals(accountID.toString());
+            boolean isExpectedUser = userIdFromToken.equals(userID.toString());
             if (!isExpectedUser) {
                 throw new ResponseStatusException(HttpStatus.FORBIDDEN, "The user is not authorized to access this account");
             }

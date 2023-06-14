@@ -38,10 +38,10 @@ public class AccountsApiTest {
 
         // Set the mock behaviour of the accountsApiController
 
-        when(accountsApiController.accountsPost(createAccountDTO)).thenReturn(new ResponseEntity<Account>(HttpStatus.CREATED));
+        when(accountsApiController.createAccount(createAccountDTO)).thenReturn(new ResponseEntity<Account>(HttpStatus.CREATED));
 
         // Call the accountsPost method
-        ResponseEntity<Account> response = accountsApiController.accountsPost(createAccountDTO);
+        ResponseEntity<Account> response = accountsApiController.createAccount(createAccountDTO);
 
         // Verify the response
         Assertions.assertEquals(HttpStatus.CREATED, response.getStatusCode());
@@ -58,10 +58,10 @@ public class AccountsApiTest {
         String iban = "";
 
         // Set the mock behaviour of the accountsApiController
-        when(accountsApiController.accountsGet(limit, offset, searchstrings, iban)).thenReturn(new ResponseEntity<List<GetAccountDTO>>(HttpStatus.OK));
+        when(accountsApiController.getAccounts(limit, offset, searchstrings, iban)).thenReturn(new ResponseEntity<List<GetAccountDTO>>(HttpStatus.OK));
 
         // Call the accountsGet method
-        ResponseEntity<List<GetAccountDTO>> response = accountsApiController.accountsGet(limit, offset, searchstrings, iban);
+        ResponseEntity<List<GetAccountDTO>> response = accountsApiController.getAccounts(limit, offset, searchstrings, iban);
 
         // Verify the response
         Assertions.assertEquals(HttpStatus.OK, response.getStatusCode());
@@ -76,10 +76,10 @@ public class AccountsApiTest {
         Principal principal = Mockito.mock(Principal.class);
 
         // Set the mock behaviour of the accountsApiController
-        when(accountsApiController.getAccountByAccountID(accountID, principal)).thenReturn(new ResponseEntity<GetAccountDTO>(HttpStatus.OK));
+        when(accountsApiController.getAccountById(accountID, principal)).thenReturn(new ResponseEntity<GetAccountDTO>(HttpStatus.OK));
 
         // Call the accountsAccountIDGet method
-        ResponseEntity<GetAccountDTO> response = accountsApiController.getAccountByAccountID(accountID, principal);
+        ResponseEntity<GetAccountDTO> response = accountsApiController.getAccountById(accountID, principal);
 
         // Verify the response
         Assertions.assertEquals(HttpStatus.OK, response.getStatusCode());
@@ -94,12 +94,13 @@ public class AccountsApiTest {
         Integer limit = 10;
         Integer offset = 0;
         String searchstrings = "";
+        Principal principal = Mockito.mock(Principal.class);
 
         // Set the mock behaviour of the accountsApiController
-        when(accountsApiController.getAccountsOfUser(userId, limit, offset, searchstrings)).thenReturn(new ResponseEntity<List<GetAccountDTO>>(HttpStatus.OK));
+        when(accountsApiController.getUserAccounts(userId, limit, offset, searchstrings, principal)).thenReturn(new ResponseEntity<List<GetAccountDTO>>(HttpStatus.OK));
 
         // Call the accountsUserUserIdAccountsGet method
-        ResponseEntity<List<GetAccountDTO>> response = accountsApiController.getAccountsOfUser(userId, limit, offset, searchstrings);
+        ResponseEntity<List<GetAccountDTO>> response = accountsApiController.getUserAccounts(userId, limit, offset, searchstrings, principal);
 
         // Verify the response
         Assertions.assertEquals(HttpStatus.OK, response.getStatusCode());
@@ -116,10 +117,10 @@ public class AccountsApiTest {
         Principal principal = Mockito.mock(Principal.class);
 
         // Set the mock behaviour of the accountsApiController
-        when(accountsApiController.accountsAccountIDPut(accountID, updateAccountDTO, principal)).thenReturn(new ResponseEntity<GetAccountDTO>(HttpStatus.OK));
+        when(accountsApiController.updateAccount(accountID, updateAccountDTO, principal)).thenReturn(new ResponseEntity<GetAccountDTO>(HttpStatus.OK));
 
         // Call the accountsAccountIDPut method
-        ResponseEntity<GetAccountDTO> response = accountsApiController.accountsAccountIDPut(accountID, updateAccountDTO, principal);
+        ResponseEntity<GetAccountDTO> response = accountsApiController.updateAccount(accountID, updateAccountDTO, principal);
 
         // Verify the response
         Assertions.assertEquals(HttpStatus.OK, response.getStatusCode());

@@ -56,7 +56,7 @@ class AccountsApiControllerTest {
 
         when(accountService.add(any(CreateAccountDTO.class))).thenReturn(bankAccount);
 
-        ResponseEntity<Account> response = accountsApiController.accountsPost(createAccountDTO);
+        ResponseEntity<Account> response = accountsApiController.createAccount(createAccountDTO);
 
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.CREATED);
         assertThat(response.getBody()).isEqualTo(bankAccount);
@@ -70,7 +70,7 @@ class AccountsApiControllerTest {
         when(accountService.add(any(CreateAccountDTO.class))).thenThrow(new ResponseStatusException(HttpStatus.BAD_REQUEST, "This user does not exist"));
 
         try {
-            ResponseEntity<Account> response = accountsApiController.accountsPost(createAccountDTO);
+            ResponseEntity<Account> response = accountsApiController.createAccount(createAccountDTO);
             Assertions.fail("Expected ResponseStatusException to be thrown");
         } catch (ResponseStatusException ex) {
             assertThat(ex.getStatus()).isEqualTo(HttpStatus.BAD_REQUEST);
@@ -96,7 +96,7 @@ class AccountsApiControllerTest {
 
         when(accountService.getAllAccounts(limit, offset, searchstrings, IBAN)).thenReturn(accounts);
 
-        ResponseEntity<List<GetAccountDTO>> responseEntity = accountsApiController.accountsGet(limit, offset,
+        ResponseEntity<List<GetAccountDTO>> responseEntity = accountsApiController.getAccounts(limit, offset,
                 searchstrings, IBAN);
 
         assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.OK);
@@ -117,7 +117,7 @@ class AccountsApiControllerTest {
         when(accountService.getAllAccounts(limit, offset, searchstrings, IBAN)).thenReturn(new ArrayList<>());
 
         // Act
-        ResponseEntity<List<GetAccountDTO>> responseEntity = accountsApiController.accountsGet(limit, offset, searchstrings, IBAN);
+        ResponseEntity<List<GetAccountDTO>> responseEntity = accountsApiController.getAccounts(limit, offset, searchstrings, IBAN);
 
         // Assert
         assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.OK);
@@ -131,7 +131,7 @@ class AccountsApiControllerTest {
         when(accountService.getAllAccounts(10, 0, null, null)).thenThrow(new ResponseStatusException(HttpStatus.BAD_REQUEST, "Couldn't serialize response for content type application/json"));
 
         try {
-            ResponseEntity<List<GetAccountDTO>> response = accountsApiController.accountsGet(10, 0, null, null);
+            ResponseEntity<List<GetAccountDTO>> response = accountsApiController.getAccounts(10, 0, null, null);
             Assertions.fail("Expected ResponseStatusException to be thrown");
         } catch (ResponseStatusException ex) {
             assertThat(ex.getStatus()).isEqualTo(HttpStatus.BAD_REQUEST);
@@ -155,7 +155,7 @@ class AccountsApiControllerTest {
 
         when(accountService.getAccountByAccountID(accountId)).thenReturn(account);
 
-        ResponseEntity<GetAccountDTO> responseEntity = accountsApiController.getAccountByAccountID(accountId, principal);
+        ResponseEntity<GetAccountDTO> responseEntity = accountsApiController.getAccountById(accountId, principal);
 
         assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.OK);
         assertThat(responseEntity.getBody().getAccountID()).isEqualTo(account.getAccountID());
@@ -169,7 +169,7 @@ class AccountsApiControllerTest {
         when(accountService.getAccountByAccountID(any(UUID.class))).thenThrow(new ResponseStatusException(HttpStatus.BAD_REQUEST, "Couldn't serialize response for content type application/json"));
 
         try {
-            ResponseEntity<GetAccountDTO> response = accountsApiController.getAccountByAccountID(UUID.randomUUID(), principal);
+            ResponseEntity<GetAccountDTO> response = accountsApiController.getAccountById(UUID.randomUUID(), principal);
             Assertions.fail("Expected ResponseStatusException to be thrown");
         } catch (ResponseStatusException ex) {
             assertThat(ex.getStatus()).isEqualTo(HttpStatus.BAD_REQUEST);
@@ -188,13 +188,14 @@ class AccountsApiControllerTest {
         UUID userId = UUID.randomUUID();
         GetAccountDTO account = new GetAccountDTO();
         account.setUserID(userId);
+        Principal principal = userId::toString;
 
         List<GetAccountDTO> accounts = new ArrayList<>();
         accounts.add(account);
 
         when(accountService.getAccountsOfUser(userId, limit, offset, searchstrings)).thenReturn(accounts);
 
-        ResponseEntity<List<GetAccountDTO>> responseEntity = accountsApiController.getAccountsOfUser(userId, limit, offset, searchstrings);
+        ResponseEntity<List<GetAccountDTO>> responseEntity = accountsApiController.getUserAccounts(userId, limit, offset, searchstrings, principal);
 
         assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.OK);
         assertThat(responseEntity.getBody()).hasSize(1);
@@ -206,16 +207,18 @@ class AccountsApiControllerTest {
     @Test
     void testGetAccountsOfUser_WhenNoAccountsExist_ReturnsEmptyList() {
         UUID userId = UUID.randomUUID();
+
         // Arrange
         int limit = 10;
         int offset = 0;
         String searchstrings = null;
         String IBAN = null;
+        Principal principal = userId::toString;
 
         when(accountService.getAccountsOfUser(userId, limit, offset, searchstrings)).thenReturn(new ArrayList<>());
 
         // Act
-        ResponseEntity<List<GetAccountDTO>> responseEntity = accountsApiController.getAccountsOfUser(userId, limit, offset, searchstrings);
+        ResponseEntity<List<GetAccountDTO>> responseEntity = accountsApiController.getUserAccounts(userId, limit, offset, searchstrings, principal);
 
         // Assert
         assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.OK);
@@ -226,9 +229,10 @@ class AccountsApiControllerTest {
     void testGetAccountsOfUser_BadSerialization_BAD_REQUEST() {
         UUID userId = UUID.randomUUID();
         when(accountService.getAccountsOfUser(userId, 10,  0, null)).thenThrow(new ResponseStatusException(HttpStatus.BAD_REQUEST, "Couldn't serialize response for content type application/json"));
+        Principal principal = userId::toString;
 
         try {
-            ResponseEntity<List<GetAccountDTO>> response = accountsApiController.getAccountsOfUser(userId, 10, 0, null);
+            ResponseEntity<List<GetAccountDTO>> response = accountsApiController.getUserAccounts(userId, 10, 0, null, principal);
             Assertions.fail("Expected ResponseStatusException to be thrown");
         } catch (ResponseStatusException ex) {
             assertThat(ex.getStatus()).isEqualTo(HttpStatus.BAD_REQUEST);
@@ -254,7 +258,7 @@ class AccountsApiControllerTest {
 
         when(accountService.updateAccount(accountId, updateAccountDTO)).thenReturn(account);
 
-        ResponseEntity<GetAccountDTO> responseEntity = accountsApiController.accountsAccountIDPut(accountId, updateAccountDTO, principal);
+        ResponseEntity<GetAccountDTO> responseEntity = accountsApiController.updateAccount(accountId, updateAccountDTO, principal);
 
         assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.OK);
         assertThat(responseEntity.getBody().getAccountID()).isEqualTo(accountId);
@@ -270,7 +274,7 @@ class AccountsApiControllerTest {
         when(accountService.updateAccount(userId, updateAccountDTO)).thenThrow(new ResponseStatusException(HttpStatus.BAD_REQUEST, "Couldn't serialize response for content type application/json"));
 
         try {
-            ResponseEntity<GetAccountDTO> response = accountsApiController.accountsAccountIDPut(userId, updateAccountDTO, principal);
+            ResponseEntity<GetAccountDTO> response = accountsApiController.updateAccount(userId, updateAccountDTO, principal);
             Assertions.fail("Expected ResponseStatusException to be thrown");
         } catch (ResponseStatusException ex) {
             assertThat(ex.getStatus()).isEqualTo(HttpStatus.BAD_REQUEST);
