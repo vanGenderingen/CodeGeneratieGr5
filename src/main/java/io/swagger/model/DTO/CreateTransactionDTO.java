@@ -1,8 +1,7 @@
 package io.swagger.model.DTO;
 
-import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonValue;
+import io.swagger.model.transactions.TransactionType;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -34,39 +33,9 @@ public class CreateTransactionDTO   {
   @NotNull
   private Double amount = null;
 
-  /**
-   * Gets or Sets transactionType
-   */
-  public enum TransactionTypeEnum {
-    DEPOSIT("Deposit"),
-    
-    WITHDRAWAL("Withdrawal");
-
-    private String value;
-
-    TransactionTypeEnum(String value) {
-      this.value = value;
-    }
-
-    @Override
-    @JsonValue
-    public String toString() {
-      return String.valueOf(value);
-    }
-
-    @JsonCreator
-    public static TransactionTypeEnum fromValue(String text) {
-      for (TransactionTypeEnum b : TransactionTypeEnum.values()) {
-        if (String.valueOf(b.value).equals(text)) {
-          return b;
-        }
-      }
-      return null;
-    }
-  }
   @JsonProperty("transactionType")
   @NotNull
-  private TransactionTypeEnum transactionType = null;
+  private TransactionType transactionType = null;
 
   @NotNull
   @JsonProperty("description")

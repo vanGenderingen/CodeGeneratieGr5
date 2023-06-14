@@ -11,6 +11,7 @@ import io.swagger.model.DTO.CreateTransactionDTO;
 import io.swagger.model.Role;
 import io.swagger.model.transactions.Transaction;
 import io.swagger.model.User;
+import io.swagger.model.transactions.TransactionType;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
@@ -129,43 +130,43 @@ public class DataSeeder implements ApplicationRunner {
         //create transactions, 4 for every account
 
 //        //transactions for account 2
-        CreateTransactionDTO transactionAccount2toAccount3 = new CreateTransactionDTO("NL01INHO0000000002", "NL01INHO0000000003", 50.00, CreateTransactionDTO.TransactionTypeEnum.DEPOSIT, "Test transaction 1");
+        CreateTransactionDTO transactionAccount2toAccount3 = new CreateTransactionDTO("NL01INHO0000000002", "NL01INHO0000000003", 50.00, TransactionType.TRANSFER, "Test transaction 1");
         Transaction transaction1 = objectMapper.convertValue(transactionAccount2toAccount3, Transaction.class);
         transaction1.setUserPerforming(bank2.getUserID());
         transactionService.add(transaction1);
 
-        CreateTransactionDTO transactionAccount2toAccount4 = new CreateTransactionDTO("NL01INHO0000000002", "NL01INHO0000000004", 50.00, CreateTransactionDTO.TransactionTypeEnum.DEPOSIT, "Test transaction 2");
+        CreateTransactionDTO transactionAccount2toAccount4 = new CreateTransactionDTO("NL01INHO0000000002", "NL01INHO0000000004", 150.00, TransactionType.TRANSFER, "Test transaction 2");
         Transaction transaction2 = objectMapper.convertValue(transactionAccount2toAccount4, Transaction.class);
         transaction2.setUserPerforming(bank2.getUserID());
         transactionService.add(transaction2);
 
-        CreateTransactionDTO transactionAccount2fromAccount5 = new CreateTransactionDTO("NL01INHO0000000006", "NL01INHO0000000002", 50.00, CreateTransactionDTO.TransactionTypeEnum.DEPOSIT, "Test transaction 3");
+        CreateTransactionDTO transactionAccount2fromAccount5 = new CreateTransactionDTO("NL01INHO0000000006", "NL01INHO0000000002", 50.00, TransactionType.TRANSFER, "Test transaction 3");
         Transaction transaction3 = objectMapper.convertValue(transactionAccount2fromAccount5, Transaction.class);
         transaction3.setUserPerforming(bank2.getUserID());
         transactionService.add(transaction3);
 
-        CreateTransactionDTO transactionAccount2fromAccount6 = new CreateTransactionDTO("NL01INHO0000000006", "NL01INHO0000000002", 50.00, CreateTransactionDTO.TransactionTypeEnum.DEPOSIT, "Test transaction 4");
+        CreateTransactionDTO transactionAccount2fromAccount6 = new CreateTransactionDTO("NL01INHO0000000006", "NL01INHO0000000002", 150.00, TransactionType.TRANSFER, "Test transaction 4");
         Transaction transaction4 = objectMapper.convertValue(transactionAccount2fromAccount6, Transaction.class);
         transaction4.setUserPerforming(bank2.getUserID());
         transactionService.add(transaction4);
 
         //transactions for account 3
-        CreateTransactionDTO transactionAccount3toAccount4 = new CreateTransactionDTO("NL01INHO0000000003", "NL01INHO0000000004", 50.00, CreateTransactionDTO.TransactionTypeEnum.DEPOSIT, "Test transaction 5");
+        CreateTransactionDTO transactionAccount3toAccount4 = new CreateTransactionDTO("NL01INHO0000000003", "NL01INHO0000000004", 50.00, TransactionType.TRANSFER, "Test transaction 5");
         Transaction transaction5 = objectMapper.convertValue(transactionAccount3toAccount4, Transaction.class);
         transaction5.setUserPerforming(bank2.getUserID());
         transactionService.add(transaction5);
 
-        CreateTransactionDTO transactionAccount3toAccount5 = new CreateTransactionDTO("NL01INHO0000000003", "NL01INHO0000000006", 50.00, CreateTransactionDTO.TransactionTypeEnum.DEPOSIT, "Test transaction 6");
+        CreateTransactionDTO transactionAccount3toAccount5 = new CreateTransactionDTO("NL01INHO0000000003", "NL01INHO0000000006", 150.00, TransactionType.TRANSFER, "Test transaction 6");
         Transaction transaction6 = objectMapper.convertValue(transactionAccount3toAccount5, Transaction.class);
         transaction6.setUserPerforming(bank2.getUserID());
         transactionService.add(transaction6);
 
-        CreateTransactionDTO transactionAccount3fromAccount6 = new CreateTransactionDTO("NL01INHO0000000006", "NL01INHO0000000003", 50.00, CreateTransactionDTO.TransactionTypeEnum.DEPOSIT, "Test transaction 7");
+        CreateTransactionDTO transactionAccount3fromAccount6 = new CreateTransactionDTO("NL01INHO0000000006", "NL01INHO0000000003", 50.00, TransactionType.TRANSFER, "Test transaction 7");
         Transaction transaction7 = objectMapper.convertValue(transactionAccount3fromAccount6, Transaction.class);
         transaction7.setUserPerforming(bank2.getUserID());
         transactionService.add(transaction7);
 
-        CreateTransactionDTO transactionAccount3fromAccount7 = new CreateTransactionDTO("NL01INHO0000000007", "NL01INHO0000000003", 50.00, CreateTransactionDTO.TransactionTypeEnum.DEPOSIT, "Test transaction 8");
+        CreateTransactionDTO transactionAccount3fromAccount7 = new CreateTransactionDTO("NL01INHO0000000007", "NL01INHO0000000003", 150.00, TransactionType.TRANSFER, "Test transaction 8");
         Transaction transaction8 = objectMapper.convertValue(transactionAccount3fromAccount7, Transaction.class);
         transaction8.setUserPerforming(bank2.getUserID());
         transactionService.add(transaction8);
