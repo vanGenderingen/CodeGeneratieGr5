@@ -26,8 +26,6 @@ import java.util.UUID;
 @RequestMapping("/accounts")
 public class AccountsApiController implements AccountsApi {
 
-    //TODO: make sure that only a user can only access their own accounts
-
     @Autowired
     private final ObjectMapper objectMapper;
 
