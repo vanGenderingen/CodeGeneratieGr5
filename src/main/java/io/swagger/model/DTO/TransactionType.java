@@ -1,6 +1,7 @@
 package io.swagger.model.DTO;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonValue;
 
 public enum TransactionType {
     DEPOSIT("Deposit"),
@@ -14,6 +15,7 @@ public enum TransactionType {
     }
 
     @Override
+    @JsonValue
     public String toString() {
         return String.valueOf(value);
     }
