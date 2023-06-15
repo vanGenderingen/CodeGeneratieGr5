@@ -3,12 +3,15 @@ package io.swagger.model.DTO;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonValue;
+import io.swagger.model.AccountType;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.springframework.validation.annotation.Validated;
 
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.validation.constraints.NotNull;
 import java.util.UUID;
 
@@ -31,39 +34,9 @@ public class CreateAccountDTO   {
   @NotNull
   private Double balance = 0.0;
 
-  /**
-   * Type of account.
-   */
-  public enum TypeEnum {
-    CURRENT("Current"),
-
-    SAVINGS("Savings");
-
-    private String value;
-
-    TypeEnum(String value) {
-      this.value = value;
-    }
-
-    @Override
-    @JsonValue
-    public String toString() {
-      return String.valueOf(value);
-    }
-
-    @JsonCreator
-    public static TypeEnum fromValue(String text) {
-      for (TypeEnum b : TypeEnum.values()) {
-        if (String.valueOf(b.value).equals(text)) {
-          return b;
-        }
-      }
-      return null;
-    }
-  }
   @JsonProperty("Type")
-  @NotNull
-  private TypeEnum type = null;
+  @Enumerated(EnumType.STRING)
+  private AccountType.TypeEnum type = null;
 
   @JsonProperty("MinBal")
   @NotNull

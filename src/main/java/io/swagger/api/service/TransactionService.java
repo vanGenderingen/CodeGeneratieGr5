@@ -47,10 +47,10 @@ public class TransactionService {
             if(userPerforming.getUserID() != fromUser.getUserID()){
                 throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "You can't perform a transaction from an account that isn't yours");
             }
-            if (toAccount.getType() == Account.TypeEnum.SAVINGS && fromUser.getUserID() != toUser.getUserID()){
+            if (toAccount.getType() == AccountType.TypeEnum.SAVINGS && fromUser.getUserID() != toUser.getUserID()){
                 throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "You can't transfer money to a savings account that isn't yours");
             }
-            if (fromAccount.getType() == Account.TypeEnum.SAVINGS && fromUser.getUserID() != toUser.getUserID()) {
+            if (fromAccount.getType() == AccountType.TypeEnum.SAVINGS && fromUser.getUserID() != toUser.getUserID()) {
                 throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "You can't transfer money from a savings account that isn't yours");
             }
         }

@@ -104,7 +104,7 @@ public class AccountsApiController implements AccountsApi {
     @PutMapping(value = "/{accountID}", produces = "application/json")
     public ResponseEntity<GetAccountDTO> updateAccount(
             @Valid @PathVariable("accountID") UUID accountID,
-            @Valid @RequestBody UpdateAccountDTO updateAccountDTO,
+            @RequestBody UpdateAccountDTO updateAccountDTO,
             Principal principal
     ){
         //Get the requested account from the database

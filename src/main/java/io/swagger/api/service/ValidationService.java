@@ -21,9 +21,6 @@ public class ValidationService {
     }
 
     public static void validateAccountPutAccess(UUID userID, String IBAN, Principal principal) {
-        boolean isEmployee = SecurityContextHolder.getContext().getAuthentication().getAuthorities()
-                .stream()
-                .anyMatch(role -> role.getAuthority().equals("ROLE_EMPLOYEE"));
         if (!Objects.equals(IBAN, "NL01INHO0000000001")) {
             validate(userID, principal, "The user is not authorized to access this account");
         }else{
