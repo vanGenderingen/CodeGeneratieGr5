@@ -1,4 +1,4 @@
-package io.swagger.model.DTO;
+package io.swagger.model;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
@@ -11,7 +11,7 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.PrePersist;
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 import java.util.UUID;
 
 @Validated
@@ -45,13 +45,11 @@ public class Transaction   {
   private UUID userPerforming = null;
 
   @JsonProperty("timeStamp")
-  private LocalDateTime timeStamp = null;
+  private LocalDate timeStamp = null;
 
   @JsonProperty("description")
   private String description = null;
 
   @PrePersist
-  public void onCreate() {
-    this.timeStamp = LocalDateTime.now();
-  }
+  public void onCreate() {this.timeStamp = LocalDate.now();}
 }

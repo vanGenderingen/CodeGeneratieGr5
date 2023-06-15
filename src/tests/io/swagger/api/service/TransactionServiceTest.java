@@ -6,7 +6,7 @@ import io.swagger.api.repository.UserRepository;
 import io.swagger.model.*;
 import io.swagger.model.DTO.AmountFilter;
 import io.swagger.model.DTO.IBANFilter;
-import io.swagger.model.DTO.Transaction;
+import io.swagger.model.Transaction;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;

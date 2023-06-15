@@ -8,7 +8,7 @@ package io.swagger.api;
 import io.swagger.model.DTO.AmountFilter;
 import io.swagger.model.DTO.CreateTransactionDTO;
 import io.swagger.model.DTO.IBANFilter;
-import io.swagger.model.DTO.Transaction;
+import io.swagger.model.Transaction;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.enums.ParameterIn;

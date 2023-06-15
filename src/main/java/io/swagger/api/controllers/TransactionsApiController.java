@@ -4,7 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import io.swagger.api.service.TransactionService;
 import io.swagger.api.specification.SearchCriteria;
 import io.swagger.model.DTO.CreateTransactionDTO;
-import io.swagger.model.DTO.Transaction;
+import io.swagger.model.Transaction;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.enums.ParameterIn;
 import io.swagger.v3.oas.annotations.media.Schema;

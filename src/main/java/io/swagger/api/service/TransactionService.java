@@ -5,11 +5,7 @@ import io.swagger.api.repository.TransactionRepository;
 import io.swagger.api.repository.UserRepository;
 import io.swagger.api.specification.SearchCriteria;
 import io.swagger.api.specification.TransactionSpecification;
-import io.swagger.model.Account;
-import io.swagger.model.AccountType;
-import io.swagger.model.Role;
-import io.swagger.model.User;
-import io.swagger.model.DTO.Transaction;
+import io.swagger.model.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
@@ -17,7 +13,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.security.Principal;
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.UUID;
 
@@ -52,7 +48,7 @@ public class TransactionService {
 
         if(!validatePerformingUserIsEmployee(transaction.getUserPerforming())){
             // Verify if the user is the owner of the account
-            validateFromAccountIsFromPerformingUser(transaction.getUserPerforming(), transaction.getFromIBAN());
+            validateFromAccountIsFromPerformingUser(transaction.getUserPerforming(), fromAccount);
             // Verify if the account is a savings account and from the user
             validateSavingsAccountIsFromUser(fromAccount.getType(), fromAccount, toAccount);
         }
@@ -90,11 +86,10 @@ public class TransactionService {
         }
     }
 
-    public void validateFromAccountIsFromPerformingUser(UUID userPerforming, String fromIBAN){
+    public void validateFromAccountIsFromPerformingUser(UUID userPerforming, Account fromAccount){
         try {
             User user = userRepository.getUserByUserID(userPerforming);
-            Account account = accountsRepository.getAccountByIBAN(fromIBAN);
-            if (user.getUserID() != account.getUserID()){
+            if (user.getUserID() != fromAccount.getUserID()){
                 throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "You can't perform a transaction from an account that isn't yours");
             }
         } catch (NullPointerException e) {
@@ -123,7 +118,7 @@ public class TransactionService {
     public void validateDailyLimit(User user, String fromIBAN, double amount){
         SearchCriteria searchCriteria = new SearchCriteria();
         searchCriteria.setFromIBAN(fromIBAN);
-        searchCriteria.setDate(LocalDateTime.now());
+        searchCriteria.setDate(LocalDate.now());
 
         List<Transaction> transactions = transactionRepository.findAll(new TransactionSpecification(searchCriteria));
 

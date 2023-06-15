@@ -9,9 +9,9 @@ import io.swagger.api.service.UserService;
 import io.swagger.model.*;
 import io.swagger.model.DTO.CreateTransactionDTO;
 import io.swagger.model.Role;
-import io.swagger.model.DTO.Transaction;
+import io.swagger.model.Transaction;
 import io.swagger.model.User;
-import io.swagger.model.DTO.TransactionType;
+import io.swagger.model.TransactionType;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
@@ -64,7 +64,7 @@ public class DataSeeder implements ApplicationRunner {
         User bank8 = userService.getUserByEmail("hermionegranger@mail.nl");
 
 //create user users
-        User user = new User(UUID.fromString("bb0cc36d-69a7-471e-a665-3609bc14c27a"), "John", "Doe", "john.doe@mail.nl", encodePassword("password"), Arrays.asList(Role.ROLE_USER), true, new ArrayList<>(), 1000.00, 10000.00);
+        User user = new User(UUID.fromString("bb0cc36d-69a7-471e-a665-3609bc14c27a"), "John", "Doe", "john.doe@mail.nl", encodePassword("password"), Arrays.asList(Role.ROLE_USER), true, new ArrayList<>(), 1000.00, 100.00);
         userRepository.save(user);
         User user2 = userService.getUserByEmail("john.doe@mail.nl");
 

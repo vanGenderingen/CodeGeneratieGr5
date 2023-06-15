@@ -1,7 +1,5 @@
 package io.swagger.model;
 
-import io.swagger.model.DTO.Transaction;
-import io.swagger.model.DTO.TransactionType;
 import junit.framework.TestCase;
 
 import java.time.LocalDateTime;
