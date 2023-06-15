@@ -4,7 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import io.swagger.api.service.TransactionService;
 import io.swagger.api.specification.SearchCriteria;
 import io.swagger.model.DTO.CreateTransactionDTO;
-import io.swagger.model.transactions.Transaction;
+import io.swagger.model.DTO.Transaction;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.enums.ParameterIn;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -65,15 +65,12 @@ public class TransactionsApiController {
             consumes = {"application/json"},
             method = RequestMethod.POST)
     public ResponseEntity<Transaction> postTransactions(@RequestBody CreateTransactionDTO body) {
-        try{
-            Principal principal = request.getUserPrincipal();
-            Transaction transaction = objectMapper.convertValue(body, Transaction.class);
-            transaction.setUserPerforming(UUID.fromString(principal.getName()));
+        Principal principal = request.getUserPrincipal();
 
-            Transaction result = transactionService.add(transaction);
-            return new ResponseEntity<Transaction>(result, HttpStatus.OK);
-        }catch (Exception e) {
-            return new ResponseEntity<Transaction>(HttpStatus.INTERNAL_SERVER_ERROR);
-        }
+        Transaction transaction = objectMapper.convertValue(body, Transaction.class);
+        transaction.setUserPerforming(UUID.fromString(principal.getName()));
+        Transaction result = transactionService.add(transaction);
+
+        return ResponseEntity.status(HttpStatus.CREATED).body(result);
     }
 }

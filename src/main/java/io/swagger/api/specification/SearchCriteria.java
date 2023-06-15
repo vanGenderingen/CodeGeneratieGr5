@@ -1,6 +1,6 @@
 package io.swagger.api.specification;
 
-import io.swagger.model.transactions.TransactionType;
+import io.swagger.model.DTO.TransactionType;
 import lombok.Getter;
 import lombok.Setter;
 

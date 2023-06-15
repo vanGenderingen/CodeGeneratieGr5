@@ -1,4 +1,4 @@
-package io.swagger.model.transactions;
+package io.swagger.model.DTO;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 

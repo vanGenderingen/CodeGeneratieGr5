@@ -9,7 +9,7 @@ import io.swagger.model.Account;
 import io.swagger.model.AccountType;
 import io.swagger.model.Role;
 import io.swagger.model.User;
-import io.swagger.model.transactions.Transaction;
+import io.swagger.model.DTO.Transaction;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
@@ -34,6 +34,9 @@ public class TransactionService {
     private UserRepository userRepository;
 
     public Transaction add(Transaction transaction) {
+        if(transaction.getAmount() < 0){
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Amount cannot be negative");
+        }
         //Get the account from the IBAN
         Account fromAccount = getAccountByIBAN(transaction.getFromIBAN());
 

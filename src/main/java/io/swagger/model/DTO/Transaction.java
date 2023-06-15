@@ -1,4 +1,4 @@
-package io.swagger.model.transactions;
+package io.swagger.model.DTO;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
@@ -46,7 +46,6 @@ public class Transaction   {
 
   @JsonProperty("timeStamp")
   private LocalDateTime timeStamp = null;
-
 
   @JsonProperty("description")
   private String description = null;

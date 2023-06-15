@@ -1,7 +1,6 @@
 package io.swagger.model.DTO;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import io.swagger.model.transactions.TransactionType;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;

@@ -1,7 +1,7 @@
 package io.swagger.api.repository;
 
 import io.swagger.api.specification.TransactionSpecification;
-import io.swagger.model.transactions.Transaction;
+import io.swagger.model.DTO.Transaction;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;

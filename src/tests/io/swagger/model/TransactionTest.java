@@ -1,9 +1,10 @@
 package io.swagger.model;
 
-import io.swagger.model.transactions.Transaction;
+import io.swagger.model.DTO.Transaction;
+import io.swagger.model.DTO.TransactionType;
 import junit.framework.TestCase;
-import org.threeten.bp.OffsetDateTime;
 
+import java.time.LocalDateTime;
 import java.util.UUID;
 
 public class TransactionTest extends TestCase {
@@ -50,7 +51,7 @@ public class TransactionTest extends TestCase {
     public void testGetTransactionType() {
         Transaction transaction = new Transaction();
         transaction.onCreate();
-        transaction.setTransactionType(Transaction.TransactionTypeEnum.DEPOSIT);
+        transaction.setTransactionType(TransactionType.DEPOSIT);
         assertNotNull(transaction.getTransactionType());
     }
     public void testGetUserPerforming() {
@@ -101,7 +102,7 @@ public class TransactionTest extends TestCase {
     public void testSetTransactionType() {
         Transaction transaction = new Transaction();
         transaction.onCreate();
-        Transaction.TransactionTypeEnum transactionType = Transaction.TransactionTypeEnum.DEPOSIT;
+        TransactionType transactionType = TransactionType.DEPOSIT;
         transaction.setTransactionType(transactionType);
         assertEquals(transactionType, transaction.getTransactionType());
     }
@@ -115,7 +116,7 @@ public class TransactionTest extends TestCase {
     public void testSetTimeStamp() {
         Transaction transaction = new Transaction();
         transaction.onCreate();
-        OffsetDateTime timeStamp = OffsetDateTime.now();
+        LocalDateTime timeStamp = LocalDateTime.now();
         transaction.setTimeStamp(timeStamp);
         assertEquals(timeStamp, transaction.getTimeStamp());
     }

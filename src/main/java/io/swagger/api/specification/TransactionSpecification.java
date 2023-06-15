@@ -1,6 +1,6 @@
 package io.swagger.api.specification;
 
-import io.swagger.model.transactions.Transaction;
+import io.swagger.model.DTO.Transaction;
 import org.springframework.data.jpa.domain.Specification;
 
 import javax.persistence.criteria.CriteriaBuilder;
