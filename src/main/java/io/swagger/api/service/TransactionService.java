@@ -1,11 +1,14 @@
 package io.swagger.api.service;
 
+import io.swagger.api.controllers.UsersApiController;
 import io.swagger.api.repository.AccountRepository;
 import io.swagger.api.repository.TransactionRepository;
 import io.swagger.api.repository.UserRepository;
 import io.swagger.api.specification.SearchCriteria;
 import io.swagger.api.specification.TransactionSpecification;
 import io.swagger.model.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
@@ -14,11 +17,15 @@ import org.springframework.web.server.ResponseStatusException;
 
 import java.security.Principal;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.UUID;
 
 @Service
 public class TransactionService {
+
+    private static final Logger log = LoggerFactory.getLogger(UsersApiController.class);
 
     @Autowired
     private TransactionRepository transactionRepository;
@@ -118,7 +125,19 @@ public class TransactionService {
     public void validateDailyLimit(User user, String fromIBAN, double amount){
         SearchCriteria searchCriteria = new SearchCriteria();
         searchCriteria.setFromIBAN(fromIBAN);
-        searchCriteria.setDate(LocalDate.now());
+
+        LocalDate date = LocalDate.now();
+
+        DateTimeFormatter formatter = DateTimeFormatter.ISO_DATE_TIME;
+        LocalDateTime currentDate = date.atStartOfDay();
+
+        // Convert LocalDateTime to string using the formatter
+        String dateString = currentDate.format(formatter);
+
+        //TODO: Hij haalt hier de exacte start van de dag op. Je moet dus nog toevoegen dat hij alles na deze datum pakt. Misschien met een if statement ofzo?
+
+        // Set the converted string as the search criteria date
+        searchCriteria.setDate(LocalDateTime.parse(dateString));
 
         List<Transaction> transactions = transactionRepository.findAll(new TransactionSpecification(searchCriteria));
 
@@ -130,5 +149,8 @@ public class TransactionService {
         if (dailyLimit < total + amount) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "You can't withdraw more than your daily limit");
         }
+
     }
+
+
 }

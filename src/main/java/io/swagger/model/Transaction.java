@@ -10,8 +10,7 @@ import org.springframework.validation.annotation.Validated;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
-import javax.persistence.PrePersist;
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Validated
@@ -45,11 +44,12 @@ public class Transaction   {
   private UUID userPerforming = null;
 
   @JsonProperty("timeStamp")
-  private LocalDate timeStamp = null;
+  private LocalDateTime timeStamp = null;
 
   @JsonProperty("description")
   private String description = null;
-
+/*
   @PrePersist
-  public void onCreate() {this.timeStamp = LocalDate.now();}
+  public void onCreate() {this.timeStamp = LocalDateTime.now();}
+  */
 }

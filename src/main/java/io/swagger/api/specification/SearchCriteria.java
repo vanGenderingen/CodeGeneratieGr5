@@ -3,8 +3,9 @@ package io.swagger.api.specification;
 import io.swagger.model.TransactionType;
 import lombok.Getter;
 import lombok.Setter;
+import org.springframework.format.annotation.DateTimeFormat;
 
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Getter
@@ -17,5 +18,7 @@ public class SearchCriteria {
     private Double lower;
     private Double higher;
     private Double equal;
-    private LocalDate date;
+
+    @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
+    private LocalDateTime date;
 }
