@@ -149,13 +149,14 @@ public class UserServiceTest {
         User existingUser = new User();
         existingUser.setUserID(userID);
         when(userRepository.getUserByUserID(userID)).thenReturn(existingUser);
+        when(userRepository.save(any(User.class))).thenReturn(existingUser);
         when(objectMapper.convertValue(any(User.class), eq(GetUserDTO.class))).thenReturn(userDTO);
 
         GetUserDTO response = userService.updateUser(userID, updateUserDTO);
 
         assertThat(response.getUserID()).isEqualTo(userID);
-        assertThat(response.getUserID()).isEqualTo(userID);
 
         verify(userRepository, times(1)).getUserByUserID(userID);
+        verify(userRepository, times(1)).save(existingUser);
     }
 }
