@@ -22,7 +22,7 @@ class ValidationServiceTest {
         UUID accountId = UUID.randomUUID();
         Principal principal = createPrincipal(accountId.toString(), "ROLE_EMPLOYEE");
 
-        assertDoesNotThrow(() -> ValidationService.validateAccountAndUserGetAccess(accountId, principal));
+        assertDoesNotThrow(() -> ValidationService.validateAccountGetAccess(accountId, principal));
     }
 
     @Test
@@ -30,7 +30,7 @@ class ValidationServiceTest {
         UUID accountId = UUID.randomUUID();
         Principal principal = createPrincipal(accountId.toString(), "ROLE_USER");
 
-        assertDoesNotThrow(() -> ValidationService.validateAccountAndUserGetAccess(accountId, principal));
+        assertDoesNotThrow(() -> ValidationService.validateAccountGetAccess(accountId, principal));
     }
 
     @Test
@@ -40,7 +40,7 @@ class ValidationServiceTest {
         Principal principal = createPrincipal(differentAccountId.toString(), "ROLE_USER");
 
         ResponseStatusException exception = assertThrows(ResponseStatusException.class,
-                () -> ValidationService.validateAccountAndUserGetAccess(accountId, principal));
+                () -> ValidationService.validateAccountGetAccess(accountId, principal));
 
         assertEquals("The user is not authorized to access this account", exception.getReason());
         assertEquals(403, exception.getStatus().value());
@@ -89,6 +89,35 @@ class ValidationServiceTest {
 
         assertEquals("The user is not authorized to access this account", exception.getReason());
         assertEquals(403, exception.getStatus().value());
+    }
+
+    @Test
+    void testValidateUserGetAndPutAcess_UserAccessWithMatchingUserId() {
+        UUID userId = UUID.randomUUID();
+        Principal principal = createPrincipal(userId.toString(), "ROLE_USER");
+
+        assertDoesNotThrow(() -> ValidationService.validateUserGetAndPutAccess(userId, principal));
+    }
+
+    @Test
+    void testValidateUserGetAndPutAcess_UserAccessWithDifferentUserId() {
+        UUID userId = UUID.randomUUID();
+        UUID differentUserId = UUID.randomUUID();
+        Principal principal = createPrincipal(differentUserId.toString(), "ROLE_USER");
+
+        ResponseStatusException exception = assertThrows(ResponseStatusException.class,
+                () -> ValidationService.validateUserGetAndPutAccess(userId, principal));
+
+        assertEquals("You're not authorized to do this", exception.getReason());
+        assertEquals(403, exception.getStatus().value());
+    }
+
+    @Test
+    void testValidateUserGetAndPutAcess_EmployeeAccess() {
+        UUID userId = UUID.randomUUID();
+        Principal principal = createPrincipal(userId.toString(), "ROLE_EMPLOYEE");
+
+        assertDoesNotThrow(() -> ValidationService.validateUserGetAndPutAccess(userId, principal));
     }
 
     private Principal createPrincipal(String username, String role) {

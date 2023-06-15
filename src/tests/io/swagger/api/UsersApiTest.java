@@ -1,112 +1,92 @@
 package io.swagger.api;
 
-import io.swagger.api.controllers.UsersApiController;
 import io.swagger.api.service.UserService;
 import io.swagger.model.DTO.CreateUserDTO;
 import io.swagger.model.DTO.GetUserDTO;
 import io.swagger.model.DTO.UpdateUserDTO;
 import io.swagger.model.User;
-import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
-import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
-import java.util.ArrayList;
+import java.security.Principal;
+import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
 
-@ExtendWith(MockitoExtension.class)
-public class UsersApiTest {
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.Mockito.when;
+
+class UsersApiTest {
 
     @Mock
     private UserService userService;
 
     @InjectMocks
-    private UsersApiController usersApiController;
+    private UsersApiImpl usersApi;
 
-    @BeforeEach
-    void setUp() {
-        MockitoAnnotations.initMocks(this);
+    public UsersApiTest() {
+        MockitoAnnotations.openMocks(this);
     }
 
     @Test
-    public void testUsersGet() {
-        // Create test data
-        List<GetUserDTO> users = new ArrayList<>();
-        users.add(new GetUserDTO());
-        users.add(new GetUserDTO());
-
-        // Mock the behavior of the usersGet() method
-        Mockito.when(userService.getAllUsers(null, null, null, null))
-                .thenReturn(ResponseEntity.ok(users));
-
-        // Perform the usersGet() method invocation
-        ResponseEntity<List<GetUserDTO>> response = usersApiController.usersGet(null, null, null, null);
-
-        // Verify the results
-        Assertions.assertEquals(HttpStatus.OK, response.getStatusCode());
-        Assertions.assertEquals(users, response.getBody());
-    }
-
-    @Test
-    public void testUsersPost() {
-        // Create test data
+    void createUser_shouldReturnCreatedUser() {
         CreateUserDTO createUserDTO = new CreateUserDTO();
-        User user = new User();
+        User createdUser = new User();
+        ResponseEntity<User> expectedResponse = ResponseEntity.status(HttpStatus.CREATED).body(createdUser);
 
-        // Mock the behavior of the usersPost() method
-        Mockito.when(userService.add(createUserDTO))
-                .thenReturn(ResponseEntity.status(HttpStatus.CREATED).body(user));
+        when(userService.add(createUserDTO)).thenReturn(createdUser);
 
-        // Perform the usersPost() method invocation
-        ResponseEntity<User> response = usersApiController.usersPost(createUserDTO);
+        ResponseEntity<User> response = usersApi.createUser(createUserDTO);
 
-        // Verify the results
-        Assertions.assertEquals(HttpStatus.CREATED, response.getStatusCode());
-        Assertions.assertEquals(user, response.getBody());
+        assertEquals(expectedResponse, response);
     }
 
     @Test
-    public void testUsersUserIDGet() {
-        // Create test data
-        UUID userID = UUID.randomUUID();
-        GetUserDTO getUserDTO = new GetUserDTO();
+    void getUsers_shouldReturnListOfUsers() {
+        Integer limit = 10;
+        Integer offset = 0;
+        String searchStrings = "search";
+        String email = "example@example.com";
+        List<GetUserDTO> users = Collections.singletonList(new GetUserDTO());
+        ResponseEntity<List<GetUserDTO>> expectedResponse = ResponseEntity.ok(users);
 
-        // Mock the behavior of the usersUserIDGet() method
-        Mockito.when(userService.getUserByUserID(userID))
-                .thenReturn(ResponseEntity.ok(getUserDTO));
+        when(userService.getAllUsers(limit, offset, searchStrings, email)).thenReturn(users);
 
-        // Perform the usersUserIDGet() method invocation
-        ResponseEntity<GetUserDTO> response = usersApiController.usersUserIDGet(userID);
+        ResponseEntity<List<GetUserDTO>> response = usersApi.getUsers(limit, offset, searchStrings, email);
 
-        // Verify the results
-        Assertions.assertEquals(HttpStatus.OK, response.getStatusCode());
-        Assertions.assertEquals(getUserDTO, response.getBody());
+        assertEquals(expectedResponse, response);
     }
 
     @Test
-    public void testUsersUserIDPut() {
-        // Create test data
-        UUID userID = UUID.randomUUID();
+    void getUserById_shouldReturnUser() {
+        UUID userId = UUID.randomUUID();
+        GetUserDTO user = new GetUserDTO();
+        Principal principal = () -> "username";
+        ResponseEntity<GetUserDTO> expectedResponse = ResponseEntity.ok(user);
+
+        when(userService.getUserByUserID(userId)).thenReturn(user);
+
+        ResponseEntity<GetUserDTO> response = usersApi.getUserById(userId, principal);
+
+        assertEquals(expectedResponse, response);
+    }
+
+    @Test
+    void updateUser_shouldReturnUpdatedUser() {
+        UUID userId = UUID.randomUUID();
         UpdateUserDTO updateUserDTO = new UpdateUserDTO();
-        GetUserDTO getUserDTO = new GetUserDTO();
+        GetUserDTO updatedUser = new GetUserDTO();
+        Principal principal = () -> "username";
+        ResponseEntity<GetUserDTO> expectedResponse = ResponseEntity.ok(updatedUser);
 
-        // Mock the behavior of the usersUserIDPut() method
-        Mockito.when(userService.updateUser(userID, updateUserDTO))
-                .thenReturn(ResponseEntity.ok(getUserDTO));
+        when(userService.updateUser(userId, updateUserDTO)).thenReturn(updatedUser);
 
-        // Perform the usersUserIDPut() method invocation
-        ResponseEntity<GetUserDTO> response = usersApiController.usersUserIDPut(userID, updateUserDTO);
+        ResponseEntity<GetUserDTO> response = usersApi.(userId, updateUserDTO, principal);
 
-        // Verify the results
-        Assertions.assertEquals(HttpStatus.OK, response.getStatusCode());
-        Assertions.assertEquals(getUserDTO, response.getBody());
+        assertEquals(expectedResponse, response);
     }
 }

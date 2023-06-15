@@ -3,43 +3,41 @@ package io.swagger.api.controllers;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.swagger.api.UsersApi;
 import io.swagger.api.service.UserService;
+import io.swagger.api.service.ValidationService;
 import io.swagger.model.DTO.CreateUserDTO;
 import io.swagger.model.DTO.GetUserDTO;
 import io.swagger.model.DTO.UpdateUserDTO;
 import io.swagger.model.User;
-import io.swagger.v3.oas.annotations.Parameter;
-import io.swagger.v3.oas.annotations.enums.ParameterIn;
-import io.swagger.v3.oas.annotations.media.Schema;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
-import javax.validation.ValidationException;
+import java.security.Principal;
 import java.util.List;
-import java.util.Map;
 import java.util.UUID;
 
-@javax.annotation.Generated(value = "io.swagger.codegen.v3.generators.java.SpringCodegen", date = "2023-05-16T13:11:00.686570329Z[GMT]")
 @CrossOrigin(origins = "*")
 @RestController
+@RequestMapping("/users")
 public class UsersApiController implements UsersApi {
 
     private static final Logger log = LoggerFactory.getLogger(UsersApiController.class);
 
     private final ObjectMapper objectMapper;
 
+    private final HttpServletRequest request;
+
     @Autowired
     private UserService userService;
-    private final HttpServletRequest request;
 
 
     public UsersApiController(ObjectMapper objectMapper, HttpServletRequest request) {
-        this.userService = userService;
         this.objectMapper = objectMapper;
         this.request = request;
     }
@@ -50,32 +48,49 @@ public class UsersApiController implements UsersApi {
         this.request = request;
     }
 
+    @Override
     @PreAuthorize("hasRole('ROLE_EMPLOYEE')")
-    @RequestMapping(value = "/users", produces = "application/json", method = RequestMethod.POST)
-    public ResponseEntity<User> usersPost(@RequestBody CreateUserDTO createUserDTO) {
-        return userService.add(createUserDTO);
+    @PostMapping(produces = "application/json")
+    public ResponseEntity<User> createUser(@Valid @RequestBody CreateUserDTO createUserDTO) {
+        return ResponseEntity.status(HttpStatus.CREATED).body(userService.add(createUserDTO));
     }
-
+    @Override
     @PreAuthorize("hasRole('ROLE_EMPLOYEE')")
-    @RequestMapping(value = "/users", produces = {"application/json"}, method = RequestMethod.GET)
-    public ResponseEntity<List<GetUserDTO>> usersGet(
-            @Parameter(in = ParameterIn.QUERY, description = "The maximum number of accounts to retrieve.", schema = @Schema(allowableValues = {"0", "50"}, type = "integer", defaultValue = "20", maximum = "50")) @Valid @RequestParam(value = "limit", required = false, defaultValue = "10") Integer limit,
-            @Parameter(in = ParameterIn.QUERY, description = "The offset for paginated results.", schema = @Schema(type = "integer", defaultValue = "0", minimum = "0")) @Valid @RequestParam(value = "offset", required = false, defaultValue = "0") Integer offset,
-            @Parameter(in = ParameterIn.QUERY, description = "Comma-separated list of search strings to filter accounts.", schema = @Schema(type = "string")) @Valid @RequestParam(value = "searchstrings", required = false) String searchstrings,
-            @Parameter(in = ParameterIn.QUERY, description = "Email to filter by email", schema = @Schema(type = "string")) @Valid @RequestParam(value = "Email", required = false) String Email)
+    @GetMapping(produces = "application/json")
+    public ResponseEntity<List<GetUserDTO>> getUsers(
+            @Valid @RequestParam(value = "limit", defaultValue = "10") Integer limit,
+            @Valid @RequestParam(value = "offset", defaultValue = "0") Integer offset,
+            @Valid @RequestParam(value = "searchstrings", required = false) String searchStrings,
+            @Valid @RequestParam(value = "Email", required = false) String Email)
     {
-        return userService.getAllUsers(limit, offset, searchstrings, Email);
+        return ResponseEntity.ok(userService.getAllUsers(limit, offset, searchStrings, Email));
     }
 
-    @PreAuthorize("hasRole('ROLE_EMPLOYEE')")
-    @RequestMapping(value = "/users/{userID}", produces = {"application/json"}, method = RequestMethod.GET)
-    public ResponseEntity<GetUserDTO> usersUserIDGet(@PathVariable("userID") UUID userID) {
-        return userService.getUserByUserID(userID);
+    @Override
+    @PreAuthorize("hasRole('ROLE_USER')")
+    @GetMapping(value = "/{userID}", produces = {"application/json"})
+    public ResponseEntity<GetUserDTO> getUserById(
+            @Valid @PathVariable("userID") UUID userID,
+            Principal principal)
+    {
+
+        //Validate that the user is the same as the one in the token
+        ValidationService.validateUserGetAndPutAccess(userID, principal);
+
+        return ResponseEntity.ok(userService.getUserByUserID(userID));
     }
-    @PreAuthorize("hasRole('ROLE_EMPLOYEE')")
-   @RequestMapping(value = "/users/{userID}", produces = {"application/json"}, method = RequestMethod.PUT)
-    public ResponseEntity<GetUserDTO> usersUserIDPut(@PathVariable("userID") UUID userID, @RequestBody UpdateUserDTO updateUserDTO) throws ValidationException {
-        return userService.updateUser(userID, updateUserDTO);
+    @Override
+    @PreAuthorize("hasRole('ROLE_USER')")
+    @PutMapping(value = "/{userID}", produces = {"application/json"})
+    public ResponseEntity<GetUserDTO> updateUser(
+            @Valid @PathVariable("userID") UUID userID,
+            @Valid @RequestBody UpdateUserDTO updateUserDTO,
+            Principal principal)
+    {
+        //Validate that the user is the same as the one in the token
+        ValidationService.validateUserGetAndPutAccess(userID, principal);
+
+        return ResponseEntity.ok(userService.updateUser(userID, updateUserDTO));
     }
 
 }

@@ -13,8 +13,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.*;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.domain.Pageable;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.util.ArrayList;
@@ -47,6 +45,19 @@ public class UserServiceTest {
     }
 
     @Test
+    void testPasswordEncoder() {
+        String userPassword = "password";
+
+
+        when(passwordEncoder.encode(anyString())).thenReturn(userPassword);
+
+        String response = passwordEncoder.encode(userPassword);
+
+        assertThat(response).isEqualTo(userPassword);
+
+        verify(passwordEncoder).encode(anyString());
+    }
+    @Test
     void testUserAdd() {
         String userPassword = "password";
 
@@ -59,10 +70,9 @@ public class UserServiceTest {
         when(objectMapper.convertValue(any(CreateUserDTO.class), eq(User.class))).thenReturn(user);
         when(userRepository.save(any(User.class))).thenReturn(user);
 
-        ResponseEntity<User> response = userService.add(createUserDTO);
+        User response = userService.add(createUserDTO);
 
-        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
-        assertThat(response.getBody()).isEqualTo(user);
+        assertThat(response).isEqualTo(user);
 
         verify(userRepository).save(any(User.class));
     }
@@ -94,11 +104,11 @@ public class UserServiceTest {
                 Mockito.eq(GetUserDTO.class)
         )).thenReturn(userDTO);
 
-        ResponseEntity<List<GetUserDTO>> responseEntity = userService.getAllUsers(limit, offset, searchStrings, Email);
+        List<GetUserDTO> response = userService.getAllUsers(limit, offset, searchStrings, Email);
 
-        assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.OK);
-        assertThat(responseEntity.getBody()).hasSize(1);
-        assertThat(responseEntity.getBody().get(0).getUserID()).isEqualTo(userId);
+
+        assertThat(response).hasSize(1);
+        assertThat(response.get(0).getUserID()).isEqualTo(userId);
 
         verify(userRepository, times(1)).getAll(
                 ArgumentMatchers.<String>any(),
@@ -118,10 +128,10 @@ public class UserServiceTest {
         when(userRepository.getUserByUserID(userID)).thenReturn(user);
         when(objectMapper.convertValue(any(User.class), eq(GetUserDTO.class))).thenReturn(userDTO);
 
-        ResponseEntity<GetUserDTO> responseEntity = userService.getUserByUserID(userID);
+        GetUserDTO response = userService.getUserByUserID(userID);
 
-        assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.OK);
-        assertThat(responseEntity.getBody().getUserID()).isEqualTo(userID);
+        assertThat(response).isEqualTo(userDTO);
+        assertThat(response.getUserID()).isEqualTo(userID);
 
         verify(userRepository, times(1)).getUserByUserID(userID);
     }
@@ -139,15 +149,13 @@ public class UserServiceTest {
         User existingUser = new User();
         existingUser.setUserID(userID);
         when(userRepository.getUserByUserID(userID)).thenReturn(existingUser);
-        when(userRepository.save(any(User.class))).thenReturn(existingUser);
         when(objectMapper.convertValue(any(User.class), eq(GetUserDTO.class))).thenReturn(userDTO);
 
-        ResponseEntity<GetUserDTO> responseEntity = userService.updateUser(userID, updateUserDTO);
+        GetUserDTO response = userService.updateUser(userID, updateUserDTO);
 
-        assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.OK);
-        assertThat(responseEntity.getBody().getUserID()).isEqualTo(userID);
+        assertThat(response.getUserID()).isEqualTo(userID);
+        assertThat(response.getUserID()).isEqualTo(userID);
 
         verify(userRepository, times(1)).getUserByUserID(userID);
-        verify(userRepository, times(1)).save(any(User.class));
     }
 }
