@@ -18,7 +18,6 @@ public class SearchCriteria {
     private Double lower;
     private Double higher;
     private Double equal;
-
     @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
     private LocalDateTime date;
 }

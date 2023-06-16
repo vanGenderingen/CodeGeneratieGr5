@@ -14,7 +14,6 @@ import org.springframework.boot.ApplicationRunner;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.UUID;
@@ -160,13 +159,11 @@ public class DataSeeder implements ApplicationRunner {
 
         CreateTransactionDTO transactionAccount3fromAccount6 = new CreateTransactionDTO("NL01INHO0000000006", "NL01INHO0000000003", 50.00, TransactionType.WITHDRAWAL, "Test transaction 7");
         Transaction transaction7 = objectMapper.convertValue(transactionAccount3fromAccount6, Transaction.class);
-        transaction7.setTimeStamp(LocalDateTime.now());
         transaction7.setUserPerforming(bank2.getUserID());
         transactionService.add(transaction7);
 
         CreateTransactionDTO transactionAccount3fromAccount7 = new CreateTransactionDTO("NL01INHO0000000007", "NL01INHO0000000003", 150.00, TransactionType.WITHDRAWAL, "Test transaction 8");
         Transaction transaction8 = objectMapper.convertValue(transactionAccount3fromAccount7, Transaction.class);
-        transaction8.setTimeStamp(LocalDateTime.now().plusHours(2));
         transaction8.setUserPerforming(bank2.getUserID());
         transactionService.add(transaction8);
     }

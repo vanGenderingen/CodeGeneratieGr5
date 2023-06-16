@@ -7,6 +7,7 @@ import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
+import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -43,7 +44,7 @@ public class TransactionSpecification implements Specification<Transaction> {
                 .ifPresent(equal -> predicates.add(criteriaBuilder.equal(root.get("amount"), equal)));
 
         Optional.ofNullable(criteria.getDate())
-                .ifPresent(date -> predicates.add(criteriaBuilder.equal(root.get("timeStamp"), date)));
+                .ifPresent(date -> predicates.add(criteriaBuilder.between(root.get("timeStamp"), date.toLocalDate().atStartOfDay(), date.toLocalDate().atTime(LocalTime.MAX))));
 
         return criteriaBuilder.and(predicates.toArray(new Predicate[0]));
     }
