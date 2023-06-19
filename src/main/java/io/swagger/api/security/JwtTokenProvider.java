@@ -58,16 +58,6 @@ public class JwtTokenProvider {
                 .compact();
     }
 
-    public String generateSecretKey() {
-        // Generate a random secret key using the HS256 algorithm
-        byte[] keyBytes = secretKeyFor(SignatureAlgorithm.HS256).getEncoded();
-        return base64UrlEncode(keyBytes);
-    }
-
-    private String base64UrlEncode(byte[] bytes) {
-        return java.util.Base64.getUrlEncoder().withoutPadding().encodeToString(bytes);
-    }
-
     public Authentication getAuthentication(String token) {
         UserDetails userDetails = userDetailsService.loadUserByUsername(getUserID(token));
         return new UsernamePasswordAuthenticationToken(userDetails, "", userDetails.getAuthorities());

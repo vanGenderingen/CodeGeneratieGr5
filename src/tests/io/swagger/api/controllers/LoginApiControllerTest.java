@@ -63,7 +63,24 @@ class LoginApiControllerTest {
         // Assert
         assertEquals(HttpStatus.NOT_IMPLEMENTED, response.getStatusCode());
     }
+    @Test
+    void testLoginWithInvalidFields() {
+        // Arrange
+        //when(userRepository.getUserByEmail("testuser")).thenReturn(null);
+
+        LoginDTO loginDTO = new LoginDTO();
+        loginDTO.setEmail("");
+        loginDTO.setPassword("");
+
+        // Act
+        ResponseEntity<LoginResponseDTO> response = loginApiController.loginPost(loginDTO);
+
+        // Assert
+        assertEquals(HttpStatus.NOT_IMPLEMENTED, response.getStatusCode());
+    }
 
     private void assertEquals(HttpStatus httpStatus, HttpStatus statusCode) {
     }
+
+
 }
