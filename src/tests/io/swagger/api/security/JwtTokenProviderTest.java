@@ -1,6 +1,5 @@
 package io.swagger.api.security;
 
-import io.swagger.api.security.JwtTokenProvider;
 import io.swagger.model.Role;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -11,11 +10,10 @@ import org.springframework.security.core.userdetails.UserDetails;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.Collections;
-import java.util.Date;
 import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.when;
 
 class JwtTokenProviderTest {
 
@@ -31,6 +29,7 @@ class JwtTokenProviderTest {
     void setUp() {
         MockitoAnnotations.initMocks(this);
         jwtTokenProvider = new JwtTokenProvider();
+        jwtTokenProvider.init();
     }
 
     @Test
