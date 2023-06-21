@@ -17,6 +17,8 @@ public interface    AccountRepository extends JpaRepository<Account, Long> {
     @Query("SELECT a FROM Account a WHERE a.user.userID = :userId AND (:searchStrings IS NULL OR LOWER(a.name) LIKE CONCAT('%', LOWER(:searchStrings), '%'))")
     List<Account> getAccountsOfUser(UUID userId, String searchStrings, Pageable pageable);
 
+    List<Account> getAccountsByUserID(UUID userId);
+
     Account getAccountByAccountID(UUID accountID);
 
     Account getAccountByIBAN(String IBAN);

@@ -22,17 +22,23 @@ public class TransactionSpecification implements Specification<Transaction> {
     @Override
     public Predicate toPredicate(Root<Transaction> root, CriteriaQuery<?> query, CriteriaBuilder criteriaBuilder) {
         List<Predicate> predicates = new ArrayList<>();
-        Optional.ofNullable(criteria.getFromIBAN())
+        if(criteria.getFromIBAN() != null && criteria.getToIBAN() != null && criteria.getAccountID() != null){
+            predicates.add(criteriaBuilder.or(
+                    criteriaBuilder.equal(root.get("toIBAN"), criteria.getToIBAN()),
+                    criteriaBuilder.equal(root.get("fromIBAN"), criteria.getFromIBAN())
+            ));
+        }else {
+            Optional.ofNullable(criteria.getFromIBAN())
                 .ifPresent(fromIBAN -> predicates.add(criteriaBuilder.equal(root.get("fromIBAN"), fromIBAN)));
 
-        Optional.ofNullable(criteria.getToIBAN())
-                .ifPresent(toIBAN -> predicates.add(criteriaBuilder.equal(root.get("toIBAN"), toIBAN)));
+            Optional.ofNullable(criteria.getToIBAN())
+                    .ifPresent(toIBAN -> predicates.add(criteriaBuilder.equal(root.get("toIBAN"), toIBAN)));
+        }
+
+
 
         Optional.ofNullable(criteria.getTransactionType())
                 .ifPresent(transactionType -> predicates.add(criteriaBuilder.equal(root.get("transactionType"), transactionType)));
-
-        Optional.ofNullable(criteria.getUserPerforming())
-                .ifPresent(userPerforming -> predicates.add(criteriaBuilder.equal(root.get("userPerforming"), userPerforming)));
 
         Optional.ofNullable(criteria.getLower())
                 .ifPresent(lower -> predicates.add(criteriaBuilder.lessThanOrEqualTo(root.get("amount"), lower)));

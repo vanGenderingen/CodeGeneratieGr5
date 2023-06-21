@@ -17,6 +17,7 @@ import org.springframework.web.server.ResponseStatusException;
 
 import java.security.Principal;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -51,7 +52,7 @@ public class TransactionService {
         validateAmountIsLowerThanTransactionLimit(fromUser, transaction.getAmount());
         validateDailyLimit(fromUser, transaction.getFromIBAN(), transaction.getAmount());
 
-        if(!validatePerformingUserIsEmployee(transaction.getUserPerforming())){
+        if(!validateUserIsEmployee(transaction.getUserPerforming())){
             // Verify if the user is the owner of the account
             validateFromAccountIsFromPerformingUser(transaction.getUserPerforming(), fromAccount);
             // Verify if the account is a savings account and from the user
@@ -67,7 +68,25 @@ public class TransactionService {
     }
 
     public List<Transaction> getTransactions(Integer offset, Integer limit, SearchCriteria filters, Principal principal) {
-        //Add user verification
+        if(!validateUserIsEmployee(UUID.fromString(principal.getName()))){
+            if (filters.getAccountID() == null){
+                List<Account> userAccounts = accountsRepository.getAccountsByUserID(UUID.fromString(principal.getName()));
+
+                List<Transaction> transactions = new ArrayList<>();
+                for(Account account : userAccounts){
+                    filters.setAccountID(account.getAccountID());
+                    transactions.addAll(getAllTransactions(PageRequest.of(offset, limit), new TransactionSpecification(validateIfCreateriaIsCorrectForUser(filters))));
+                }
+                return transactions;
+            }
+            return getAllTransactions(PageRequest.of(offset, limit), new TransactionSpecification(validateIfCreateriaIsCorrectForUser(filters)));
+
+        }
+        if (filters.getAccountID() != null) {
+            Account account = accountsRepository.getAccountByAccountID(filters.getAccountID());
+            filters.setToIBAN(account.getIBAN());
+            filters.setFromIBAN(account.getIBAN());
+        }
         return getAllTransactions(PageRequest.of(offset, limit), new TransactionSpecification(filters));
     }
 
@@ -82,7 +101,7 @@ public class TransactionService {
         throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "The IBAN is not valid");
     }
 
-    public boolean validatePerformingUserIsEmployee(UUID userPerforming){
+    public boolean validateUserIsEmployee(UUID userPerforming){
         try {
             User user = userRepository.getUserByUserID(userPerforming);
             return user.getRoles().contains(Role.ROLE_EMPLOYEE);
@@ -120,7 +139,7 @@ public class TransactionService {
         }
     }
 
-    public void validateDailyLimit(User user, String fromIBAN, double amount){
+    public void validateDailyLimit(User user, String fromIBAN, double amount) {
         SearchCriteria searchCriteria = new SearchCriteria();
         searchCriteria.setFromIBAN(fromIBAN);
         searchCriteria.setDate(LocalDateTime.now());
@@ -135,8 +154,25 @@ public class TransactionService {
         if (dailyLimit < total + amount) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "You can't withdraw more than your daily limit");
         }
-
     }
 
-
+    public SearchCriteria validateIfCreateriaIsCorrectForUser(SearchCriteria searchCriteria){
+        try{
+            if(searchCriteria.getAccountID() != null){
+                Account account = accountsRepository.getAccountByAccountID(searchCriteria.getAccountID());
+                if(searchCriteria.getFromIBAN() == null){
+                    searchCriteria.setFromIBAN(account.getIBAN());
+                }else if(searchCriteria.getToIBAN() == null){
+                    searchCriteria.setToIBAN(account.getIBAN());
+                }else {
+                    searchCriteria.setToIBAN(account.getIBAN());
+                    searchCriteria.setFromIBAN(account.getIBAN());
+                }
+                return searchCriteria;
+            }
+        }catch (NullPointerException e) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "The accountID is not valid");
+        }
+        throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "The accountID is not valid");
+    }
 }

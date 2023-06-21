@@ -99,10 +99,10 @@ public class DataSeeder implements ApplicationRunner {
         accountRepository.save(savingsAccountEmployee3);
 
         //create user accounts
-        Account currentAccountUser2 = new Account(UUID.randomUUID(), user2, user2.getUserID(), "Current account Ronald Weasly", "NL01INHO0000000010", 100.00, AccountType.CURRENT, -100.00, true);
+        Account currentAccountUser2 = new Account(UUID.randomUUID(), user2, user2.getUserID(), "Current account John Doe", "NL01INHO0000000010", 100.00, AccountType.CURRENT, -100.00, true);
         accountRepository.save(currentAccountUser2);
 
-        Account savingsAccountUser2 = new Account(UUID.randomUUID(), user2, user2.getUserID(), "Savings account Ronald Weasly", "NL01INHO0000000011", 100.00, AccountType.SAVINGS, -100.00, true);
+        Account savingsAccountUser2 = new Account(UUID.randomUUID(), user2, user2.getUserID(), "Savings account John Doe", "NL01INHO0000000011", 100.00, AccountType.SAVINGS, -100.00, true);
         accountRepository.save(savingsAccountUser2);
 
         Account currentAccountUser4 = new Account(UUID.randomUUID(), user4, user4.getUserID(), "Current account Severus Snape", "NL01INHO0000000012", 100.00, AccountType.CURRENT, -100.00, true);

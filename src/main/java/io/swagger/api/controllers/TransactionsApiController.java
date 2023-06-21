@@ -45,7 +45,7 @@ public class TransactionsApiController {
         this.request = request;
     }
 
-//    @PreAuthorize("hasRole('ROLE_USER')")
+    @PreAuthorize("hasRole('ROLE_USER')")
     @RequestMapping(value = "/transactions",
             produces = {"application/json"},
             method = RequestMethod.GET)

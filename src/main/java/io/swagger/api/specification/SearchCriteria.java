@@ -14,7 +14,7 @@ public class SearchCriteria {
     private String fromIBAN;
     private String toIBAN;
     private TransactionType transactionType;
-    private UUID userPerforming;
+    private UUID accountID;
     private Double lower;
     private Double higher;
     private Double equal;
