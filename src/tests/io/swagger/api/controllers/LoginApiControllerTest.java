@@ -1,5 +1,6 @@
 package io.swagger.api.controllers;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import io.swagger.api.repository.UserRepository;
 import io.swagger.api.service.LoginService;
 import io.swagger.model.DTO.LoginDTO;
@@ -13,9 +14,17 @@ import org.mockito.MockitoAnnotations;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
+import javax.servlet.http.HttpServletRequest;
+
 import static org.mockito.Mockito.when;
 
 class LoginApiControllerTest {
+
+    @Mock
+    private HttpServletRequest request;
+
+    @Mock
+    private LoginService loginService;
 
     @Mock
     private UserRepository userRepository;
@@ -25,8 +34,11 @@ class LoginApiControllerTest {
 
     @BeforeEach
     void setUp() {
+        loginApiController = new LoginApiController(new ObjectMapper(), request, loginService);
         MockitoAnnotations.initMocks(this);
     }
+
+
 
     @Test
     void testLoginWithValidCredentials() {
