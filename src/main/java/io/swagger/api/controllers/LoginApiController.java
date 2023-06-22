@@ -35,7 +35,8 @@ public class LoginApiController implements LoginApi {
     private LoginService loginService;//LoginService to use the methods of the service
 
     @org.springframework.beans.factory.annotation.Autowired
-    public LoginApiController(ObjectMapper objectMapper, HttpServletRequest request) {
+    public LoginApiController(ObjectMapper objectMapper, HttpServletRequest request, LoginService loginService){
+        this.loginService = loginService;//Initialize the LoginService
         this.objectMapper = objectMapper;//Initialize the ObjectMapper and the HttpServletRequest
         this.request = request;
     }

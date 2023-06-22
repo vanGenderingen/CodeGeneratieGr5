@@ -87,7 +87,7 @@ Current scope:     <a href="../../index.html">all classes</a>
 <code class="sourceCode" id="sourceCode">&nbsp;package io.swagger.api.controllers;
 &nbsp;
 &nbsp;import com.fasterxml.jackson.databind.ObjectMapper;
-&nbsp;import io.swagger.api.AccountsApi;
+&nbsp;import io.swagger.api.interfaces.io.swagger.api.AccountsApi;
 &nbsp;import io.swagger.api.service.AccountService;
 &nbsp;import io.swagger.api.service.UserService;
 &nbsp;import io.swagger.model.Account;
@@ -115,7 +115,7 @@ Current scope:     <a href="../../index.html">all classes</a>
 &nbsp;@CrossOrigin(origins = &quot;*&quot;)
 &nbsp;@javax.annotation.Generated(value = &quot;io.swagger.codegen.v3.generators.java.SpringCodegen&quot;, date = &quot;2023-05-16T13:11:00.686570329Z[GMT]&quot;)
 &nbsp;@RestController
-&nbsp;public class AccountsApiController implements AccountsApi {
+&nbsp;public class AccountsApiController implements io.swagger.api.AccountsApi {
 &nbsp;    @Autowired
 &nbsp;    private final ObjectMapper objectMapper;
 &nbsp;

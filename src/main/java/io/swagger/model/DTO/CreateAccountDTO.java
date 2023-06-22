@@ -1,8 +1,6 @@
 package io.swagger.model.DTO;
 
-import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonValue;
 import io.swagger.model.AccountType;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -36,7 +34,7 @@ public class CreateAccountDTO   {
 
   @JsonProperty("Type")
   @Enumerated(EnumType.STRING)
-  private AccountType.TypeEnum type = null;
+  private AccountType type = null;
 
   @JsonProperty("MinBal")
   @NotNull

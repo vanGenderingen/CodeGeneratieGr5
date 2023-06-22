@@ -1,8 +1,6 @@
 package io.swagger.model;
 
-import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonValue;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -47,7 +45,7 @@ public class Account   {
 
   @JsonProperty("Type")
   @Enumerated(EnumType.STRING)
-  private AccountType.TypeEnum type = null;
+  private AccountType type = null;
 
   @JsonProperty("MinBal")
   private Double minBal = null;
