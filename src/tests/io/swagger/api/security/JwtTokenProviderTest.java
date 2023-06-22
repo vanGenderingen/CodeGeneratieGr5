@@ -73,4 +73,65 @@ class JwtTokenProviderTest {
         assertTrue(jwtTokenProvider.validateToken(token));
         assertThrows(Exception.class, () -> jwtTokenProvider.validateToken("invalid_token"));
     }
+    @Test
+    void testValidateToken() {
+        jwtTokenProvider.init();
+        String token = jwtTokenProvider.createToken(UUID.randomUUID(), Collections.singletonList(Role.ROLE_USER));
+        assertTrue(jwtTokenProvider.validateToken(token));
+        assertThrows(Exception.class, () -> jwtTokenProvider.validateToken("invalid_token"));
+    }@Test
+    void testValidateToken() {
+        jwtTokenProvider.init();
+        String token = jwtTokenProvider.createToken(UUID.randomUUID(), Collections.singletonList(Role.ROLE_USER));
+        assertTrue(jwtTokenProvider.validateToken(token));
+        assertThrows(Exception.class, () -> jwtTokenProvider.validateToken("invalid_token"));
+    }@Test
+    void testValidateToken() {
+        jwtTokenProvider.init();
+        String token = jwtTokenProvider.createToken(UUID.randomUUID(), Collections.singletonList(Role.ROLE_USER));
+        assertTrue(jwtTokenProvider.validateToken(token));
+        assertThrows(Exception.class, () -> jwtTokenProvider.validateToken("invalid_token"));
+    }@Test
+    void testValidateToken() {
+        jwtTokenProvider.init();
+        String token = jwtTokenProvider.createToken(UUID.randomUUID(), Collections.singletonList(Role.ROLE_USER));
+        assertTrue(jwtTokenProvider.validateToken(token));
+        assertThrows(Exception.class, () -> jwtTokenProvider.validateToken("invalid_token"));
+    }@Test
+    void testValidateToken() {
+        jwtTokenProvider.init();
+        String token = jwtTokenProvider.createToken(UUID.randomUUID(), Collections.singletonList(Role.ROLE_USER));
+        assertTrue(jwtTokenProvider.validateToken(token));
+        assertThrows(Exception.class, () -> jwtTokenProvider.validateToken("invalid_token"));
+    }@Test
+    void testValidateToken() {
+        jwtTokenProvider.init();
+        String token = jwtTokenProvider.createToken(UUID.randomUUID(), Collections.singletonList(Role.ROLE_USER));
+        assertTrue(jwtTokenProvider.validateToken(token));
+        assertThrows(Exception.class, () -> jwtTokenProvider.validateToken("invalid_token"));
+    }@Test
+    void testValidateToken() {
+        jwtTokenProvider.init();
+        String token = jwtTokenProvider.createToken(UUID.randomUUID(), Collections.singletonList(Role.ROLE_USER));
+        assertTrue(jwtTokenProvider.validateToken(token));
+        assertThrows(Exception.class, () -> jwtTokenProvider.validateToken("invalid_token"));
+    }@Test
+    void testValidateToken() {
+        jwtTokenProvider.init();
+        String token = jwtTokenProvider.createToken(UUID.randomUUID(), Collections.singletonList(Role.ROLE_USER));
+        assertTrue(jwtTokenProvider.validateToken(token));
+        assertThrows(Exception.class, () -> jwtTokenProvider.validateToken("invalid_token"));
+    }@Test
+    void testValidateToken() {
+        jwtTokenProvider.init();
+        String token = jwtTokenProvider.createToken(UUID.randomUUID(), Collections.singletonList(Role.ROLE_USER));
+        assertTrue(jwtTokenProvider.validateToken(token));
+        assertThrows(Exception.class, () -> jwtTokenProvider.validateToken("invalid_token"));
+    }@Test
+    void testValidateToken() {
+        jwtTokenProvider.init();
+        String token = jwtTokenProvider.createToken(UUID.randomUUID(), Collections.singletonList(Role.ROLE_USER));
+        assertTrue(jwtTokenProvider.validateToken(token));
+        assertThrows(Exception.class, () -> jwtTokenProvider.validateToken("invalid_token"));
+    }
 }
