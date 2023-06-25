@@ -115,11 +115,23 @@ public class UserService {
         }
     }
     public void updatePasswordByEmail(String email, String newPassword) {
-        Optional<User> optionalUser = Optional.ofNullable(userRepository.getUserByEmail(email));
-        User user = optionalUser.orElseThrow(() -> new UsernameNotFoundException("User not found with email: " + email));
+        try {
+            User user = userRepository.getUserByEmail(email);
 
-        user.setPassword(passwordEncoder.encode(newPassword));
-        userRepository.save(user);
+            if (user != null) {
+                user.setPassword(passwordEncoder.encode(newPassword));
+                userRepository.save(user);
+            } else {
+                // Handle the case when the user is not found
+                // For example, throw an exception or log an error
+                throw new RuntimeException("User not found for email: " + email);
+            }
+        } catch (Exception e) {
+            // Handle any exceptions that occur during the password update process
+            // For example, log the error or throw a custom exception
+            e.printStackTrace();
+            throw new RuntimeException("Error updating password: " + e.getMessage());
+        }
     }
 
 

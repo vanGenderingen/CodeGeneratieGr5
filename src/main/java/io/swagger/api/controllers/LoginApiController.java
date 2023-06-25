@@ -4,11 +4,14 @@ package io.swagger.api.controllers;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.swagger.api.LoginApi;
+import io.swagger.api.repository.TokenRepository;
 import io.swagger.api.service.EmailService;
 import io.swagger.api.service.LoginService;
+import io.swagger.api.service.TokenService;
 import io.swagger.api.service.UserService;
 import io.swagger.model.DTO.LoginDTO;
 import io.swagger.model.DTO.LoginResponseDTO;
+import io.swagger.model.Token;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.enums.ParameterIn;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -28,8 +31,11 @@ import javax.validation.Valid;
 import java.security.Timestamp;
 import java.time.LocalDate;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import static java.time.LocalDate.now;
 
@@ -42,7 +48,11 @@ public class LoginApiController implements LoginApi {
 
     private final ObjectMapper objectMapper;//ObjectMapper to map objects
 
+    private String email;//String to store the email
+
     private final HttpServletRequest request;//HttpServletRequest to get the request
+
+    private final Map<String, String> tokenEmailMap = new HashMap<>();//Map to store the token and the email
 
     @Autowired
     private LoginService loginService;//LoginService to use the methods of the service
@@ -51,6 +61,10 @@ public class LoginApiController implements LoginApi {
     private UserService userService;//LoginService to use the methods of the service
     @Autowired
     private EmailService emailService;//LoginService to use the methods of the service
+    @Autowired
+    private TokenService tokenService;//LoginService to use the methods of the service
+//    @Autowired
+//    private TokenRepository tokenRepository;
 
     @org.springframework.beans.factory.annotation.Autowired
     public LoginApiController(ObjectMapper objectMapper, HttpServletRequest request, LoginService loginService){
@@ -75,7 +89,13 @@ public class LoginApiController implements LoginApi {
         String email = request.get("email");
         // Generate a unique token for the user and store it in the database
         String token = UUID.randomUUID().toString();
+        //final Map<String, String> tokenEmailMap = new HashMap<>();
+        //tokenEmailMap.put(token, email);
         //Timestamp timestamp = new Timestamp(Date.now();
+        Token token1 = new Token();
+        token1.setEmail(email);
+        token1.setToken(token);
+        tokenService.saveToken(token1);
         // Save the token, email, and timestamp in the database
         String resetUrl = "http://localhost:5173/reset-password?token=" + token;
         String subject = "Reset Your Password";
@@ -96,12 +116,15 @@ public class LoginApiController implements LoginApi {
     public ResponseEntity<?> resetPassword(@RequestBody Map<String, String> request) {
         String newPassword = request.get("newPassword");
         String confirmPassword = request.get("confirmPassword");
-        if (!newPassword.equals(confirmPassword)) {
+        String Email = request.get("email");
+        Token token = tokenService.findByEmail(Email);
+        String tokenfromDB = token.getToken();
+        String tokenFromRequest = request.get("token");
+        if (!newPassword.equals(confirmPassword) || !tokenfromDB.equals(tokenFromRequest)){
             //return ResponseEntity.badRequest().body(Map.of("message", "Passwords do not match"));
-            return new ResponseEntity<LoginResponseDTO>(HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<LoginResponseDTO>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
-
-        userService.updatePasswordByEmail(newPassword, request.get("email"));
+        userService.updatePasswordByEmail(Email, newPassword);
 
         //return ResponseEntity.ok(Map.of("message", "Password reset successfully"));
         return new ResponseEntity<LoginResponseDTO>(HttpStatus.OK);
