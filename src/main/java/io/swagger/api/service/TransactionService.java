@@ -19,6 +19,7 @@ import java.security.Principal;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.UUID;
 
 @Service
@@ -41,7 +42,6 @@ public class TransactionService {
         }
         //Get the account from the IBAN
         Account fromAccount = getAccountByIBAN(transaction.getFromIBAN());
-
         Account toAccount = getAccountByIBAN(transaction.getToIBAN());
 
         //Verify transaction and daily limit
@@ -53,7 +53,7 @@ public class TransactionService {
 
 
             // Verify if the user is the owner of the account
-            validateFromAccountIsFromPerformingUser(transaction.getUserPerforming(), fromAccount);
+            validateFromAccountIsFromPerformingUser(transaction.getUserPerforming(), fromUser);
             // Verify if the account is a savings account and from the user
             validateSavingsAccountIsFromUser(fromAccount.getType(), fromAccount, toAccount);
         }
@@ -112,10 +112,9 @@ public class TransactionService {
         }
     }
 
-    public void validateFromAccountIsFromPerformingUser(UUID userPerforming, Account fromAccount){
+    public void validateFromAccountIsFromPerformingUser(UUID userPerforming, User fromUser){
         try {
-            User user = userRepository.getUserByUserID(userPerforming);
-            if (user.getUserID() != fromAccount.getUserID()){
+            if (!Objects.equals(fromUser.getUserID().toString(), userPerforming.toString())){
                 throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "You can't perform a transaction from an account that isn't yours");
             }
         } catch (NullPointerException e) {
