@@ -22,11 +22,15 @@ public class LoginService {
     private JwtTokenProvider jwtTokenProvider;
 
     public String login(String userEmail, String password) {
-        User user = userRepository.getUserByEmail(userEmail);
-        if (user != null && passwordEncoder.matches(password, user.getPassword())) {
-            return jwtTokenProvider.createToken(user.getUserID(), user.getRoles());
-        } else {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid username/password");
+        try {
+            User user = userRepository.getUserByEmail(userEmail);
+            if (user != null && passwordEncoder.matches(password, user.getPassword())) {
+                return jwtTokenProvider.createToken(user.getUserID(), user.getRoles());
+            } else {
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid username/password");
+            }
+        } catch (NullPointerException e) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "User not found");
         }
     }
 }

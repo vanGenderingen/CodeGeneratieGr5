@@ -76,6 +76,10 @@ public class DataSeeder implements ApplicationRunner {
         userRepository.save(user7);
         User user8 = userService.getUserByEmail("sir.lancelot@mail.nl");
 
+        User user9 = new User(UUID.fromString("3d892b84-1377-11ee-be56-0242ac120002"), "Jelle", "Koomen", "jelle_koomen@outlook.com", encodePassword("password"), Arrays.asList(Role.ROLE_USER), true, new ArrayList<>(), 1000.00, 10000.00);
+        userRepository.save(user9);
+        User user10 = userService.getUserByEmail("jelle_koomen@outlook.com");
+
 
         //create accounts
         //create one account for bank
