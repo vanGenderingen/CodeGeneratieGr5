@@ -166,6 +166,16 @@ public class DataSeeder implements ApplicationRunner {
         Transaction transaction8 = objectMapper.convertValue(transactionAccount3fromAccount7, Transaction.class);
         transaction8.setUserPerforming(bank2.getUserID());
         transactionService.add(transaction8);
+
+        CreateTransactionDTO transactionJD = new CreateTransactionDTO("NL01INHO0000000010", "NL01INHO0000000011", 10.00, TransactionType.TRANSFER, "Test transactions");
+        Transaction transaction9 = objectMapper.convertValue(transactionJD, Transaction.class);
+        transaction9.setUserPerforming(bank2.getUserID());
+        transactionService.add(transaction9);
+
+        CreateTransactionDTO transactionJD2 = new CreateTransactionDTO("NL01INHO0000000010", "NL01INHO0000000011", 10.00, TransactionType.TRANSFER, "Test transactions 2");
+        Transaction transaction10 = objectMapper.convertValue(transactionJD2, Transaction.class);
+        transaction10.setUserPerforming(bank2.getUserID());
+        transactionService.add(transaction10);
     }
 
     private String encodePassword(String password) {

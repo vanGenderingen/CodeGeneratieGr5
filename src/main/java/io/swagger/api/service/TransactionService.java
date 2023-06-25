@@ -42,22 +42,24 @@ public class TransactionService {
         //Get the account from the IBAN
         Account fromAccount = getAccountByIBAN(transaction.getFromIBAN());
 
-        //Verify if the account has enough money
-        validateAccountHasEnoughMoney(fromAccount, transaction.getAmount());
-
         Account toAccount = getAccountByIBAN(transaction.getToIBAN());
 
         //Verify transaction and daily limit
         User fromUser = userRepository.getUserByUserID(fromAccount.getUserID());
-        validateAmountIsLowerThanTransactionLimit(fromUser, transaction.getAmount());
+        validateTransactionLimit(fromUser, transaction.getAmount());
         validateDailyLimit(fromUser, transaction.getFromIBAN(), transaction.getAmount());
 
         if(!validateUserIsEmployee(transaction.getUserPerforming())){
+
+
             // Verify if the user is the owner of the account
             validateFromAccountIsFromPerformingUser(transaction.getUserPerforming(), fromAccount);
             // Verify if the account is a savings account and from the user
             validateSavingsAccountIsFromUser(fromAccount.getType(), fromAccount, toAccount);
         }
+
+        //Verify if the account has enough money
+        validateAccountHasEnoughMoney(fromAccount, transaction.getAmount());
 
         fromAccount.setBalance(fromAccount.getBalance() - transaction.getAmount());
         toAccount.setBalance(toAccount.getBalance() + transaction.getAmount());
@@ -133,7 +135,7 @@ public class TransactionService {
         }
     }
 
-    public void validateAmountIsLowerThanTransactionLimit(User user, double amount){
+    public void validateTransactionLimit(User user, double amount){
         if (user.getTransactionLimit() < amount) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "You can't withdraw more than your transaction limit");
         }
@@ -175,4 +177,9 @@ public class TransactionService {
         }
         throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "The accountID is not valid");
     }
+//
+//    public boolean checkIfTypeIsTransaction(){
+//
+//    }
+
 }
