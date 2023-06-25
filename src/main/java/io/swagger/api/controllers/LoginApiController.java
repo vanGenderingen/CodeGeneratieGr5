@@ -67,21 +67,27 @@ public class LoginApiController implements LoginApi {
 
         return new ResponseEntity<LoginResponseDTO>(loginResponse, HttpStatus.OK);
     }
-    @PostMapping("/forgot-password")
+
+
+    //@PostMapping("/forgot-password")
+    @RequestMapping(value = "/forgot-password", produces = {"application/json"}, method = RequestMethod.POST)
     public ResponseEntity<?> forgotPassword(@RequestBody Map<String, String> request) {
         String email = request.get("email");
         // Generate a unique token for the user and store it in the database
         String token = UUID.randomUUID().toString();
         //Timestamp timestamp = new Timestamp(Date.now();
         // Save the token, email, and timestamp in the database
-        String resetUrl = "http://localhost:8080/reset-password?token=" + token;
+        String resetUrl = "http://localhost:5173/reset-password?token=" + token;
         String subject = "Reset Your Password";
         String body = "Click the following link to reset your password: " + resetUrl;
         try {
             emailService.sendEmail(email, subject, body);
-            return ResponseEntity.ok(Map.of("message", "Email sent successfully"));
+            //return ResponseEntity.ok(Map.of("message", "Email sent successfully"));
+            return new ResponseEntity<LoginResponseDTO>(HttpStatus.OK);
         } catch (MailException e) {
-            return ResponseEntity.badRequest().body(Map.of("message", "Failed to send email"));
+           // return ResponseEntity.badRequest().body(Map.of("message", "Failed to send email"));
+
+            return new ResponseEntity<LoginResponseDTO>(HttpStatus.INTERNAL_SERVER_ERROR);
         } catch (MessagingException e) {
             throw new RuntimeException(e);
         }
@@ -91,11 +97,13 @@ public class LoginApiController implements LoginApi {
         String newPassword = request.get("newPassword");
         String confirmPassword = request.get("confirmPassword");
         if (!newPassword.equals(confirmPassword)) {
-            return ResponseEntity.badRequest().body(Map.of("message", "Passwords do not match"));
+            //return ResponseEntity.badRequest().body(Map.of("message", "Passwords do not match"));
+            return new ResponseEntity<LoginResponseDTO>(HttpStatus.BAD_REQUEST);
         }
 
         userService.updatePasswordByEmail(newPassword, request.get("email"));
 
-        return ResponseEntity.ok(Map.of("message", "Password reset successfully"));
+        //return ResponseEntity.ok(Map.of("message", "Password reset successfully"));
+        return new ResponseEntity<LoginResponseDTO>(HttpStatus.OK);
     }
 }
