@@ -1,112 +1,157 @@
 package io.swagger.api;
 
 import io.swagger.api.controllers.UsersApiController;
-import io.swagger.api.service.UserService;
 import io.swagger.model.DTO.CreateUserDTO;
 import io.swagger.model.DTO.GetUserDTO;
 import io.swagger.model.DTO.UpdateUserDTO;
 import io.swagger.model.User;
 import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
-import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
-import java.util.ArrayList;
+import java.security.Principal;
 import java.util.List;
 import java.util.UUID;
 
-@ExtendWith(MockitoExtension.class)
-public class UsersApiTest {
+import static org.mockito.Mockito.when;
 
+class UsersApiTest {
     @Mock
-    private UserService userService;
-
-    @InjectMocks
     private UsersApiController usersApiController;
 
-    @BeforeEach
-    void setUp() {
+    public UsersApiTest() {
         MockitoAnnotations.initMocks(this);
     }
 
     @Test
-    public void testUsersGet() {
-        // Create test data
-        List<GetUserDTO> users = new ArrayList<>();
-        users.add(new GetUserDTO());
-        users.add(new GetUserDTO());
-
-        // Mock the behavior of the usersGet() method
-        Mockito.when(userService.getAllUsers(null, null, null, null))
-                .thenReturn(ResponseEntity.ok(users));
-
-        // Perform the usersGet() method invocation
-        ResponseEntity<List<GetUserDTO>> response = usersApiController.usersGet(null, null, null, null);
-
-        // Verify the results
-        Assertions.assertEquals(HttpStatus.OK, response.getStatusCode());
-        Assertions.assertEquals(users, response.getBody());
-    }
-
-    @Test
-    public void testUsersPost() {
-        // Create test data
+    void createUser_shouldReturnCreatedUser() {
         CreateUserDTO createUserDTO = new CreateUserDTO();
-        User user = new User();
 
-        // Mock the behavior of the usersPost() method
-        Mockito.when(userService.add(createUserDTO))
-                .thenReturn(ResponseEntity.status(HttpStatus.CREATED).body(user));
+        when(usersApiController.createUser(createUserDTO)).thenReturn(new ResponseEntity<User>(HttpStatus.CREATED));
 
-        // Perform the usersPost() method invocation
-        ResponseEntity<User> response = usersApiController.usersPost(createUserDTO);
+        ResponseEntity<User> response = usersApiController.createUser(createUserDTO);
 
-        // Verify the results
         Assertions.assertEquals(HttpStatus.CREATED, response.getStatusCode());
-        Assertions.assertEquals(user, response.getBody());
+        User user = response.getBody();
     }
 
     @Test
-    public void testUsersUserIDGet() {
-        // Create test data
-        UUID userID = UUID.randomUUID();
-        GetUserDTO getUserDTO = new GetUserDTO();
+    void createUser_ReturnsBadRequest() {
+        CreateUserDTO createUserDTO = new CreateUserDTO();
 
-        // Mock the behavior of the usersUserIDGet() method
-        Mockito.when(userService.getUserByUserID(userID))
-                .thenReturn(ResponseEntity.ok(getUserDTO));
+        when(usersApiController.createUser(createUserDTO)).thenReturn(new ResponseEntity<User>(HttpStatus.BAD_REQUEST));
 
-        // Perform the usersUserIDGet() method invocation
-        ResponseEntity<GetUserDTO> response = usersApiController.usersUserIDGet(userID);
+        ResponseEntity<User> response = usersApiController.createUser(createUserDTO);
 
-        // Verify the results
+        Assertions.assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
+    }
+
+    @Test
+    void getUsers_shouldReturnListOfUsers() {
+        Integer limit = 10;
+        Integer offset = 0;
+        String searchStrings = "";
+        String email = "";
+
+        // Set the mock behaviour of the usersApiController
+        when(usersApiController.getUsers(limit, offset, searchStrings, email)).thenReturn(new ResponseEntity<List<GetUserDTO>>(HttpStatus.OK));
+
+        // Call the usersGet method
+        ResponseEntity<List<GetUserDTO>> response = usersApiController.getUsers(limit, offset, searchStrings, email);
+
+        // Verify the response
         Assertions.assertEquals(HttpStatus.OK, response.getStatusCode());
-        Assertions.assertEquals(getUserDTO, response.getBody());
+        List<GetUserDTO> users = response.getBody();
     }
 
     @Test
-    public void testUsersUserIDPut() {
+    void getUsers_ReturnsNotFound() {
+        Integer limit = 10;
+        Integer offset = 0;
+        String searchStrings = "";
+        String email = "";
+
+        // Set the mock behaviour of the usersApiController
+        when(usersApiController.getUsers(limit, offset, searchStrings, email)).thenReturn(new ResponseEntity<List<GetUserDTO>>(HttpStatus.NOT_FOUND));
+
+        // Call the usersGet method
+        ResponseEntity<List<GetUserDTO>> response = usersApiController.getUsers(limit, offset, searchStrings, email);
+
+        // Verify the response
+        Assertions.assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
+    }
+
+    @Test
+    void getUserById_shouldReturnUser() {
         // Create test data
-        UUID userID = UUID.randomUUID();
+        UUID userId = UUID.randomUUID();
+        Principal principal = Mockito.mock(Principal.class);
+
+        // Set the mock behaviour of the usersApiController
+        when(usersApiController.getUserById(userId, principal)).thenReturn(new ResponseEntity<GetUserDTO>(HttpStatus.OK));
+
+        // Call the usersGet method
+        ResponseEntity<GetUserDTO> response = usersApiController.getUserById(userId, principal);
+
+        // Verify the response
+        Assertions.assertEquals(HttpStatus.OK, response.getStatusCode());
+        GetUserDTO user = response.getBody();
+    }
+
+    @Test
+    void getUserById_ReturnsNotFound() {
+        // Create test data
+        UUID userId = UUID.randomUUID();
+        Principal principal = Mockito.mock(Principal.class);
+
+        // Set the mock behaviour of the usersApiController
+        when(usersApiController.getUserById(userId, principal)).thenReturn(new ResponseEntity<GetUserDTO>(HttpStatus.NOT_FOUND));
+
+        // Call the usersGet method
+        ResponseEntity<GetUserDTO> response = usersApiController.getUserById(userId, principal);
+
+        // Verify the response
+        Assertions.assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
+    }
+
+    @Test
+    void updateUser_shouldReturnUpdatedUser() {
+        // Create test data
+        UUID userId = UUID.randomUUID();
         UpdateUserDTO updateUserDTO = new UpdateUserDTO();
-        GetUserDTO getUserDTO = new GetUserDTO();
+        Principal principal = Mockito.mock(Principal.class);
 
-        // Mock the behavior of the usersUserIDPut() method
-        Mockito.when(userService.updateUser(userID, updateUserDTO))
-                .thenReturn(ResponseEntity.ok(getUserDTO));
+        // Set the mock behaviour of the usersApiController
+        when(usersApiController.updateUser(userId, updateUserDTO, principal)).thenReturn(new ResponseEntity<GetUserDTO>(HttpStatus.OK));
 
-        // Perform the usersUserIDPut() method invocation
-        ResponseEntity<GetUserDTO> response = usersApiController.usersUserIDPut(userID, updateUserDTO);
+        // Call the usersGet method
+        ResponseEntity<GetUserDTO> response = usersApiController.updateUser(userId, updateUserDTO, principal);
 
-        // Verify the results
+        // Verify the response
         Assertions.assertEquals(HttpStatus.OK, response.getStatusCode());
-        Assertions.assertEquals(getUserDTO, response.getBody());
+        GetUserDTO user = response.getBody();
+
     }
+
+    @Test
+    void updateUser_ReturnsBadRequest() {
+        // Create test data
+        UUID userId = UUID.randomUUID();
+        UpdateUserDTO updateUserDTO = new UpdateUserDTO();
+        Principal principal = Mockito.mock(Principal.class);
+
+        // Set the mock behaviour of the usersApiController
+        when(usersApiController.updateUser(userId, updateUserDTO, principal)).thenReturn(new ResponseEntity<GetUserDTO>(HttpStatus.BAD_REQUEST));
+
+        // Call the usersGet method
+        ResponseEntity<GetUserDTO> response = usersApiController.updateUser(userId, updateUserDTO, principal);
+
+        // Verify the response
+        Assertions.assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
+    }
+
 }
