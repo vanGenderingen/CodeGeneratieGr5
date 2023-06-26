@@ -26,14 +26,6 @@ public class JwtTokenFilter extends OncePerRequestFilter {
     @Autowired
     private JwtTokenProvider jwtTokenProvider;
 
-    @Bean
-    public FilterRegistrationBean<JwtTokenFilter> jwtTokenFilterRegistration() {
-        FilterRegistrationBean<JwtTokenFilter> registrationBean = new FilterRegistrationBean<>();
-        registrationBean.setFilter(new JwtTokenFilter());
-        registrationBean.addUrlPatterns("/*");
-        return registrationBean;
-    }
-
     @Override
     protected void doFilterInternal(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse, FilterChain filterChain) throws IOException, ServletException {
         String path = httpServletRequest.getRequestURI();

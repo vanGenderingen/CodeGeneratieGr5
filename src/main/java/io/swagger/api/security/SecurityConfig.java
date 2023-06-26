@@ -26,14 +26,12 @@ import static org.springframework.security.config.Customizer.withDefaults;
 @EnableWebSecurity
 public class SecurityConfig {
 
-    @Autowired
-    private UserDetailsService userDetailsService;
-    @Autowired
-    private FilterRegistrationBean<JwtTokenFilter> jwtTokenFilterRegistration;
+    /*@Autowired
+    private UserDetailsService userDetailsService;*/
 
-    protected void configure(AuthenticationManagerBuilder auth) throws Exception {
+    /*protected void configure(AuthenticationManagerBuilder auth) throws Exception {
         auth.userDetailsService(userDetailsService).passwordEncoder(passwordEncoder());
-    }
+    }*/
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
@@ -46,7 +44,7 @@ public class SecurityConfig {
                 )
                 .httpBasic(withDefaults())
                 .csrf().disable()
-                .authenticationManager(new CustomAuthenticationManager())
+                //.authenticationManager(new CustomAuthenticationManager())
                 .headers().frameOptions().disable();
         return http.build();
     }
