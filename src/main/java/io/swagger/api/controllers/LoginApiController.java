@@ -102,6 +102,8 @@ public class LoginApiController implements LoginApi {
             return new ResponseEntity<LoginResponseDTO>(HttpStatus.OK);
         } catch (MailException e) {
             return new ResponseEntity<LoginResponseDTO>(HttpStatus.BAD_REQUEST);
+        } catch (MessagingException e) {
+            throw new RuntimeException(e);
         }
     }
 
