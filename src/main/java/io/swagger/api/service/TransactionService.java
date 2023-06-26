@@ -6,6 +6,7 @@ import io.swagger.api.repository.UserRepository;
 import io.swagger.api.specification.SearchCriteria;
 import io.swagger.api.specification.TransactionSpecification;
 import io.swagger.model.*;
+import io.swagger.model.DTO.GetUserDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
