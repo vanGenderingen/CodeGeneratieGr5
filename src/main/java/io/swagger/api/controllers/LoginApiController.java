@@ -1,10 +1,7 @@
 package io.swagger.api.controllers;
 
-//import com.sun.org.apache.xml.internal.security.algorithms.SignatureAlgorithm;
-
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.swagger.api.LoginApi;
-import io.swagger.api.repository.TokenRepository;
 import io.swagger.api.service.EmailService;
 import io.swagger.api.service.LoginService;
 import io.swagger.api.service.TokenService;
@@ -21,23 +18,16 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.mail.MailException;
-import org.springframework.mail.SimpleMailMessage;
-import org.springframework.security.crypto.bcrypt.BCrypt;
 import org.springframework.web.bind.annotation.*;
 
 import javax.mail.MessagingException;
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
-import java.security.Timestamp;
-import java.time.LocalDate;
-import java.util.Date;
+
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
-import static java.time.LocalDate.now;
 
 @CrossOrigin(origins = "*")
 @javax.annotation.Generated(value = "io.swagger.codegen.v3.generators.java.SpringCodegen", date = "2023-05-16T13:11:00.686570329Z[GMT]")
@@ -56,19 +46,18 @@ public class LoginApiController implements LoginApi {
 
     @Autowired
     private LoginService loginService;//LoginService to use the methods of the service
-
     @Autowired
     private UserService userService;//LoginService to use the methods of the service
     @Autowired
     private EmailService emailService;//LoginService to use the methods of the service
     @Autowired
     private TokenService tokenService;//LoginService to use the methods of the service
-//    @Autowired
-//    private TokenRepository tokenRepository;
 
     @org.springframework.beans.factory.annotation.Autowired
     public LoginApiController(ObjectMapper objectMapper, HttpServletRequest request, LoginService loginService){
         this.loginService = loginService;//Initialize the LoginService
+        this.emailService = emailService;//Initialize the EmailService
+        this.tokenService = tokenService;//Initialize the TokenService
         this.objectMapper = objectMapper;//Initialize the ObjectMapper and the HttpServletRequest
         this.request = request;
     }
@@ -81,52 +70,62 @@ public class LoginApiController implements LoginApi {
 
         return new ResponseEntity<LoginResponseDTO>(loginResponse, HttpStatus.OK);
     }
-
-
-    //@PostMapping("/forgot-password")
     @RequestMapping(value = "/forgot-password", produces = {"application/json"}, method = RequestMethod.POST)
     public ResponseEntity<?> forgotPassword(@RequestBody Map<String, String> request) {
+
         String email = request.get("email");
-        // Generate a unique token for the user and store it in the database
         String token = UUID.randomUUID().toString();
-        //final Map<String, String> tokenEmailMap = new HashMap<>();
-        //tokenEmailMap.put(token, email);
-        //Timestamp timestamp = new Timestamp(Date.now();
+
         Token token1 = new Token();
         token1.setEmail(email);
         token1.setToken(token);
-        tokenService.saveToken(token1);
-        // Save the token, email, and timestamp in the database
+        try {
+            tokenService.saveToken(token1);
+        } catch (Exception e) {
+            e.printStackTrace();
+            Map<String, String> response = new HashMap<>();
+            response.put("message", "Failed to save token");
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
+        }
+
         String resetUrl = "http://localhost:5173/reset-password?token=" + token;
         String subject = "Reset Your Password";
         String body = "Click the following link to reset your password: " + resetUrl;
+
         try {
             emailService.sendEmail(email, subject, body);
-            //return ResponseEntity.ok(Map.of("message", "Email sent successfully"));
             return new ResponseEntity<LoginResponseDTO>(HttpStatus.OK);
         } catch (MailException e) {
-           // return ResponseEntity.badRequest().body(Map.of("message", "Failed to send email"));
-
-            return new ResponseEntity<LoginResponseDTO>(HttpStatus.INTERNAL_SERVER_ERROR);
+            return new ResponseEntity<LoginResponseDTO>(HttpStatus.BAD_REQUEST);
         } catch (MessagingException e) {
             throw new RuntimeException(e);
         }
     }
-    @PostMapping("/reset-password")
+
+    @RequestMapping(value = "/reset-password", produces = {"application/json"}, method = RequestMethod.POST)
     public ResponseEntity<?> resetPassword(@RequestBody Map<String, String> request) {
+
         String newPassword = request.get("newPassword");
         String confirmPassword = request.get("confirmPassword");
         String Email = request.get("email");
+
+        if (request.get("email" ) == null || request.get("newPassword") == null || request.get("confirmPassword") == null || request.get("token") == null){
+            return new ResponseEntity<LoginResponseDTO>(HttpStatus.BAD_REQUEST);
+        }
         Token token = tokenService.findByEmail(Email);
+        if (token == null){
+            return new ResponseEntity<LoginResponseDTO>(HttpStatus.BAD_REQUEST);
+        }
         String tokenfromDB = token.getToken();
         String tokenFromRequest = request.get("token");
+
         if (!newPassword.equals(confirmPassword) || !tokenfromDB.equals(tokenFromRequest)){
-            //return ResponseEntity.badRequest().body(Map.of("message", "Passwords do not match"));
-            return new ResponseEntity<LoginResponseDTO>(HttpStatus.INTERNAL_SERVER_ERROR);
+            return ResponseEntity.badRequest().body(Map.of("message", "Passwords do not match"));
+            //return new ResponseEntity<LoginResponseDTO>(HttpStatus.BAD_REQUEST);
         }
         userService.updatePasswordByEmail(Email, newPassword);
 
-        //return ResponseEntity.ok(Map.of("message", "Password reset successfully"));
-        return new ResponseEntity<LoginResponseDTO>(HttpStatus.OK);
+        return ResponseEntity.ok(Map.of("message", "Password reset successfully"));
+        //return new ResponseEntity<LoginResponseDTO>(HttpStatus.OK);
     }
 }
