@@ -16,11 +16,13 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 
@@ -110,6 +112,25 @@ public class UserService {
         } catch (Exception e) {
             log.error("Couldn't serialize response for content type application/json", e);
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+    public void updatePasswordByEmail(String email, String newPassword) {
+        try {
+            User user = userRepository.getUserByEmail(email);
+
+            if (user != null) {
+                user.setPassword(passwordEncoder.encode(newPassword));
+                userRepository.save(user);
+            } else {
+                // Handle the case when the user is not found
+                // For example, throw an exception or log an error
+                throw new RuntimeException("User not found for email: " + email);
+            }
+        } catch (Exception e) {
+            // Handle any exceptions that occur during the password update process
+            // For example, log the error or throw a custom exception
+            e.printStackTrace();
+            throw new RuntimeException("Error updating password: " + e.getMessage());
         }
     }
 
