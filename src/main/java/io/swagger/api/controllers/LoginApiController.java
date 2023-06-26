@@ -4,40 +4,31 @@ package io.swagger.api.controllers;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.swagger.api.LoginApi;
-import io.swagger.api.repository.TokenRepository;
 import io.swagger.api.service.EmailService;
 import io.swagger.api.service.LoginService;
 import io.swagger.api.service.TokenService;
 import io.swagger.api.service.UserService;
 import io.swagger.model.DTO.LoginDTO;
 import io.swagger.model.DTO.LoginResponseDTO;
+import io.swagger.model.DTO.UpdateUserDTO;
 import io.swagger.model.Token;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.enums.ParameterIn;
 import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.mail.MessagingException;
+import jakarta.servlet.http.HttpServletRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.mail.MailException;
-import org.springframework.mail.SimpleMailMessage;
-import org.springframework.security.crypto.bcrypt.BCrypt;
 import org.springframework.web.bind.annotation.*;
 
-import javax.mail.MessagingException;
-import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
-import java.security.Timestamp;
-import java.time.LocalDate;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
-import static java.time.LocalDate.now;
 
 @CrossOrigin(origins = "*")
 @javax.annotation.Generated(value = "io.swagger.codegen.v3.generators.java.SpringCodegen", date = "2023-05-16T13:11:00.686570329Z[GMT]")
@@ -108,7 +99,9 @@ public class LoginApiController implements LoginApi {
            // return ResponseEntity.badRequest().body(Map.of("message", "Failed to send email"));
 
             return new ResponseEntity<LoginResponseDTO>(HttpStatus.INTERNAL_SERVER_ERROR);
-        } catch (MessagingException e) {
+        } /*catch (MessagingException e) {
+            throw new RuntimeException(e);
+        }*/ catch (MessagingException e) {
             throw new RuntimeException(e);
         }
     }
@@ -124,7 +117,10 @@ public class LoginApiController implements LoginApi {
             //return ResponseEntity.badRequest().body(Map.of("message", "Passwords do not match"));
             return new ResponseEntity<LoginResponseDTO>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
-        userService.updatePasswordByEmail(Email, newPassword);
+        //TODO Fix this so user passwords can be updated
+        //Problem is in the service, no Method for it
+
+        //userService.updateUser(Email, newPassword);
 
         //return ResponseEntity.ok(Map.of("message", "Password reset successfully"));
         return new ResponseEntity<LoginResponseDTO>(HttpStatus.OK);

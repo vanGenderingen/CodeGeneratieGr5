@@ -9,13 +9,13 @@ import io.swagger.model.Account;
 import io.swagger.model.DTO.CreateAccountDTO;
 import io.swagger.model.DTO.GetAccountDTO;
 import io.swagger.model.DTO.UpdateAccountDTO;
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
-import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 import java.security.Principal;
 import java.util.List;
@@ -73,7 +73,7 @@ public class AccountsApiController implements AccountsApi {
         GetAccountDTO getAccountDTO = accountService.getAccountByAccountID(accountID);
 
         //Validate the user is authorized to access the account
-        ValidationService.validateAccountAndUserGetAccess(getAccountDTO.getUserID(), principal);
+        ValidationService.validateAccountGetAccess(getAccountDTO.getUserID(), principal);
 
         // Return the account if the user is authorized
         return ResponseEntity.ok(getAccountDTO);
@@ -90,7 +90,7 @@ public class AccountsApiController implements AccountsApi {
             Principal principal
     ) {
         //Validate the user is authorized to access the account
-        ValidationService.validateAccountAndUserGetAccess(userId, principal);
+        ValidationService.validateAccountGetAccess(userId, principal);
 
         //Get the requested accounts from the database
         List<GetAccountDTO> getAccountDTOList = accountService.getAccountsOfUser(userId, limit, offset, searchStrings);
