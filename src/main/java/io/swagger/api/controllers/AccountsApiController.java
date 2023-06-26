@@ -9,13 +9,13 @@ import io.swagger.model.Account;
 import io.swagger.model.DTO.CreateAccountDTO;
 import io.swagger.model.DTO.GetAccountDTO;
 import io.swagger.model.DTO.UpdateAccountDTO;
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
-import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 import java.security.Principal;
 import java.util.List;
@@ -25,6 +25,8 @@ import java.util.UUID;
 @RestController
 @RequestMapping("/accounts")
 public class AccountsApiController implements AccountsApi {
+
+    //TODO: make sure that only a user can only access their own accounts
 
     @Autowired
     private final ObjectMapper objectMapper;

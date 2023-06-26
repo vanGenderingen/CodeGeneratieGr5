@@ -3,12 +3,12 @@ package io.swagger.model.DTO;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import io.swagger.model.Account;
 import io.swagger.model.Role;
+import jakarta.persistence.ElementCollection;
+import jakarta.persistence.FetchType;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.validation.annotation.Validated;
 
-import javax.persistence.ElementCollection;
-import javax.persistence.FetchType;
 import javax.validation.Valid;
 import java.util.List;
 import java.util.UUID;

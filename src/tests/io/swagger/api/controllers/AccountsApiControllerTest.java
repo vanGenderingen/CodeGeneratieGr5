@@ -1,7 +1,6 @@
 package io.swagger.api.controllers;
 
 import io.swagger.api.service.AccountService;
-import io.swagger.api.service.ValidationService;
 import io.swagger.model.Account;
 import io.swagger.model.AccountType;
 import io.swagger.model.DTO.CreateAccountDTO;
@@ -31,7 +30,6 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
 
-import static junit.framework.TestCase.fail;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
@@ -52,8 +50,8 @@ class AccountsApiControllerTest {
     @Test
     void testAccountsPost() {
         User user = new User(UUID.fromString("bb0cc36d-69a7-471e-a665-3609bc14c27a"), "Test", "Account", "testaccount@mail.nl", "password", Arrays.asList(Role.ROLE_USER), true, new ArrayList<>(), 1000.00, 10000.00);
-        Account bankAccount = new Account(UUID.randomUUID(), user, user.getUserID(), "test account", "NL01INHO0000000001", 9999999999999999.00, AccountType.TypeEnum.CURRENT, -9999999999999999.00, true);
-        CreateAccountDTO createAccountDTO = new CreateAccountDTO("test account2", 100.00, AccountType.TypeEnum.CURRENT, 1000.00, UUID.randomUUID());
+        Account bankAccount = new Account(UUID.randomUUID(), user, user.getUserID(), "test account", "NL01INHO0000000001", 9999999999999999.00, AccountType.CURRENT, -9999999999999999.00, true);
+        CreateAccountDTO createAccountDTO = new CreateAccountDTO("test account2", 100.00, AccountType.CURRENT, 1000.00, UUID.randomUUID());
 
         when(accountService.add(any(CreateAccountDTO.class))).thenReturn(bankAccount);
 
@@ -67,14 +65,14 @@ class AccountsApiControllerTest {
 
     @Test
     void testAccountsPost_UserDoesntExist_BAD_REQUEST() {
-        CreateAccountDTO createAccountDTO = new CreateAccountDTO("test account2", 100.00, AccountType.TypeEnum.CURRENT, 1000.00, UUID.randomUUID());
+        CreateAccountDTO createAccountDTO = new CreateAccountDTO("test account2", 100.00, AccountType.CURRENT, 1000.00, UUID.randomUUID());
         when(accountService.add(any(CreateAccountDTO.class))).thenThrow(new ResponseStatusException(HttpStatus.BAD_REQUEST, "This user does not exist"));
 
         try {
             ResponseEntity<Account> response = accountsApiController.createAccount(createAccountDTO);
             Assertions.fail("Expected ResponseStatusException to be thrown");
         } catch (ResponseStatusException ex) {
-            assertThat(ex.getStatus()).isEqualTo(HttpStatus.BAD_REQUEST);
+            assertThat(ex.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
             assertThat(ex.getReason()).isEqualTo("This user does not exist");
         }
 
@@ -135,7 +133,7 @@ class AccountsApiControllerTest {
             ResponseEntity<List<GetAccountDTO>> response = accountsApiController.getAccounts(10, 0, null, null);
             Assertions.fail("Expected ResponseStatusException to be thrown");
         } catch (ResponseStatusException ex) {
-            assertThat(ex.getStatus()).isEqualTo(HttpStatus.BAD_REQUEST);
+            assertThat(ex.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
             assertThat(ex.getReason()).isEqualTo("Couldn't serialize response for content type application/json");
         }
 
@@ -175,7 +173,7 @@ class AccountsApiControllerTest {
             ResponseEntity<GetAccountDTO> response = accountsApiController.getAccountById(UUID.randomUUID(), principal);
             Assertions.fail("Expected ResponseStatusException to be thrown");
         } catch (ResponseStatusException ex) {
-            assertThat(ex.getStatus()).isEqualTo(HttpStatus.BAD_REQUEST);
+            assertThat(ex.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
             assertThat(ex.getReason()).isEqualTo("Couldn't serialize response for content type application/json");
         }
 
@@ -216,7 +214,7 @@ class AccountsApiControllerTest {
             ResponseEntity<List<GetAccountDTO>> response = accountsApiController.getUserAccounts(userId, 10, 0, null, principal);
             Assertions.fail("Expected ResponseStatusException to be thrown");
         } catch (ResponseStatusException ex) {
-            assertThat(ex.getStatus()).isEqualTo(HttpStatus.BAD_REQUEST);
+            assertThat(ex.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
             assertThat(ex.getReason()).isEqualTo("Couldn't serialize response for content type application/json");
         }
 
@@ -260,7 +258,7 @@ class AccountsApiControllerTest {
             ResponseEntity<GetAccountDTO> response = accountsApiController.updateAccount(userId, updateAccountDTO, principal);
             Assertions.fail("Expected ResponseStatusException to be thrown");
         } catch (ResponseStatusException ex) {
-            assertThat(ex.getStatus()).isEqualTo(HttpStatus.BAD_REQUEST);
+            assertThat(ex.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
             assertThat(ex.getReason()).isEqualTo("Couldn't serialize response for content type application/json");
         }
 
