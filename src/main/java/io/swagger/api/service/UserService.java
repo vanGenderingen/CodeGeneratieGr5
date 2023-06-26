@@ -38,12 +38,6 @@ public class UserService {
     @Autowired
     private PasswordEncoder passwordEncoder;
 
-    @Autowired
-    private AuthenticationManager authenticationManager;
-
-    @Autowired
-    private JwtTokenProvider jwtTokenProvider;
-
     public ResponseEntity<User> add(CreateUserDTO createUserDTO) {
         String email = createUserDTO.getEmail();
         // Check if user with the given email already exists
