@@ -16,16 +16,16 @@ public class ValidationService {
         validate(userID, principal, "The user is not authorized to access this account");
     }
 
-    public static void validateUserGetAndPutAccess(UUID userID, Principal principal) {
-        validate(userID, principal, "You're not authorized to do this");
-    }
-
     public static void validateAccountPutAccess(UUID userID, String IBAN, Principal principal) {
         if (!Objects.equals(IBAN, "NL01INHO0000000001")) {
             validate(userID, principal, "The user is not authorized to access this account");
         }else{
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "The bank's account can not be adjusted");
         }
+    }
+
+    public static void validateUserGetAndPutAccess(UUID userID, Principal principal) {
+        validate(userID, principal, "You're not authorized to do this");
     }
 
     private static void validate (UUID userID, Principal principal, String message) {

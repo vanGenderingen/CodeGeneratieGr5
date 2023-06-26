@@ -17,6 +17,8 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import javax.validation.constraints.Max;
+import javax.validation.constraints.Min;
 import java.security.Principal;
 import java.util.List;
 import java.util.UUID;
@@ -25,17 +27,10 @@ import java.util.UUID;
 @RestController
 @RequestMapping("/accounts")
 public class AccountsApiController implements AccountsApi {
-
-    //TODO: make sure that only a user can only access their own accounts
-
     @Autowired
     private final ObjectMapper objectMapper;
-
     @Autowired
     private AccountService accountService;
-
-    @Autowired
-    private UserService userService;
     private final HttpServletRequest request;
 
     @org.springframework.beans.factory.annotation.Autowired
@@ -54,8 +49,8 @@ public class AccountsApiController implements AccountsApi {
     @PreAuthorize("hasRole('ROLE_EMPLOYEE')")
     @GetMapping(produces = "application/json")
     public ResponseEntity<List<GetAccountDTO>> getAccounts(
-            @Valid @RequestParam(value = "limit", defaultValue = "10") Integer limit,
-            @Valid @RequestParam(value = "offset", defaultValue = "0") Integer offset,
+            @Valid @RequestParam(value = "limit", defaultValue = "10") @Max(50) Integer limit,
+            @Valid @RequestParam(value = "offset", defaultValue = "0") @Min(0) Integer offset,
             @Valid @RequestParam(value = "searchstrings", required = false) String searchStrings,
             @Valid @RequestParam(value = "IBAN", required = false) String iban)
     {
@@ -84,8 +79,8 @@ public class AccountsApiController implements AccountsApi {
     @GetMapping(value = "/user/{userId}/accounts", produces = "application/json")
     public ResponseEntity<List<GetAccountDTO>> getUserAccounts(
             @Valid @PathVariable("userId") UUID userId,
-            @Valid @RequestParam(value = "limit", defaultValue = "10") Integer limit,
-            @Valid @RequestParam(value = "offset", defaultValue = "0") Integer offset,
+            @Valid @RequestParam(value = "limit", defaultValue = "10") @Max(50) Integer limit,
+            @Valid @RequestParam(value = "offset", defaultValue = "0") @Min(0) Integer offset,
             @Valid @RequestParam(value = "searchstrings", required = false) String searchStrings,
             Principal principal
     ) {
