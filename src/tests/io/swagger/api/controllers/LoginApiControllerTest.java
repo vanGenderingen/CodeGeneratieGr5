@@ -2,9 +2,13 @@ package io.swagger.api.controllers;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.swagger.api.repository.UserRepository;
+import io.swagger.api.service.EmailService;
 import io.swagger.api.service.LoginService;
+import io.swagger.api.service.TokenService;
+import io.swagger.api.service.UserService;
 import io.swagger.model.DTO.LoginDTO;
 import io.swagger.model.DTO.LoginResponseDTO;
+import io.swagger.model.Token;
 import io.swagger.model.User;
 import jakarta.servlet.http.HttpServletRequest;
 import org.junit.jupiter.api.BeforeEach;
@@ -15,6 +19,11 @@ import org.mockito.MockitoAnnotations;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
+import java.util.HashMap;
+import java.util.Map;
+import java.util.UUID;
+
+import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.when;
 
 class LoginApiControllerTest {
@@ -24,6 +33,14 @@ class LoginApiControllerTest {
 
     @Mock
     private LoginService loginService;
+
+    @Mock
+    private UserService userService;
+    @Mock
+    private TokenService tokenService;
+
+    @Mock
+    private EmailService emailService;
 
     @Mock
     private UserRepository userRepository;
@@ -77,7 +94,7 @@ class LoginApiControllerTest {
     @Test
     void testLoginWithInvalidFields() {
         // Arrange
-        //when(userRepository.getUserByEmail("testuser")).thenReturn(null);
+       // when(userRepository.getUserByEmail("testuser")).thenReturn(null);
 
         LoginDTO loginDTO = new LoginDTO();
         loginDTO.setEmail("");
@@ -90,19 +107,42 @@ class LoginApiControllerTest {
         assertEquals(HttpStatus.NOT_IMPLEMENTED, (HttpStatus) response.getStatusCode());
     }
     @Test
-    void testLoginWithInvalidFields() {
-        // Arrange
-        //when(userRepository.getUserByEmail("testuser")).thenReturn(null);
+    public void testResetPassword() {
+        Map<String, String> request = new HashMap<>();
+        request.put("email", "test@example.com");
+        request.put("newPassword", "newPassword");
+        request.put("confirmPassword", "newPassword");
+        request.put("token", "token");
 
-        LoginDTO loginDTO = new LoginDTO();
-        loginDTO.setEmail("");
-        loginDTO.setPassword("");
+        Token token = new Token();
+        token.setEmail("test@example.com");
+        token.setToken("token");
+        when(tokenService.findByEmail("test@example.com")).thenReturn(token);
 
-        // Act
-        ResponseEntity<LoginResponseDTO> response = loginApiController.loginPost(loginDTO);
+        ResponseEntity<?> responseEntity = loginApiController.resetPassword(request);
 
-        // Assert
-        assertEquals(HttpStatus.NOT_IMPLEMENTED, response.getStatusCode());
+        assertEquals(HttpStatus.OK, (HttpStatus) responseEntity.getStatusCode());
+    }
+
+    @Test
+    public void testForgotPassword() throws Exception {
+        Map<String, String> request = new HashMap<>();
+        request.put("email", "test@example.com");
+
+        String token = UUID.randomUUID().toString();
+        Token token1 = new Token();
+        token1.setEmail("test@example.com");
+        token1.setToken(token);
+        doNothing().when(tokenService).saveToken(token1);
+
+        String resetUrl = "http://localhost:5173/reset-password?token=" + token;
+        String subject = "Reset Your Password";
+        String body = "Click the following link to reset your password: " + resetUrl;
+        doNothing().when(emailService).sendEmail("test@example.com", subject, body);
+
+        ResponseEntity<?> responseEntity = loginApiController.forgotPassword(request);
+
+        assertEquals(HttpStatus.OK, (HttpStatus) responseEntity.getStatusCode());
     }
 
     private void assertEquals(HttpStatus httpStatus, HttpStatus statusCode) {

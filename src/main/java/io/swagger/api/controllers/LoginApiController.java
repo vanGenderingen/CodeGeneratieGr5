@@ -125,13 +125,12 @@ public class LoginApiController implements LoginApi {
         String tokenFromRequest = request.get("token");
 
         if (!newPassword.equals(confirmPassword) || !tokenfromDB.equals(tokenFromRequest)){
-            return ResponseEntity.badRequest().body(Map.of("message", "Passwords do not match"));
-            //return new ResponseEntity<LoginResponseDTO>(HttpStatus.BAD_REQUEST);
+            //return ResponseEntity.badRequest().body(Map.of("message", "Passwords do not match"));
+            return new ResponseEntity<LoginResponseDTO>(HttpStatus.BAD_REQUEST);
         }
         userService.updatePasswordByEmail(Email, newPassword);
 
-        return ResponseEntity.ok(Map.of("message", "Password reset successfully"));
-        //return new ResponseEntity<LoginResponseDTO>(HttpStatus.OK);
-
+        //return ResponseEntity.ok(Map.of("message", "Password reset successfully"));
+        return new ResponseEntity<LoginResponseDTO>(HttpStatus.OK);
     }
 }

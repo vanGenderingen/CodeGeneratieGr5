@@ -33,6 +33,8 @@ public class SecurityConfig {
 
     private static final String[] AUTH_WHITELIST = {
             "/login",
+            "/forgot-password",
+            "/reset-password",
             "/h2-console//",
             "/swagger-ui//",
             "/swagger-resources/",
