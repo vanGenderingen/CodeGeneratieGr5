@@ -168,7 +168,7 @@ public class TransactionService {
         List<Transaction> transactions = new ArrayList<>();
 
         for(Account account : userAccounts){
-            searchCriteria.setAccountID(account.getAccountID());
+            searchCriteria.setFromIBAN(account.getIBAN());
             transactions.addAll(transactionRepository.findAll(new TransactionSpecification(searchCriteria)));
         }
 
