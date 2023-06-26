@@ -15,8 +15,6 @@ import org.mockito.MockitoAnnotations;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
-import javax.servlet.http.HttpServletRequest;
-
 import static org.mockito.Mockito.when;
 
 class LoginApiControllerTest {
