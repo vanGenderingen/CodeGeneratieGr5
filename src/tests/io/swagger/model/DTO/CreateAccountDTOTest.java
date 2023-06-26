@@ -13,7 +13,7 @@ public class CreateAccountDTOTest {
         // Create test data
         String name = "John Doe";
         Double balance = 1000.0;
-        AccountType.TypeEnum type = AccountType.TypeEnum.CURRENT;
+        AccountType type = AccountType.CURRENT;
         Double minBal = 100.0;
         UUID userId = UUID.randomUUID();
 
@@ -36,15 +36,15 @@ public class CreateAccountDTOTest {
     @Test
     public void testTypeEnumToString() {
         String expected = "Current";
-        String actual = AccountType.TypeEnum.CURRENT.toString();
+        String actual = AccountType.CURRENT.toString();
 
         Assertions.assertEquals(expected, actual);
     }
 
     @Test
     public void testTypeEnumFromValue() {
-        AccountType.TypeEnum expected = AccountType.TypeEnum.SAVINGS;
-        AccountType.TypeEnum actual = AccountType.TypeEnum.fromValue("Savings");
+        AccountType expected = AccountType.SAVINGS;
+        AccountType actual = AccountType.fromValue("Savings");
 
         Assertions.assertEquals(expected, actual);
     }

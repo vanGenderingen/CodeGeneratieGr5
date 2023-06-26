@@ -60,8 +60,8 @@ public class AccountServiceTest {
     void testAdd() {
         UUID userId = UUID.fromString("bb0cc36d-69a7-471e-a665-3609bc14c27a");
         User user = new User(userId, "Test", "Account", "testaccount@mail.nl", "password", new ArrayList<>(), true, new ArrayList<>(), 1000.00, 10000.00);
-        Account bankAccount = new Account(UUID.randomUUID(), user, user.getUserID(), "test account", "NL01INHO0000000001", 9999999999999999.00, AccountType.TypeEnum.CURRENT, -9999999999999999.00, true);
-        CreateAccountDTO createAccountDTO = new CreateAccountDTO("test account2", 100.00, AccountType.TypeEnum.CURRENT, 1000.00, userId);
+        Account bankAccount = new Account(UUID.randomUUID(), user, user.getUserID(), "test account", "NL01INHO0000000001", 9999999999999999.00, AccountType.CURRENT, -9999999999999999.00, true);
+        CreateAccountDTO createAccountDTO = new CreateAccountDTO("test account2", 100.00, AccountType.CURRENT, 1000.00, userId);
 
         GetUserDTO userDTO = new GetUserDTO();
         userDTO.setUserID(userId);
@@ -88,7 +88,7 @@ public class AccountServiceTest {
 
     @Test
     public void testAdd_NullUserID() {
-        CreateAccountDTO createAccountDTO = new CreateAccountDTO("test account2", 100.00, AccountType.TypeEnum.CURRENT, 1000.00, null);
+        CreateAccountDTO createAccountDTO = new CreateAccountDTO("test account2", 100.00, AccountType.CURRENT, 1000.00, null);
 
         // Invoke the method and assert that it throws an IllegalArgumentException
         assertThrows(ResponseStatusException.class, () -> accountService.add(createAccountDTO));

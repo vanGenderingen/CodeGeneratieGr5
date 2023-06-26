@@ -2,12 +2,12 @@ package io.swagger.model.DTO;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import io.swagger.model.AccountType;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.validation.annotation.Validated;
 
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
 import java.util.UUID;
 
 /**

@@ -4,17 +4,15 @@ import io.swagger.model.Account;
 import io.swagger.model.DTO.CreateAccountDTO;
 import io.swagger.model.DTO.GetAccountDTO;
 import io.swagger.model.DTO.UpdateAccountDTO;
-
-import java.security.Principal;
-import java.util.List;
-import java.util.UUID;
-
-import javax.validation.Valid;
-
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+
+import javax.validation.Valid;
+import java.security.Principal;
+import java.util.List;
+import java.util.UUID;
 
 @Validated
 @RequestMapping("/accounts")

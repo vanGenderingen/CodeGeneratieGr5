@@ -6,6 +6,7 @@ import io.swagger.api.service.LoginService;
 import io.swagger.model.DTO.LoginDTO;
 import io.swagger.model.DTO.LoginResponseDTO;
 import io.swagger.model.User;
+import jakarta.servlet.http.HttpServletRequest;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
@@ -57,7 +58,7 @@ class LoginApiControllerTest {
 
         // Assert
 
-        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertEquals(HttpStatus.OK, (HttpStatus) response.getStatusCode());
     }
 
     @Test
@@ -73,7 +74,7 @@ class LoginApiControllerTest {
         ResponseEntity<LoginResponseDTO> response = loginApiController.loginPost(loginDTO);
 
         // Assert
-        assertEquals(HttpStatus.NOT_IMPLEMENTED, response.getStatusCode());
+        assertEquals(HttpStatus.NOT_IMPLEMENTED, (HttpStatus) response.getStatusCode());
     }
     @Test
     void testLoginWithInvalidFields() {
@@ -88,7 +89,7 @@ class LoginApiControllerTest {
         ResponseEntity<LoginResponseDTO> response = loginApiController.loginPost(loginDTO);
 
         // Assert
-        assertEquals(HttpStatus.NOT_IMPLEMENTED, response.getStatusCode());
+        assertEquals(HttpStatus.NOT_IMPLEMENTED, (HttpStatus) response.getStatusCode());
     }
 
     private void assertEquals(HttpStatus httpStatus, HttpStatus statusCode) {

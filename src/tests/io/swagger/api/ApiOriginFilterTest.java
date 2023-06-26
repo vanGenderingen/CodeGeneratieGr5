@@ -1,5 +1,6 @@
 package io.swagger.api;
 
+import jakarta.servlet.ServletException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.mock.web.MockFilterChain;
@@ -22,7 +23,7 @@ public class ApiOriginFilterTest {
     }
 
     @Test
-    public void testApiOriginFilter() throws IOException, ServletException {
+    public void testApiOriginFilter() throws IOException, ServletException, ServletException {
         MockHttpServletRequest request = new MockHttpServletRequest();
         MockHttpServletResponse response = new MockHttpServletResponse();
         MockFilterChain filterChain = new MockFilterChain();
