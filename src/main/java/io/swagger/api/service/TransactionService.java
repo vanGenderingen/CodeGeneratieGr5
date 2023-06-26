@@ -7,6 +7,8 @@ import io.swagger.api.repository.UserRepository;
 import io.swagger.api.specification.SearchCriteria;
 import io.swagger.api.specification.TransactionSpecification;
 import io.swagger.model.*;
+import io.swagger.model.DTO.GetAccountDTO;
+import io.swagger.model.DTO.GetUserDTO;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,6 +34,9 @@ public class TransactionService {
 
     @Autowired
     private AccountRepository accountsRepository;
+
+    @Autowired
+    private AccountService accountService;
 
     @Autowired
     private UserRepository userRepository;
@@ -154,6 +159,29 @@ public class TransactionService {
         if (dailyLimit < total + amount) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "You can't withdraw more than your daily limit");
         }
+    }
+
+    public double calculateLeftOverDailyLimit(GetUserDTO user) {
+
+        List<GetAccountDTO> getAccountDTOS = accountService.getAccountsOfUser(user.getUserID(), 50, 0, null);
+
+        List<Transaction> transactions = new ArrayList<>();
+        double total = 0;
+
+        for (GetAccountDTO getAccountDTO : getAccountDTOS) {
+            SearchCriteria searchCriteria = new SearchCriteria();
+            searchCriteria.setFromIBAN(getAccountDTO.getIban());
+            searchCriteria.setDate(LocalDateTime.now());
+
+            transactions = transactionRepository.findAll(new TransactionSpecification(searchCriteria));
+
+            Double dailyLimit = user.getDailyLimit();
+            total = transactions.stream()
+                    .mapToDouble(Transaction::getAmount)
+                    .sum();
+        }
+
+        return user.getDailyLimit() - total;
     }
 
     public SearchCriteria setCriteriaForAccount(SearchCriteria searchCriteria, Account account){
