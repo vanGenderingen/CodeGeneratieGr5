@@ -43,7 +43,7 @@ public class TransactionService {
         //Verify transaction and daily limit
         User fromUser = userRepository.getUserByUserID(fromAccount.getUserID());
         validateTransactionLimit(fromUser, transaction.getAmount());
-        validateDailyLimit(fromUser, transaction.getFromIBAN(), transaction.getAmount());
+        validateDailyLimit(fromUser, transaction.getAmount());
 
         if(!validateUserIsEmployee(transaction.getUserPerforming()) && (transaction.getTransactionType() == TransactionType.TRANSFER)){
             // Verify if the user is the owner of the account
@@ -137,16 +137,15 @@ public class TransactionService {
         }
     }
 
-    public void validateDailyLimit(User user, String fromIBAN, double amount) {
+    public void validateDailyLimit(User user, double amount) {
         SearchCriteria searchCriteria = new SearchCriteria();
-        searchCriteria.setFromIBAN(fromIBAN);
         searchCriteria.setDate(LocalDateTime.now());
 
         List<Account> userAccounts = accountsRepository.getAccountsByUserID(user.getUserID());
         List<Transaction> transactions = new ArrayList<>();
 
         for(Account account : userAccounts){
-            searchCriteria.setAccountID(account.getAccountID());
+            searchCriteria.setFromIBAN(account.getIBAN());
             transactions.addAll(transactionRepository.findAll(new TransactionSpecification(searchCriteria)));
         }
 
