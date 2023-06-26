@@ -30,6 +30,9 @@ public class TransactionService {
     private AccountRepository accountsRepository;
 
     @Autowired
+    private AccountService accountService;
+
+    @Autowired
     private UserRepository userRepository;
 
     public Transaction add(Transaction transaction) {
@@ -160,8 +163,29 @@ public class TransactionService {
         }
     }
 
-    public SearchCriteria setCriteriaForAccount(SearchCriteria searchCriteria, Account account) {
-        if (searchCriteria.getFromIBAN() == null && searchCriteria.getToIBAN() == null) {
+    public double calculateLeftOverDailyLimit(GetUserDTO user) {
+        SearchCriteria searchCriteria = new SearchCriteria();
+        searchCriteria.setDate(LocalDateTime.now());
+
+        List<Account> userAccounts = accountsRepository.getAccountsByUserID(user.getUserID());
+        List<Transaction> transactions = new ArrayList<>();
+
+        for(Account account : userAccounts){
+            searchCriteria.setFromIBAN(account.getIBAN());
+            transactions.addAll(transactionRepository.findAll(new TransactionSpecification(searchCriteria)));
+        }
+
+        Double dailyLimit = user.getDailyLimit();
+        double total = transactions.stream()
+                .distinct()
+                .mapToDouble(Transaction::getAmount)
+                .sum();
+
+        return dailyLimit - total;
+    }
+
+    public SearchCriteria setCriteriaForAccount(SearchCriteria searchCriteria, Account account){
+        if(searchCriteria.getFromIBAN() == null && searchCriteria.getToIBAN() == null){
             searchCriteria.setToIBAN(account.getIBAN());
             searchCriteria.setFromIBAN(account.getIBAN());
         } else if (searchCriteria.getToIBAN() == null) {
