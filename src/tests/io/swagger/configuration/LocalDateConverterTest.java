@@ -2,8 +2,6 @@ package io.swagger.configuration;
 
 import org.junit.jupiter.api.Test;
 import org.threeten.bp.LocalDate;
-import org.threeten.bp.LocalDateTime;
-import org.threeten.bp.format.DateTimeFormatter;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;

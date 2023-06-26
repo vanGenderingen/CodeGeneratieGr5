@@ -12,11 +12,16 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContext;
+import org.springframework.security.core.context.SecurityContextHolder;
 
+import java.security.Principal;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -43,16 +48,15 @@ public class UsersApiControllerTest {
     @Test
     void testUsersPost() {
 
-
         User user = new User(UUID.fromString("bb0cc36d-69a7-471e-a665-3609bc14c27a"), "Test", "Tester", "mail@example.com", "password", Arrays.asList(Role.ROLE_USER), true, new ArrayList<>(), 1000.00, 10000.00);
 
         CreateUserDTO createUserDTO = new CreateUserDTO("Test", "Tester", "mail@example.com", "password", Arrays.asList(Role.ROLE_USER), 1000.00, 10000.00);
 
-        when(userService.add(any(CreateUserDTO.class))).thenReturn(new ResponseEntity<>(user, HttpStatus.OK));
+        when(userService.add(any(CreateUserDTO.class))).thenReturn(user);
 
-        ResponseEntity<User> response = usersApiController.usersPost(createUserDTO);
+        ResponseEntity<User> response = usersApiController.createUser(createUserDTO);
 
-        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.CREATED);
         assertThat(response.getBody()).isEqualTo(user);
 
         verify(userService).add(any(CreateUserDTO.class));
@@ -71,9 +75,9 @@ public class UsersApiControllerTest {
         List<GetUserDTO> userDTOS = new ArrayList<>();
         userDTOS.add(userDTO);
 
-        when(userService.getAllUsers(limit, offset, searchstrings, Email)).thenReturn(new ResponseEntity<>(userDTOS, HttpStatus.OK));
+        when(userService.getAllUsers(limit, offset, searchstrings, Email)).thenReturn(userDTOS);
 
-        ResponseEntity<List<GetUserDTO>> responseEntity = usersApiController.usersGet(limit, offset,
+        ResponseEntity<List<GetUserDTO>> responseEntity = usersApiController.getUsers(limit, offset,
                 searchstrings, Email);
 
         assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.OK);
@@ -84,14 +88,20 @@ public class UsersApiControllerTest {
     }
 
     @Test
-    void testUsersUserIdGet() {
+    void testGetByUserID() {
         UUID userID = UUID.randomUUID();
         GetUserDTO userDTO = new GetUserDTO();
         userDTO.setUserID(userID);
+        Principal principal = userID::toString;
 
-        when(userService.getUserByUserID(userID)).thenReturn(new ResponseEntity<>(userDTO, HttpStatus.OK));
+        Authentication authentication = Mockito.mock(Authentication.class);
+        SecurityContext securityContext = Mockito.mock(SecurityContext.class);
+        SecurityContextHolder.setContext(securityContext);
+        Mockito.when(securityContext.getAuthentication()).thenReturn(authentication);
 
-        ResponseEntity<GetUserDTO> responseEntity = usersApiController.usersUserIDGet(userID);
+        when(userService.getUserByUserID(userID)).thenReturn(userDTO);
+
+        ResponseEntity<GetUserDTO> responseEntity = usersApiController.getUserById(userID, principal);
 
         assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.OK);
         assertThat(responseEntity.getBody()).isEqualTo(userDTO);
@@ -102,19 +112,25 @@ public class UsersApiControllerTest {
     @Test
     void testUsersUserIdPut() {
         UUID userID = UUID.randomUUID();
-        UpdateUserDTO userDTO = new UpdateUserDTO();
-        userDTO.setFirstName("test");
+        UpdateUserDTO updateUserDTO = new UpdateUserDTO();
+        updateUserDTO.setFirstName("test");
+        Principal principal = userID::toString;
 
         GetUserDTO getUserDTO = new GetUserDTO();
         getUserDTO.setUserID(userID);
 
-        when(userService.updateUser(userID, userDTO)).thenReturn(new ResponseEntity<GetUserDTO>(getUserDTO, HttpStatus.OK));
+        Authentication authentication = Mockito.mock(Authentication.class);
+        SecurityContext securityContext = Mockito.mock(SecurityContext.class);
+        SecurityContextHolder.setContext(securityContext);
+        Mockito.when(securityContext.getAuthentication()).thenReturn(authentication);
 
-        ResponseEntity<GetUserDTO> responseEntity = usersApiController.usersUserIDPut(userID, userDTO);
+        when(userService.updateUser(userID, updateUserDTO)).thenReturn(getUserDTO);
+
+        ResponseEntity<GetUserDTO> responseEntity = usersApiController.updateUser(userID, updateUserDTO, principal);
 
         assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.OK);
-        assertThat(responseEntity.getBody()).isInstanceOf(GetUserDTO.class);
+        assertThat(responseEntity.getBody().getUserID()).isEqualTo(userID);
 
-        verify(userService, times(1)).updateUser(userID, userDTO);
+        verify(userService, times(1)).updateUser(userID, updateUserDTO);
     }
 }

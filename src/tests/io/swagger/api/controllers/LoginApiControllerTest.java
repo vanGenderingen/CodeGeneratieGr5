@@ -6,6 +6,7 @@ import io.swagger.api.service.LoginService;
 import io.swagger.model.DTO.LoginDTO;
 import io.swagger.model.DTO.LoginResponseDTO;
 import io.swagger.model.User;
+import jakarta.servlet.http.HttpServletRequest;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
@@ -13,8 +14,6 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-
-import javax.servlet.http.HttpServletRequest;
 
 import static org.mockito.Mockito.when;
 
@@ -57,7 +56,7 @@ class LoginApiControllerTest {
 
         // Assert
 
-        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertEquals(HttpStatus.OK, (HttpStatus) response.getStatusCode());
     }
 
     @Test
@@ -73,7 +72,22 @@ class LoginApiControllerTest {
         ResponseEntity<LoginResponseDTO> response = loginApiController.loginPost(loginDTO);
 
         // Assert
-        assertEquals(HttpStatus.NOT_IMPLEMENTED, response.getStatusCode());
+        assertEquals(HttpStatus.NOT_IMPLEMENTED, (HttpStatus) response.getStatusCode());
+    }
+    @Test
+    void testLoginWithInvalidFields() {
+        // Arrange
+        //when(userRepository.getUserByEmail("testuser")).thenReturn(null);
+
+        LoginDTO loginDTO = new LoginDTO();
+        loginDTO.setEmail("");
+        loginDTO.setPassword("");
+
+        // Act
+        ResponseEntity<LoginResponseDTO> response = loginApiController.loginPost(loginDTO);
+
+        // Assert
+        assertEquals(HttpStatus.NOT_IMPLEMENTED, (HttpStatus) response.getStatusCode());
     }
     @Test
     void testLoginWithInvalidFields() {
