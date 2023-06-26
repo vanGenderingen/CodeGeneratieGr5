@@ -1,6 +1,7 @@
 package io.swagger.api.service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import io.swagger.api.controllers.AccountsApiController;
 import io.swagger.api.repository.AccountRepository;
 import io.swagger.api.repository.UserRepository;
 import io.swagger.model.Account;
@@ -9,6 +10,8 @@ import io.swagger.model.DTO.GetAccountDTO;
 import io.swagger.model.DTO.UpdateAccountDTO;
 import io.swagger.model.User;
 import org.hibernate.MappingException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
@@ -21,6 +24,11 @@ import java.util.stream.Collectors;
 
 @Service
 public class AccountService {
+
+    //TODO: Better Errors -> ikzelf vind het wel goed zo, kan iemand hier naar kijken?
+
+    private static final Logger log = LoggerFactory.getLogger(AccountsApiController.class);
+
     @Autowired
     private AccountRepository accountRepository;
     @Autowired
@@ -45,20 +53,21 @@ public class AccountService {
         }
     }
     public List<GetAccountDTO> getAllAccounts(Integer limit, Integer offset, String searchStrings, String IBAN) {
-        return checkIfListIsNotEmpty(convertAccountsToGetAccountToDTO(accountRepository.getAll(IBAN, searchStrings, PageRequest.of(offset, limit))));
+        return convertAccountsToGetAccountToDTO(accountRepository.getAll(IBAN, searchStrings, PageRequest.of(offset, limit)));
     }
 
     public GetAccountDTO getAccountByAccountID(UUID accountID) {
         try {
             return objectMapper.convertValue(accountRepository.getAccountByAccountID(accountID), GetAccountDTO.class);
         } catch (MappingException e) {
+            log.error("Couldn't serialize response for content type application/json", e);
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Couldn't serialize response for content type application/json");
         }catch (NullPointerException e){
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "This account does not exist");
         }
     }
     public List<GetAccountDTO> getAccountsOfUser(UUID userId, Integer limit, Integer offset, String searchStrings) {
-        return checkIfListIsNotEmpty(convertAccountsToGetAccountToDTO(accountRepository.getAccountsOfUser(userId, searchStrings, PageRequest.of(offset, limit))));
+        return convertAccountsToGetAccountToDTO(accountRepository.getAccountsOfUser(userId, searchStrings, PageRequest.of(offset, limit)));
     }
 
     public GetAccountDTO updateAccount(UUID accountID, UpdateAccountDTO updateAccountDTO) {
@@ -66,6 +75,7 @@ public class AccountService {
             return objectMapper.convertValue(accountRepository.save(updateAccountFieldsIfNeeded(
                     accountRepository.getAccountByAccountID(accountID), updateAccountDTO)), GetAccountDTO.class);
         } catch (MappingException e) {
+            log.error("Couldn't serialize response for content type application/json", e);
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Couldn't serialize response for content type application/json");
         }catch (NullPointerException e){
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "This account does not exist");
@@ -90,14 +100,9 @@ public class AccountService {
                     .map(account -> objectMapper.convertValue(account, GetAccountDTO.class))
                     .collect(Collectors.toList());
         } catch (MappingException e) {
+            log.error("Couldn't serialize response for content type application/json", e);
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Couldn't serialize response for content type application/json");
         }
-    }
-
-    // Make sure that the List is not null
-    private List<GetAccountDTO> checkIfListIsNotEmpty(List<GetAccountDTO> accounts) {
-        if (accounts.isEmpty()) throw new ResponseStatusException(HttpStatus.NOT_FOUND, "No Accounts found");
-        return accounts;
     }
 
     // Make sure that only the fields that are not null are updated

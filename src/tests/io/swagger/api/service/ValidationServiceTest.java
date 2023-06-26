@@ -43,7 +43,7 @@ class ValidationServiceTest {
                 () -> ValidationService.validateAccountGetAccess(accountId, principal));
 
         assertEquals("The user is not authorized to access this account", exception.getReason());
-        assertEquals(403, exception.getStatus().value());
+        assertEquals(403, exception.getStatusCode().value());
     }
 
     @Test
@@ -74,7 +74,7 @@ class ValidationServiceTest {
                 () -> ValidationService.validateAccountPutAccess(accountId, IBAN, principal));
 
         assertEquals("The bank's account can not be adjusted", exception.getReason());
-        assertEquals(403, exception.getStatus().value());
+        assertEquals(403, exception.getStatusCode().value());
     }
 
     @Test
@@ -88,7 +88,7 @@ class ValidationServiceTest {
                 () -> ValidationService.validateAccountPutAccess(accountId, IBAN, principal));
 
         assertEquals("The user is not authorized to access this account", exception.getReason());
-        assertEquals(403, exception.getStatus().value());
+        assertEquals(403, exception.getStatusCode().value());
     }
 
     @Test
@@ -109,7 +109,7 @@ class ValidationServiceTest {
                 () -> ValidationService.validateUserGetAndPutAccess(userId, principal));
 
         assertEquals("You're not authorized to do this", exception.getReason());
-        assertEquals(403, exception.getStatus().value());
+        assertEquals(403, exception.getStatusCode().value());
     }
 
     @Test

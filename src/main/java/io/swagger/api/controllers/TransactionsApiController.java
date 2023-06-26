@@ -2,13 +2,13 @@ package io.swagger.api.controllers;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.swagger.api.service.TransactionService;
-import io.swagger.model.AmountFilter;
+import io.swagger.api.specification.SearchCriteria;
 import io.swagger.model.DTO.CreateTransactionDTO;
-import io.swagger.model.IBANFilter;
 import io.swagger.model.Transaction;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.enums.ParameterIn;
 import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.servlet.http.HttpServletRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,10 +17,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
-import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 import java.security.Principal;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -55,12 +53,9 @@ public class TransactionsApiController {
             @Parameter(in = ParameterIn.QUERY, description = "The offset for paginated results.", schema=@Schema(type = "integer", defaultValue = "0", minimum = "0")) @Valid @RequestParam(value = "offset", required = false, defaultValue = "0") Integer offset,
             @Parameter(in = ParameterIn.QUERY, description = "The maximum number of transactions to retrieve.", schema = @Schema(allowableValues = {"0", "100"}, maximum = "100", defaultValue = "20")) @Valid @RequestParam(value = "limit", required = false, defaultValue = "20") Integer limit,
             @Parameter(in = ParameterIn.QUERY, description = "Retrieve transactions of a transaction type.", schema = @Schema(allowableValues = {"withdraw", "deposit"})) @Valid @RequestParam(value = "transactionType", required = false) String transactionType,
-            @Parameter(in = ParameterIn.QUERY, description = "Filter on account on or toIBAN, fromIBAN, or accountID", schema = @Schema()) @Valid @ModelAttribute(value = "accountFilter") IBANFilter accountFilter,
-            @Parameter(in = ParameterIn.QUERY, description = "Retrieve transactions that are filtered on the amount.", schema = @Schema()) @Valid @ModelAttribute(value = "amountFilter") AmountFilter amountFilter
-    ){
-
-        List<Transaction> transactions = new ArrayList<>();
-        transactions = transactionService.getTransactions(offset,limit, accountFilter, amountFilter, transactionType);
+            @Parameter(in = ParameterIn.QUERY, description = "Filter transactions", schema = @Schema()) @Valid @ModelAttribute(value = "filters") SearchCriteria filters
+            ){
+        List<Transaction> transactions = transactionService.getTransactions(offset,limit, filters, request.getUserPrincipal());
         return new ResponseEntity<List<Transaction>>(transactions, HttpStatus.OK);
     }
 
@@ -71,10 +66,11 @@ public class TransactionsApiController {
             method = RequestMethod.POST)
     public ResponseEntity<Transaction> postTransactions(@RequestBody CreateTransactionDTO body) {
         Principal principal = request.getUserPrincipal();
+
         Transaction transaction = objectMapper.convertValue(body, Transaction.class);
         transaction.setUserPerforming(UUID.fromString(principal.getName()));
-
         Transaction result = transactionService.add(transaction);
-        return new ResponseEntity<Transaction>(result, HttpStatus.OK);
+
+        return ResponseEntity.status(HttpStatus.CREATED).body(result);
     }
 }

@@ -14,7 +14,7 @@ public class ValidationService {
 
     public static void validateAccountGetAccess(UUID userID, Principal principal) {
         validate(userID, principal, "The user is not authorized to access this account");
-}
+    }
 
     public static void validateUserGetAndPutAccess(UUID userID, Principal principal) {
         validate(userID, principal, "You're not authorized to do this");

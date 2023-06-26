@@ -1,17 +1,13 @@
 package io.swagger.model.DTO;
 
-import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonValue;
 import io.swagger.model.AccountType;
-import io.swagger.model.Role;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.validation.annotation.Validated;
 
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-import java.util.List;
 import java.util.UUID;
 
 /**
@@ -37,7 +33,7 @@ public class GetAccountDTO   {
 
   @JsonProperty("Type")
   @Enumerated(EnumType.STRING)
-  private AccountType.TypeEnum type = null;
+  private AccountType type = null;
 
   @JsonProperty("MinBal")
   private Double minBal = null;

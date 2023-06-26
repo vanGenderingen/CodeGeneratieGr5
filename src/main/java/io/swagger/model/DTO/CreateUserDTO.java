@@ -2,14 +2,14 @@ package io.swagger.model.DTO;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import io.swagger.model.Role;
+import jakarta.persistence.ElementCollection;
+import jakarta.persistence.FetchType;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.springframework.validation.annotation.Validated;
 
-import javax.persistence.ElementCollection;
-import javax.persistence.FetchType;
 import java.util.List;
 
 /**

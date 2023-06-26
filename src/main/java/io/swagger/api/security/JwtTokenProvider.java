@@ -6,6 +6,7 @@ import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.swagger.configuration.UserDetailsService;
 import io.swagger.model.Role;
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
@@ -18,7 +19,6 @@ import org.springframework.web.server.ResponseStatusException;
 
 import javax.annotation.PostConstruct;
 import javax.crypto.SecretKey;
-import javax.servlet.http.HttpServletRequest;
 import java.util.Date;
 import java.util.List;
 import java.util.Objects;
@@ -54,18 +54,8 @@ public class JwtTokenProvider {
                 .setClaims(claims)//
                 .setIssuedAt(now)//
                 .setExpiration(validity)//
-                .signWith(SignatureAlgorithm.HS256, secretKey)//
+                .signWith(SignatureAlgorithm.HS256, secretKey)
                 .compact();
-    }
-
-    public String generateSecretKey() {
-        // Generate a random secret key using the HS256 algorithm
-        byte[] keyBytes = secretKeyFor(SignatureAlgorithm.HS256).getEncoded();
-        return base64UrlEncode(keyBytes);
-    }
-
-    private String base64UrlEncode(byte[] bytes) {
-        return java.util.Base64.getUrlEncoder().withoutPadding().encodeToString(bytes);
     }
 
     public Authentication getAuthentication(String token) {

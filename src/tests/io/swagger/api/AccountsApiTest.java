@@ -1,6 +1,5 @@
 package io.swagger.api;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import io.swagger.api.controllers.AccountsApiController;
 import io.swagger.model.Account;
 import io.swagger.model.DTO.CreateAccountDTO;
@@ -14,7 +13,6 @@ import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.mock.web.MockHttpServletRequest;
 
 import java.security.Principal;
 import java.util.List;

@@ -3,14 +3,14 @@ package io.swagger.model;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
 
-public enum AccountType {
-    CURRENT("Current"),
-
-    SAVINGS("Savings");
+public enum TransactionType {
+    DEPOSIT("Deposit"),
+    WITHDRAWAL("Withdrawal"),
+    TRANSFER("Transfer");
 
     private String value;
 
-    AccountType(String value) {
+    TransactionType(String value) {
         this.value = value;
     }
 
@@ -21,8 +21,8 @@ public enum AccountType {
     }
 
     @JsonCreator
-    public static AccountType fromValue(String text) {
-        for (AccountType b : AccountType.values()) {
+    public static TransactionType fromValue(String text) {
+        for (TransactionType b : TransactionType.values()) {
             if (String.valueOf(b.value).equals(text)) {
                 return b;
             }
