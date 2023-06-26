@@ -24,17 +24,13 @@ import org.springframework.mail.MailException;
 import org.springframework.web.bind.annotation.*;
 
 
-import javax.mail.MessagingException;
-import javax.servlet.http.HttpServletRequest;
+
 
 import javax.validation.Valid;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.UUID;
 
 
 @CrossOrigin(origins = "*")
@@ -60,15 +56,6 @@ public class LoginApiController implements LoginApi {
     private EmailService emailService;//LoginService to use the methods of the service
     @Autowired
     private TokenService tokenService;//LoginService to use the methods of the service
-
-    @Autowired
-    private UserService userService;//LoginService to use the methods of the service
-    @Autowired
-    private EmailService emailService;//LoginService to use the methods of the service
-    @Autowired
-    private TokenService tokenService;//LoginService to use the methods of the service
-//    @Autowired
-//    private TokenRepository tokenRepository;
 
     @org.springframework.beans.factory.annotation.Autowired
     public LoginApiController(ObjectMapper objectMapper, HttpServletRequest request, LoginService loginService){
@@ -115,8 +102,6 @@ public class LoginApiController implements LoginApi {
             return new ResponseEntity<LoginResponseDTO>(HttpStatus.OK);
         } catch (MailException e) {
             return new ResponseEntity<LoginResponseDTO>(HttpStatus.BAD_REQUEST);
-        } catch (MessagingException e) {
-            throw new RuntimeException(e);
         }
     }
 
