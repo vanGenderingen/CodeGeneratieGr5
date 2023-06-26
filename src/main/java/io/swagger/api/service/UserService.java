@@ -69,7 +69,7 @@ public class UserService {
         try {
             GetUserDTO userDTO = objectMapper.convertValue(userRepository.getUserByUserID(userID), GetUserDTO.class);
 
-            userDTO.setLeftOfDailyLimit(transactionService.calculateLeftOverDailyLimit(userDTO));
+            userDTO.setLeftOverDailyLimit(transactionService.calculateLeftOverDailyLimit(userDTO));
 
             return userDTO;
 

@@ -165,6 +165,7 @@ public class TransactionService {
 
         List<GetAccountDTO> getAccountDTOS = accountService.getAccountsOfUser(user.getUserID(), 50, 0, null);
 
+        List<Transaction> transactions = new ArrayList<>();
         double total = 0;
 
         for (GetAccountDTO getAccountDTO : getAccountDTOS) {
@@ -172,7 +173,7 @@ public class TransactionService {
             searchCriteria.setFromIBAN(getAccountDTO.getIban());
             searchCriteria.setDate(LocalDateTime.now());
 
-            List<Transaction> transactions = transactionRepository.findAll(new TransactionSpecification(searchCriteria));
+            transactions = transactionRepository.findAll(new TransactionSpecification(searchCriteria));
 
             Double dailyLimit = user.getDailyLimit();
             total = transactions.stream()

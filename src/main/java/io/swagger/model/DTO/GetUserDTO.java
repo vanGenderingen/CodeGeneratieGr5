@@ -50,6 +50,6 @@ public class GetUserDTO   {
   @JsonProperty("DailyLimit")
   private Double dailyLimit = null;
 
-  @JsonProperty("LeftOfDailyLimit")
-  private Double leftOfDailyLimit = null;
+  @JsonProperty("LeftOverDailyLimit")
+  private Double leftOverDailyLimit = null;
 }
