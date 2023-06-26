@@ -8,6 +8,8 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import javax.validation.constraints.Max;
+import javax.validation.constraints.Min;
 import java.security.Principal;
 import java.util.List;
 import java.util.UUID;
@@ -22,8 +24,8 @@ public interface UsersApi {
 
     @GetMapping
     ResponseEntity<List<GetUserDTO>> getUsers(
-            @Valid @RequestParam(value = "limit", defaultValue = "10") Integer limit,
-            @Valid @RequestParam(value = "offset", defaultValue = "0") Integer offset,
+            @Valid @RequestParam(value = "limit", defaultValue = "10") @Min(0) @Max(50) Integer limit,
+            @Valid @RequestParam(value = "offset", defaultValue = "0") @Min(0) Integer offset,
             @Valid @RequestParam(value = "searchstrings", required = false) String searchStrings,
             @Valid @RequestParam(value = "Email", required = false) String Email
     );

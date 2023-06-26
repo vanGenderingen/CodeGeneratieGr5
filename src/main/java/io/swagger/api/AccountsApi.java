@@ -26,7 +26,7 @@ public interface AccountsApi {
 
     @GetMapping
     ResponseEntity<List<GetAccountDTO>> getAccounts(
-            @Valid @RequestParam(value = "limit", defaultValue = "10") @Max(50) Integer limit,
+            @Valid @RequestParam(value = "limit", defaultValue = "10") @Min(0) @Max(50) Integer limit,
             @Valid @RequestParam(value = "offset", defaultValue = "0") @Min(0) Integer offset,
             @Valid @RequestParam(value = "searchstrings", required = false) String searchStrings,
             @Valid @RequestParam(value = "IBAN", required = false) String iban
@@ -41,7 +41,7 @@ public interface AccountsApi {
     @GetMapping("/user/{userId}/accounts")
     ResponseEntity<List<GetAccountDTO>> getUserAccounts(
             @Valid @PathVariable("userId") UUID userId,
-            @Valid @RequestParam(value = "limit", defaultValue = "10") @Max(50) Integer limit,
+            @Valid @RequestParam(value = "limit", defaultValue = "10") @Min(0) @Max(50) Integer limit,
             @Valid @RequestParam(value = "offset", defaultValue = "0") @Min(0) Integer offset,
             @Valid @RequestParam(value = "searchstrings", required = false) String searchStrings,
             Principal principal

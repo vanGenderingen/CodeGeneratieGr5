@@ -3,7 +3,6 @@ package io.swagger.api.controllers;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.swagger.api.AccountsApi;
 import io.swagger.api.service.AccountService;
-import io.swagger.api.service.UserService;
 import io.swagger.api.service.ValidationService;
 import io.swagger.model.Account;
 import io.swagger.model.DTO.CreateAccountDTO;
@@ -49,7 +48,7 @@ public class AccountsApiController implements AccountsApi {
     @PreAuthorize("hasRole('ROLE_EMPLOYEE')")
     @GetMapping(produces = "application/json")
     public ResponseEntity<List<GetAccountDTO>> getAccounts(
-            @Valid @RequestParam(value = "limit", defaultValue = "10") @Max(50) Integer limit,
+            @Valid @RequestParam(value = "limit", defaultValue = "10") @Min(0) @Max(50) Integer limit,
             @Valid @RequestParam(value = "offset", defaultValue = "0") @Min(0) Integer offset,
             @Valid @RequestParam(value = "searchstrings", required = false) String searchStrings,
             @Valid @RequestParam(value = "IBAN", required = false) String iban)
@@ -79,7 +78,7 @@ public class AccountsApiController implements AccountsApi {
     @GetMapping(value = "/user/{userId}/accounts", produces = "application/json")
     public ResponseEntity<List<GetAccountDTO>> getUserAccounts(
             @Valid @PathVariable("userId") UUID userId,
-            @Valid @RequestParam(value = "limit", defaultValue = "10") @Max(50) Integer limit,
+            @Valid @RequestParam(value = "limit", defaultValue = "10") @Min(0) @Max(50) Integer limit,
             @Valid @RequestParam(value = "offset", defaultValue = "0") @Min(0) Integer offset,
             @Valid @RequestParam(value = "searchstrings", required = false) String searchStrings,
             Principal principal

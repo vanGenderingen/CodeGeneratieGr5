@@ -8,14 +8,16 @@ import io.swagger.model.DTO.CreateUserDTO;
 import io.swagger.model.DTO.GetUserDTO;
 import io.swagger.model.DTO.UpdateUserDTO;
 import io.swagger.model.User;
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
-import jakarta.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
+import javax.validation.constraints.Max;
+import javax.validation.constraints.Min;
 import java.security.Principal;
 import java.util.List;
 import java.util.UUID;
@@ -54,8 +56,8 @@ public class UsersApiController implements UsersApi {
     @PreAuthorize("hasRole('ROLE_EMPLOYEE')")
     @GetMapping(produces = "application/json")
     public ResponseEntity<List<GetUserDTO>> getUsers(
-            @Valid @RequestParam(value = "limit", defaultValue = "10") Integer limit,
-            @Valid @RequestParam(value = "offset", defaultValue = "0") Integer offset,
+            @Valid @RequestParam(value = "limit", defaultValue = "10") @Min(0) @Max(50) Integer limit,
+            @Valid @RequestParam(value = "offset", defaultValue = "0") @Min(0) Integer offset,
             @Valid @RequestParam(value = "searchstrings", required = false) String searchStrings,
             @Valid @RequestParam(value = "Email", required = false) String Email)
     {
