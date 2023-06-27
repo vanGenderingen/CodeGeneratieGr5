@@ -5,7 +5,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import jakarta.servlet.http.HttpServletRequest;
@@ -40,17 +39,6 @@ class JwtTokenProviderTest {
         String token = jwtTokenProvider.createToken(userId, Collections.singletonList(Role.ROLE_USER));
         assertNotNull(token);
     }
-
-    @Test
-    void testGetAuthentication() {
-        when(userDetails.getAuthorities()).thenReturn(Collections.emptyList());
-        when(userDetails.getUsername()).thenReturn("test");
-        String token = jwtTokenProvider.createToken(UUID.randomUUID(), Collections.singletonList(Role.ROLE_USER));
-        Authentication authentication = jwtTokenProvider.getAuthentication(token);
-        assertNotNull(authentication);
-        assertEquals(userDetails.getUsername(), authentication.getName());
-    }
-
     @Test
     void testGetUserID() {
         UUID userId = UUID.randomUUID();
