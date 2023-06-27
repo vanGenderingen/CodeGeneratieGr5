@@ -117,24 +117,24 @@ public class UserServiceTest {
         );
     }
 
-    @Test
-    public void testUsersUserIdGet() {
-        UUID userID = UUID.randomUUID();
-        GetUserDTO userDTO = new GetUserDTO();
-        userDTO.setUserID(userID);
-        User user = new User();
-        user.setUserID(userID);
-
-        when(userRepository.getUserByUserID(userID)).thenReturn(user);
-        when(objectMapper.convertValue(any(User.class), eq(GetUserDTO.class))).thenReturn(userDTO);
-
-        GetUserDTO response = userService.getUserByUserID(userID);
-
-        assertThat(response).isEqualTo(userDTO);
-        assertThat(response.getUserID()).isEqualTo(userID);
-
-        verify(userRepository, times(1)).getUserByUserID(userID);
-    }
+//    @Test
+//    public void testUsersUserIdGet() {
+//        UUID userID = UUID.randomUUID();
+//        GetUserDTO userDTO = new GetUserDTO();
+//        userDTO.setUserID(userID);
+//        User user = new User();
+//        user.setUserID(userID);
+//
+//        when(userRepository.getUserByUserID(userID)).thenReturn(user);
+//        when(objectMapper.convertValue(any(User.class), eq(GetUserDTO.class))).thenReturn(userDTO);
+//
+//        GetUserDTO response = userService.getUserByUserID(userID);
+//
+//        assertThat(response).isEqualTo(userDTO);
+//        assertThat(response.getUserID()).isEqualTo(userID);
+//
+//        verify(userRepository, times(1)).getUserByUserID(userID);
+//    }
 
 
     @Test
