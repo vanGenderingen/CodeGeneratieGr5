@@ -53,7 +53,9 @@ public class TransactionService {
             // Verify if the user is the owner of the account
             validateFromAccountIsFromPerformingUser(transaction.getUserPerforming(), fromUser);
             // Verify if the account is a savings account and from the user
-            validateSavingsAccountIsFromUser(toAccount.getType(), fromAccount, toAccount);
+            validateSavingsAccountIsFromUser(fromAccount, toAccount);
+            // Verify if the account is a savings account and to the user
+            validateToAccount(fromAccount, toAccount);
         }
 
         //Verify if the account has enough money
@@ -123,11 +125,18 @@ public class TransactionService {
         }
     }
 
-    public void validateSavingsAccountIsFromUser(AccountType accountType, Account fromAccount, Account toAccount){
-        if (accountType == AccountType.SAVINGS && !Objects.equals(fromAccount.getUserID().toString(), toAccount.getUserID().toString())){
+    public void validateSavingsAccountIsFromUser(Account fromAccount, Account toAccount){
+        if (fromAccount.getType() == AccountType.SAVINGS && !Objects.equals(fromAccount.getUserID().toString(), toAccount.getUserID().toString())){
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "You can't perform a transaction from a savings account to an account that isn't yours");
+        }
+    }
+
+    public void validateToAccount(Account fromAccount, Account toAccount){
+        if (toAccount.getType() == AccountType.SAVINGS && !Objects.equals(fromAccount.getUserID().toString(), toAccount.getUserID().toString())){
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "You can't perform a transaction to a savings account that isn't yours");
         }
     }
+
 
     public void validateAccountHasEnoughMoney(Account fromAccount, double amount){
         if (fromAccount.getBalance() < fromAccount.getMinBal()+amount) {

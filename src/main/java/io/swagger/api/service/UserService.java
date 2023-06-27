@@ -18,6 +18,7 @@ import org.springframework.web.server.ResponseStatusException;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 
@@ -75,6 +76,25 @@ public class UserService {
 
         } catch (NullPointerException nullPointerException) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Failed to get user");
+        }
+    }
+    public void updatePasswordByEmail(String email, String newPassword) {
+        try {
+            User user = userRepository.getUserByEmail(email);
+
+            if (user != null) {
+                user.setPassword(passwordEncoder.encode(newPassword));
+                userRepository.save(user);
+            } else {
+                // Handle the case when the user is not found
+                // For example, throw an exception or log an error
+                throw new RuntimeException("User not found for email: " + email);
+            }
+        } catch (Exception e) {
+            // Handle any exceptions that occur during the password update process
+            // For example, log the error or throw a custom exception
+            e.printStackTrace();
+            throw new RuntimeException("Error updating password: " + e.getMessage());
         }
     }
 
