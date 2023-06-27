@@ -34,6 +34,9 @@ public class UserService {
     private ObjectMapper objectMapper;
 
     @Autowired
+    private TransactionService transactionService;
+
+    @Autowired
     private PasswordEncoder passwordEncoder;
 
     public User add(CreateUserDTO createUserDTO) {
@@ -65,7 +68,12 @@ public class UserService {
 
     public GetUserDTO getUserByUserID(UUID userID) {
         try {
-            return objectMapper.convertValue(userRepository.getUserByUserID(userID), GetUserDTO.class);
+            GetUserDTO userDTO = objectMapper.convertValue(userRepository.getUserByUserID(userID), GetUserDTO.class);
+
+            userDTO.setLeftOverDailyLimit(transactionService.calculateLeftOverDailyLimit(userDTO));
+
+            return userDTO;
+
         } catch (NullPointerException nullPointerException) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Failed to get user");
         }

@@ -1,14 +1,12 @@
 package io.swagger.api.service;
 
-import io.swagger.api.controllers.UsersApiController;
 import io.swagger.api.repository.AccountRepository;
 import io.swagger.api.repository.TransactionRepository;
 import io.swagger.api.repository.UserRepository;
 import io.swagger.api.specification.SearchCriteria;
 import io.swagger.api.specification.TransactionSpecification;
 import io.swagger.model.*;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import io.swagger.model.DTO.GetUserDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
@@ -21,17 +19,19 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Service
 public class TransactionService {
-
-    private static final Logger log = LoggerFactory.getLogger(UsersApiController.class);
 
     @Autowired
     private TransactionRepository transactionRepository;
 
     @Autowired
     private AccountRepository accountsRepository;
+
+    @Autowired
+    private AccountService accountService;
 
     @Autowired
     private UserRepository userRepository;
@@ -47,7 +47,7 @@ public class TransactionService {
         //Verify transaction and daily limit
         User fromUser = userRepository.getUserByUserID(fromAccount.getUserID());
         validateTransactionLimit(fromUser, transaction.getAmount());
-        validateDailyLimit(fromUser, transaction.getFromIBAN(), transaction.getAmount());
+        validateDailyLimit(fromUser, transaction.getAmount());
 
         if(!validateUserIsEmployee(transaction.getUserPerforming()) && (transaction.getTransactionType() == TransactionType.TRANSFER)){
             // Verify if the user is the owner of the account
@@ -79,7 +79,9 @@ public class TransactionService {
                     filters.setAccountID(account.getAccountID());
                     transactions.addAll(getAllTransactions(PageRequest.of(offset, limit), new TransactionSpecification(setCriteriaForAccount(filters, account))));
                 }
-                return transactions;
+                return transactions.stream()
+                        .distinct()
+                        .collect(Collectors.toList());
             }
             Account account = accountsRepository.getAccountByAccountID(filters.getAccountID());
             return getAllTransactions(PageRequest.of(offset, limit), new TransactionSpecification(setCriteriaForAccount(filters, account)));
@@ -148,15 +150,21 @@ public class TransactionService {
         }
     }
 
-    public void validateDailyLimit(User user, String fromIBAN, double amount) {
+    public void validateDailyLimit(User user, double amount) {
         SearchCriteria searchCriteria = new SearchCriteria();
-        searchCriteria.setFromIBAN(fromIBAN);
         searchCriteria.setDate(LocalDateTime.now());
 
-        List<Transaction> transactions = transactionRepository.findAll(new TransactionSpecification(searchCriteria));
+        List<Account> userAccounts = accountsRepository.getAccountsByUserID(user.getUserID());
+        List<Transaction> transactions = new ArrayList<>();
+
+        for(Account account : userAccounts){
+            searchCriteria.setFromIBAN(account.getIBAN());
+            transactions.addAll(transactionRepository.findAll(new TransactionSpecification(searchCriteria)));
+        }
 
         Double dailyLimit = user.getDailyLimit();
         double total = transactions.stream()
+                .distinct()
                 .mapToDouble(Transaction::getAmount)
                 .sum();
 
@@ -165,20 +173,36 @@ public class TransactionService {
         }
     }
 
+    public double calculateLeftOverDailyLimit(GetUserDTO user) {
+        SearchCriteria searchCriteria = new SearchCriteria();
+        searchCriteria.setDate(LocalDateTime.now());
+
+        List<Account> userAccounts = accountsRepository.getAccountsByUserID(user.getUserID());
+        List<Transaction> transactions = new ArrayList<>();
+
+        for(Account account : userAccounts){
+            searchCriteria.setFromIBAN(account.getIBAN());
+            transactions.addAll(transactionRepository.findAll(new TransactionSpecification(searchCriteria)));
+        }
+
+        Double dailyLimit = user.getDailyLimit();
+        double total = transactions.stream()
+                .distinct()
+                .mapToDouble(Transaction::getAmount)
+                .sum();
+
+        return dailyLimit - total;
+    }
+
     public SearchCriteria setCriteriaForAccount(SearchCriteria searchCriteria, Account account){
         if(searchCriteria.getFromIBAN() == null && searchCriteria.getToIBAN() == null){
             searchCriteria.setToIBAN(account.getIBAN());
             searchCriteria.setFromIBAN(account.getIBAN());
-        }else if(searchCriteria.getToIBAN() == null){
+        } else if (searchCriteria.getToIBAN() == null) {
             searchCriteria.setToIBAN(account.getIBAN());
-        }else {
+        } else {
             searchCriteria.setFromIBAN(account.getIBAN());
         }
         return searchCriteria;
     }
-//
-//    public boolean checkIfTypeIsTransaction(){
-//
-//    }
-
 }

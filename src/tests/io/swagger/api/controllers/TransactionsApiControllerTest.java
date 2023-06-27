@@ -56,7 +56,7 @@ class TransactionsApiControllerTest {
         ResponseEntity<Transaction> response = transactionsApiController.postTransactions(createTransactionDTO);
 
         // Assert
-        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertEquals(HttpStatus.CREATED, response.getStatusCode());
         assertEquals(transaction, response.getBody());
         verify(transactionService, times(1)).add(any(Transaction.class));
     }
@@ -98,7 +98,7 @@ class TransactionsApiControllerTest {
         ResponseEntity<Transaction> response = transactionsApiController.postTransactions(createTransactionDTO);
 
         // Assert
-        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertEquals(HttpStatus.CREATED, response.getStatusCode());
         assertEquals(transaction, response.getBody());
         verify(transactionService, times(1)).add(any(Transaction.class));
     }

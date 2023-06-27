@@ -24,9 +24,6 @@ import java.util.stream.Collectors;
 
 @Service
 public class AccountService {
-
-    //TODO: Better Errors -> ikzelf vind het wel goed zo, kan iemand hier naar kijken?
-
     private static final Logger log = LoggerFactory.getLogger(AccountsApiController.class);
 
     @Autowired
