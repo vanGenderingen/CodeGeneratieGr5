@@ -34,6 +34,9 @@ public class UserServiceTest {
     private UserRepository userRepository;
 
     @Mock
+    private TransactionService transactionService;
+
+    @Mock
     private ObjectMapper objectMapper;
 
     @InjectMocks
@@ -117,24 +120,26 @@ public class UserServiceTest {
         );
     }
 
-//    @Test
-//    public void testUsersUserIdGet() {
-//        UUID userID = UUID.randomUUID();
-//        GetUserDTO userDTO = new GetUserDTO();
-//        userDTO.setUserID(userID);
-//        User user = new User();
-//        user.setUserID(userID);
-//
-//        when(userRepository.getUserByUserID(userID)).thenReturn(user);
-//        when(objectMapper.convertValue(any(User.class), eq(GetUserDTO.class))).thenReturn(userDTO);
-//
-//        GetUserDTO response = userService.getUserByUserID(userID);
-//
-//        assertThat(response).isEqualTo(userDTO);
-//        assertThat(response.getUserID()).isEqualTo(userID);
-//
-//        verify(userRepository, times(1)).getUserByUserID(userID);
-//    }
+    @Test
+    public void testUsersUserIdGet() {
+        UUID userID = UUID.randomUUID();
+        GetUserDTO userDTO = new GetUserDTO();
+        userDTO.setUserID(userID);
+        User user = new User();
+        user.setUserID(userID);
+
+        when(userRepository.getUserByUserID(userID)).thenReturn(user);
+        when(objectMapper.convertValue(any(User.class), eq(GetUserDTO.class))).thenReturn(userDTO);
+        when(transactionService.calculateLeftOverDailyLimit(any(GetUserDTO.class))).thenReturn(1000.00);
+
+        GetUserDTO response = userService.getUserByUserID(userID);
+        userDTO.setLeftOverDailyLimit(1000.00);
+
+        assertThat(response).isEqualTo(userDTO);
+        assertThat(response.getUserID()).isEqualTo(userID);
+
+        verify(userRepository, times(1)).getUserByUserID(userID);
+    }
 
 
     @Test
